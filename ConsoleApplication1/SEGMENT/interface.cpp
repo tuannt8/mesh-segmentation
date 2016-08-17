@@ -627,6 +627,7 @@ interface_dsc::interface_dsc(int &argc, char** argv){
         image_->load_image(std::string(argv[1]));
     }else
     image_->load_image(std::string(DATA_PATH) + IMAGE_NAME);
+    
     imageSize = Vec2(image_->width(), image_->height());
 
     check_gl_error();

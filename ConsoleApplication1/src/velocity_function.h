@@ -121,21 +121,21 @@ namespace DSC2D {
         /**
          Updates the time it took to compute new positions for the interface vertices.
          */
-//        void update_compute_time(const std::chrono::time_point<std::chrono::system_clock>& start_time)
-//        {
-//            std::chrono::duration<real> t = std::chrono::system_clock::now() - start_time;
-//            compute_time += t.count();
-//            total_compute_time += t.count();
-//        }
-//        /**
-//         Updates the time it took to deform the interface.
-//         */
-//        void update_deform_time(const std::chrono::time_point<std::chrono::system_clock>& start_time)
-//        {
-//            std::chrono::duration<real> t = std::chrono::system_clock::now() - start_time;
-//            deform_time += t.count();
-//            total_deform_time += t.count();
-//        }
+        void update_compute_time(const std::chrono::time_point<std::chrono::system_clock>& start_time)
+        {
+            std::chrono::duration<real> t = std::chrono::system_clock::now() - start_time;
+            compute_time += t.count();
+            total_compute_time += t.count();
+        }
+        /**
+         Updates the time it took to deform the interface.
+         */
+        void update_deform_time(const std::chrono::time_point<std::chrono::system_clock>& start_time)
+        {
+            std::chrono::duration<real> t = std::chrono::system_clock::now() - start_time;
+            deform_time += t.count();
+            total_deform_time += t.count();
+        }
         
     private:
         /**
