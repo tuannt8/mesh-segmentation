@@ -23,28 +23,8 @@ void adapt_mesh::split_face(DSC2D::DeformableSimplicialComplex &dsc, image &img)
 {
     dsc_ = & dsc;
     
-//    /**
-//     Auto get threshold
-//     */
     auto c_array = g_param.mean_intensity;
     c_array[BOUND_FACE] = INFINITY;
-//    double mincij = INFINITY;
-//    
-//    for (auto c1 : c_array)
-//    {
-//        for (auto c2 : c_array)
-//        {
-//            if (c1.first != c2.first
-//                && mincij > std::abs(c1.second - c2.second))
-//            {
-//                mincij = std::abs(c1.second - c2.second);
-//            }
-//        }
-//    }
-//    assert(mincij > 1e-5);
-//
-//    double flip_thres = SPLIT_FACE_COEFFICIENT*mincij*mincij;
-//    std::cout << "Split thres = " << flip_thres << "; mincij = " << mincij << std::endl;
     
     double flip_thres = SPLIT_FACE_COEFFICIENT;
     
@@ -123,16 +103,15 @@ void adapt_mesh::split_face(DSC2D::DeformableSimplicialComplex &dsc, image &img)
             {
                 bStable += dsc_->bStable[w.vertex()];
             }
-          //  cout << "Stable = " << bStable << endl;
+
             if (bStable > 1)
             {
                 
                 dsc_->split(fkey);
-           //     std::cout << "Adapt: Split face: " << fkey.get_index() << std::endl;
             }
             else
             {
-               // cout << "Adapt: not stable " << fkey.get_index() << std::endl;
+
             }
         }
     }
@@ -191,30 +170,7 @@ void adapt_mesh::remove_needles(DSC2D::DeformableSimplicialComplex &dsc)
 void adapt_mesh::thinning(DSC2D::DeformableSimplicialComplex &dsc, image &img)
 {
     dsc_ = & dsc;
-    
-//    /**
-//     Auto get threshold
-//     */
-//    std::map<int, double> c_array = g_param.mean_intensity;
-//
-//    double mincij = INFINITY;
-//    
-//    for (auto c1 : c_array)
-//    {
-//        for (auto c2 : c_array)
-//        {
-//            if (c1.first != c2.first
-//                && mincij > std::abs(c1.second - c2.second))
-//            {
-//                mincij = std::abs(c1.second - c2.second);
-//            }
-//        }
-//    }
-//    
-//    assert(mincij > 1e-5);
-//    
-//    double flip_thres = SPLIT_FACE_COEFFICIENT*(1-SPLIT_FACE_COEFFICIENT)*mincij*mincij;
-//    std::cout << "Flip thres = " << flip_thres << "; mincij = " << mincij << std::endl;
+
     
     double flip_thres = SPLIT_FACE_COEFFICIENT;
     
@@ -345,8 +301,6 @@ void adapt_mesh::split_edge(DSC2D::DeformableSimplicialComplex &dsc, image &img)
                 
                 
                 dsc.split_adpat_mesh(ekey);
-                cout << "Adapt: Split edge " << ekey.get_index() << "; thres = " << thres <<
-                    " energy = " << ev << endl;
             }
             else // Low energy, consider collapse
             {
@@ -356,7 +310,6 @@ void adapt_mesh::split_edge(DSC2D::DeformableSimplicialComplex &dsc, image &img)
                 
                 if(dsc.collapse(ekey, true))
                 {
-             //       cout << "Adapt mesh: Collapse edge " << ekey.get_index() << endl;
                 }
             }
         }

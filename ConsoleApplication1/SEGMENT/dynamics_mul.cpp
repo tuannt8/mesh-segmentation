@@ -59,21 +59,11 @@ void dynamics_mul::update_dsc_explicit(dsc_obj &dsc, image &img){
     // 3. Curvature force
     compute_curvature_force();
     
-//    compute_difference();
+
     
     double t = helper_t::get_time_and_start();
 
-//    static int it = 0;
-//    std::cout << it++ << "\n";
-    
-//    static int nb_spli = 0;
-//    if (nb_spli < 10) {
-//        std::cout << s_dsc->get_no_faces() <<" " << t << "\n";
-//        ưư
-//        for (auto fkey : s_dsc->faces()) {
-//            s_dsc->split(fkey);
-//        }
-//    }
+
 }
 
 void dynamics_mul::write_energy()
@@ -115,7 +105,6 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
     
     if (count > nb_displace)
     {
-        std::cout << "\n \n Adapt mesh --------------------- \n ";
         
         count = 0;
         
@@ -243,7 +232,6 @@ void dynamics_mul::update_vertex_stable()
             
             if (move < STABLE_MOVE) // stable
             {
-               // std::cout << "Stable : " << ni->get_index() << std::endl;
                 obj->bStable[*ni] = 1;
             }
             else
@@ -1017,7 +1005,6 @@ double dynamics_mul::optimal_dt(dsc_obj * clone_dsc){
     double E1 = get_total_energy(clone_dsc, mean_inten_);
     double dE0 = energy_gradient_by_moving_distance(s_dsc, mean_inten_);
     
-    std::cout << E0 << " " << " " << E1 << " " << E1-E0 << " " << dE0 << " | E0 E1 delta_E dE0" << std::endl;
     
     return -1./2. * dE0 / (E0 - E1 - dE0);
 }
@@ -1074,8 +1061,6 @@ double dynamics_mul::energy_gradient_by_moving_distance(dsc_obj *obj,
     // 3. Curvature
     double dEl = gradient_length(obj);
     
-    std::cout << dEu << "  " << dEg << " " << dEl
-                << " | u-grad; image-frad; length-grad" << std::endl;
     
     return dEu + dEl + dEg;
 }
@@ -1329,7 +1314,6 @@ void dynamics_mul::debug_optimum_dt(){
             // 4. Optimal alpha
             double alpha_g = 1.0/2.0*(2.0*delta_E - alpha_max*grad_E_a_2)/(delta_E - alpha_max*grad_E_a_2);
             
-            cout << " " << alpha_g << endl;
             
         }
     }
@@ -1457,16 +1441,6 @@ void dynamics_mul::displace_dsc(dsc_obj *obj){
 
             obj->set_destination(*ni, obj->get_pos(*ni) + dis*n_dt);
             
-//            if (dis.length()*n_dt < STABLE_MOVE) // stable
-//            {
-//                double a = dis.length()*n_dt;
-//                std::cout << "Stable : " << ni->get_index() << std::endl;
-//                obj->bStable[*ni] = 1;
-//            }
-//            else
-//            {
-//                obj->bStable[*ni] = 0;
-//            }
         }
     }
     
@@ -1605,7 +1579,6 @@ void dynamics_mul::compute_intensity_force(){
             
             if (length < 0.001) {
                 // Avoid retouch the edge
-                cout << " Singular edge length" << endl;
                 touched[*eit] = 1;
                 touched[hew.opp().halfedge()] = 1;
                 continue;
@@ -1638,22 +1611,6 @@ void dynamics_mul::compute_intensity_force(){
                 f1 += f*(p-p0).length() / (double)length;
             }
             
-//            f0 = 0.0, f1 = 0.0;
-//            for (int i = 0; i <= length; i++) {
-//                
-//                auto p = p0 + (p1 - p0)*(double(i)/(double)length);
-//                double I = s_img->get_intensity_f(p[0], p[1]);
-//                
-//                // Normalize force
-//                double f = ( (c0-c1)*(2*I - c0 - c1)) / ((c0-c1)*(c0-c1));
-//                assert(f != NAN);
-//
-//                
-//                // Barry Centric coordinate
-//                f0 += f*(p-p1).length() / (double)length;
-//                f1 += f*(p-p0).length() / (double)length;
-//            }
-            
             // Set force
             Vec2 L01 = p1 - p0;
             L01.normalize();
@@ -1674,39 +1631,6 @@ void dynamics_mul::compute_intensity_force(){
         }
     }
     
-//    // Check the gradient value
-//    for (auto nkey : s_dsc->vertices())
-//    {
-//        if (s_dsc->is_interface(nkey)
-//            or s_dsc->is_crossing(nkey))
-//        {
-//            auto grad = -s_dsc->get_node_external_force(nkey);
-//            double dt_ = s_dsc->time_step(nkey);
-//            auto dis = -grad*dt_;
-//            
-//            double predict_dE = CGLA::dot(grad, dis);
-//            
-//            double E0, E1;
-//            energy_with_location(E0, nkey, Vec2(0.0));
-//            energy_with_location(E1, nkey, dis);
-//            
-//            double beta = 0.8;
-//            if (E1 - E0 > predict_dE/2) {
-//                
-//                double pre_t = s_dsc->time_step(nkey);
-//                
-//                s_dsc->set_time(nkey, beta*s_dsc->time_step(nkey));
-//                
-//                cout << "Node: " <<(int)nkey.get_index() << "; dE = " << E1 - E0
-//                << "; predict: " << predict_dE << "t = " << pre_t
-//                << " -- reduced dt = " << s_dsc->time_step(nkey) << endl;
-//            }else{
-//                cout<<"Node: " <<(int)nkey.get_index() << "; dE = " << E1 - E0
-//                    << "; predict: " << predict_dE << endl;
-//            }
-//        }
-//    }
-//    cout << "=======================\n";
 }
 
 double dynamics_mul::star_energy(Node_key nid, Vec2 new_pos){

@@ -86,7 +86,7 @@ private:
             // Assign parameter
             setup_parameter();
         }
-        catch (std::exception e)
+        catch (std::exception & e)
         {
             throw e;
         }

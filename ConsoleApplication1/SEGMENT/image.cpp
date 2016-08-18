@@ -31,7 +31,7 @@ void image::load_image(std::string const file_path){
         set_gl_texture();
 //        compute_gradient();
     }
-    catch (std::exception e)
+    catch (std::exception & e)
     {
         cout << e.what();
     }

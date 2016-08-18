@@ -550,45 +550,6 @@ void dyn_integral::compute_derivative(){
             de2 = abs(de2) + 0.01;
             
             force = Vec2(- dE[0]/ddE[0]/2, - dE[1]/ddE[1]/2)*0.1;
-       //     force = Vec2(- dE[0]/de2, - dE[1]/de2);
-       //     force = Vec2(-dE[0], -dE[1]);
-//            {
-//                /**
-//                 Newton method
-//                 f = H^-1 * E'
-//                 */
-//                CGLA::Mat2x2f H(ddE[0], ddExy, ddEyx, ddE[1]);
-//                auto H_i = CGLA::invert(H);
-//                CGLA::Vec2f dE_f(dE[0], dE[1]);
-//                auto f = H_i*dE_f;
-//                
-//                force = Vec2(f[0], f[1]);
-//            }
-            
-//            {
-//                /**
-//                 Quadratic interpolation
-//                 */
-//                double ep2 = epsilon_deriv*epsilon_deriv;
-//                double ep = epsilon_deriv;
-//                double a = (Ex1 + Ex0 - 2*E0)/(2*ep2);
-//                double b = (Ey1 + Ey0 - 2*E0)/(2*ep2);
-//                double d = (Ex1 - Ex0)/(2*ep);
-//                double e = (Ey1 - Ey0)/(2*ep);
-//                double c = (Ex1y1 - E0 - a*ep2 - b*ep2 - d*ep - e*ep)/ep2;
-//                
-//                double denom = 4*a*b - c*c;
-//                cout << "Denom: " << denom << "\n";
-//                double x = (e*c - 2*b*d) / denom;
-//                double y = (d*c - 2*a*e) / denom;
-//                
-//                force = Vec2(-x,-y);
-//            }
-            
-//            if(force.length() > 10){
-//                force.normalize();
-//                force = force*10;
-//            }
             
             Vec2 des = s_dsc->get_pos(nkey) + force;
             s_dsc->set_destination(nkey, des);

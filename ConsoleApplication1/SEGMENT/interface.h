@@ -49,6 +49,7 @@ public:
     std::unique_ptr<dynamics_mul> dyn_;
     std::unique_ptr<image> image_;
     
+    int iter = 0;
 private:
     int debug_num_[10];
     

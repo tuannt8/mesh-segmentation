@@ -116,7 +116,7 @@ void interface_dsc::reshape(int width, int height){
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
 //        gluOrtho2D(0, imageSize[0], 0, imageSize[1]);
-        gluOrtho2D(-DISCRETIZE_RES, imageSize[0], -DISCRETIZE_RES, imageSize[1]);
+        gluOrtho2D(-DISCRETIZE_RES, imageSize[0]-DISCRETIZE_RES, -DISCRETIZE_RES, imageSize[1]-DISCRETIZE_RES);
         
         double lx = (gl_ratio < image_ratio)? WIN_SIZE_Y/image_ratio : real_width;
         double ly = (gl_ratio < image_ratio)? WIN_SIZE_Y : real_width*image_ratio;
@@ -126,7 +126,8 @@ void interface_dsc::reshape(int width, int height){
       //  glutReshapeWindow(WIN_SIZE_X, WIN_SIZE_Y);
         
         
-        gl_debug_helper::coord_transform(Vec2(options_disp::width_view + (real_width - lx)/2, (WIN_SIZE_Y - ly)/2),
+        gl_debug_helper::coord_transform(Vec2(options_disp::width_view + (real_width - lx)/2 +DISCRETIZE_RES/2,
+                                              (WIN_SIZE_Y - ly)/2 + DISCRETIZE_RES/2),
                                          Vec2(imageSize[0] / lx, imageSize[1] / ly),
                                          WIN_SIZE_Y);
     }
@@ -329,9 +330,9 @@ void interface_dsc::draw()
 //        image_->draw_grad(WIN_SIZE_X);
 //    }
 //    
-//    if (options_disp::get_option("Face intensity", false) and dsc) {
-//        Painter::draw_faces_intensity(*dsc);
-//    }
+    if (options_disp::get_option("Face intensity", false) and dsc) {
+        Painter::draw_faces_intensity(*dsc);
+    }
     
     if (options_disp::get_option("Edge and vertices ", true) and dsc) {
         glLineWidth(1.0);
@@ -603,7 +604,7 @@ void interface_dsc::update_title()
     std::ostringstream oss;
     oss << "2D DSC\t";
     if (RUN) {
-        oss << " running\t";
+        oss << " running iteration " << iter;
     }
 
     std::string str(oss.str());
@@ -659,28 +660,6 @@ interface_dsc::interface_dsc(int &argc, char** argv){
     
     reshape(WIN_SIZE_X, WIN_SIZE_Y);
     display();
-    
-    
-    //// test
-    //setting_io io;
-    //try
-    //{
-    //    io.load("test.txt");
-    //    
-    //    int ss = io.get_int("shortest_edge");
-    //    std::string p = io.get_string("file_path");
-    //    
-    //    std::cout << ss << " " << p << std::endl;
-    //    
-    //    int s1 = io.get_int("crash");
-    //    
-    //    std::cout << s1;
-    //}
-    //catch (std::exception & ee)
-    //{
-    //    std::cout << ee.what() << std::endl;
-    //    exit(1);
-    //}
     
     
 }
@@ -816,7 +795,7 @@ void interface_dsc::dynamics_image_seg(){
     // Old approach
     // Edge-based force
     dyn_->update_dsc(*dsc, *image_);
-    
+    iter ++;
     // Virtual displacement
     // Compute energy change with assumed movement
 //    static dyn_integral dyn;
@@ -863,6 +842,5 @@ void interface_dsc::init_boundary_brain(){
     
     for (int i = 0; i < labels_list.size(); i++) {
         ObjectGenerator::label_tris(*dsc, labels_list[i], i);
-        std::cout << labels_list[i].size() << " in phase " << i << std::endl;
     }
 }

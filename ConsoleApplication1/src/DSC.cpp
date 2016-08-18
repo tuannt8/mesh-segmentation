@@ -938,7 +938,6 @@ namespace DSC2D
     
     bool DeformableSimplicialComplex::collapse(HMesh::Walker hew, real weight)
     {
-//        std::cout << "Collapse: " << hew.halfedge().get_index() << endl;
         
         node_key vid = hew.vertex();
         vec2 p = (1.-weight) * get_pos(hew.vertex()) + weight * get_pos(hew.opp().vertex());
@@ -1049,6 +1048,7 @@ namespace DSC2D
         if (p.size() != 3)
         {
             throw std::invalid_argument("Get tri vertex error");
+            return 0;
         }
         return Util::min_angle(p[0], p[1], p[2]);
     }
@@ -1073,7 +1073,6 @@ namespace DSC2D
 #ifdef DEBUG
                 if (split(f))
                 {
-                    std::cout << "Split needle" << std::endl;
                 }
 #else
                 split(f);
@@ -1122,9 +1121,7 @@ namespace DSC2D
                     face_key f2 = hew.opp().face();
                     node_key v2 = hew.opp().next().vertex();
                     
-                    std::cout << "Degenerated tri. Opp vertex: " << v1.get_index() << endl;
-                    
-                    
+
                     // Split
                     node_key vid = mesh->split_edge(hew.halfedge());
                     face_key newf1 = mesh->split_face_by_edge(f1, vid, v1);
@@ -1161,14 +1158,14 @@ namespace DSC2D
                 
                 try
                 {
-                    if((min_angle(*fi) < DEG_ANGLE || area(*fi) < DEG_AREA*AVG_AREA) && !collapse(*fi, true))
+                    if(mesh->in_use(*fi) && (
+                       (min_angle(*fi) < DEG_ANGLE || area(*fi) < DEG_AREA*AVG_AREA) && !collapse(*fi, true))
+                       )
                     {
-                        double mm = max_angle(*fi, hew);
-                        std::cout << "Degenerated normal. face: " << fi->get_index() << " Max a = " << mm << endl;
                         collapse(*fi, false);
                     }
                 }
-                catch (std::exception e)
+                catch (std::exception & e)
                 {
                     cout << e.what();
                 }
@@ -1620,7 +1617,6 @@ namespace DSC2D
     
     void DeformableSimplicialComplex::remove_degenerate_needle2(Face_key fkey)
     {
-        cout << "Remove needle: " << fkey.get_index() << endl;
         
         auto edges = sorted_face_edges(fkey);
         int l = get_label(fkey);
@@ -1684,7 +1680,6 @@ namespace DSC2D
     
     void DeformableSimplicialComplex::remove_degenerate_needle(Face_key fkey)
     {
-        cout << "Remove needle: " << fkey.get_index() << endl;
         
         auto edges = sorted_face_edges(fkey);
         int l = get_label(fkey);
