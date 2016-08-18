@@ -15,6 +15,10 @@
 #include <fstream>
 #include <algorithm>
 
+#ifdef WIN32
+#include <ctype.h>
+#endif
+
 
 #define IMAGE_PATH_S                "file_path"
 
@@ -60,7 +64,7 @@ private:
                 line.erase(std::remove_if(
                                           line.begin(),
                                           line.end(),
-                                          [](char x){return std::isspace(x);}),
+                                          [](char x){return isspace(x);}),
                            line.end());
                 
                 // Ignore comment with #
