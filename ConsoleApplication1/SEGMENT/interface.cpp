@@ -323,15 +323,15 @@ void interface_dsc::draw()
         Painter::draw_faces(*dsc);
     }
     
-    draw_test();
-    
-    if(options_disp::get_option("Image gradient", false)){
-        image_->draw_grad(WIN_SIZE_X);
-    }
-    
-    if (options_disp::get_option("Face intensity", false) and dsc) {
-        Painter::draw_faces_intensity(*dsc);
-    }
+//    draw_test();
+//    
+//    if(options_disp::get_option("Image gradient", false)){
+//        image_->draw_grad(WIN_SIZE_X);
+//    }
+//    
+//    if (options_disp::get_option("Face intensity", false) and dsc) {
+//        Painter::draw_faces_intensity(*dsc);
+//    }
     
     if (options_disp::get_option("Edge and vertices ", true) and dsc) {
         glLineWidth(1.0);
@@ -341,38 +341,38 @@ void interface_dsc::draw()
     //    Painter::draw_vertices(*dsc);
     }
     
-    if(options_disp::get_option("Phase index", false)){
-        Painter::draw_face_label(*dsc);
-    }
+//    if(options_disp::get_option("Phase index", false)){
+//        Painter::draw_face_label(*dsc);
+//    }
+//    
+//    if(options_disp::get_option("Triangle variation", false)){
+//        draw_tri_variant();
+//    }
+//
+//    
+//    if(options_disp::get_option("Edge energy", false)){
+//        draw_edge_energy();
+//    }
+//    
+//    if(options_disp::get_option("Vertices index", false)){
+//        glColor3f(1, 0, 0);
+//        Painter::draw_vertices_index(*dsc);
+//    }
     
-    if(options_disp::get_option("Triangle variation", false)){
-        draw_tri_variant();
-    }
-
+//    if(options_disp::get_option("Edge index", false)){
+//        glColor3f(1, 0, 0);
+//        // Painter::draw_vertices_index(*dsc);
+//        // Painter::draw_faces_index(*dsc);
+//        Painter::draw_edges_index(*dsc);
+//    }
     
-    if(options_disp::get_option("Edge energy", false)){
-        draw_edge_energy();
-    }
-    
-    if(options_disp::get_option("Vertices index", false)){
-        glColor3f(1, 0, 0);
-        Painter::draw_vertices_index(*dsc);
-    }
-    
-    if(options_disp::get_option("Edge index", false)){
-        glColor3f(1, 0, 0);
-        // Painter::draw_vertices_index(*dsc);
-        // Painter::draw_faces_index(*dsc);
-        Painter::draw_edges_index(*dsc);
-    }
-    
-    if (options_disp::get_option("Face index")){
-        Painter::draw_faces_index(*dsc);
-    }
-    
-    if (options_disp::get_option("Node external force")) {
-        Painter::draw_external_force(*dsc);
-    }
+//    if (options_disp::get_option("Face index")){
+//        Painter::draw_faces_index(*dsc);
+//    }
+//    
+//    if (options_disp::get_option("Node external force")) {
+//        Painter::draw_external_force(*dsc);
+//    }
     
     // Debug
 //    auto fid = dsc->faces_begin();

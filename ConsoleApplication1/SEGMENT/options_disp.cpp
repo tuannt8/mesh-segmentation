@@ -71,6 +71,18 @@ void options_disp::draw(int width, int height)
         print_gl(gap, y, m.first.c_str());
         i ++;
     }
+    {
+    int y = i*(font_height + 2*gap) + gap;
+    glColor3f(1, 1, 1);
+    print_gl(gap, y, "---------------");
+    i++;
+    }
+    {
+    int y = i*(font_height + 2*gap) + gap;
+    glColor3f(1, 1, 1);
+    print_gl(gap, y, "DISPLAY OPTIONS");
+    }
+    
     glPopMatrix();
     
     

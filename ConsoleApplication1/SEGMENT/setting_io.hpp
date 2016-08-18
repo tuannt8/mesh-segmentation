@@ -23,21 +23,11 @@
 #define SPLIT_EDGE_COEFFICIENT_S        "threshold_adapt_edge"
 #define SPLIT_FACE_COEFFICIENT_S        "threshold_adapt_face"
 
+#define RELABEL_S               "relabel"
+
 #define DT_S                        "time_step"
 #define DISCRETIZE_RES_S           "dsc_init_resolution"
 
-
-enum setting_type
-{
-    interger_value,
-    string_value,
-    float_vallue
-};
-
-struct value
-{
-    
-};
 
 class setting_io
 {

@@ -17,6 +17,7 @@ float SPLIT_FACE_COEFFICIENT;
 float SPLIT_EDGE_COEFFICIENT;
 float ALPHA;
 float DT_;
+bool RELABEL = true;
 
 //#endif
 
@@ -31,5 +32,6 @@ void setting_io::setup_parameter()
     SPLIT_EDGE_COEFFICIENT = get_float(SPLIT_EDGE_COEFFICIENT_S);
     ALPHA = get_float(ALPHA_S);
     DT_ = get_float(DT_S);
+    RELABEL = get_int(RELABEL_S);
 }
 

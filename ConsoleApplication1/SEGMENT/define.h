@@ -42,6 +42,7 @@ extern float SPLIT_FACE_COEFFICIENT;
 extern float SPLIT_EDGE_COEFFICIENT;
 extern float ALPHA;
 extern float DT_;
+extern bool RELABEL;
 
 #define STABLE_MOVE 1e-2
 #define BETA    1.0 // external force
