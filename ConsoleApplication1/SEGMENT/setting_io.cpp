@@ -8,6 +8,7 @@
 
 #include "setting_io.hpp"
 
+
 //#ifdef USE_SETTING_FILE
 
 std::string IMAGE_PATH;
@@ -18,6 +19,7 @@ float SPLIT_EDGE_COEFFICIENT;
 float ALPHA;
 float DT_;
 bool RELABEL = true;
+std::map<int , std::vector<init_circle>> _circle_inits;
 
 //#endif
 
@@ -33,5 +35,8 @@ void setting_io::setup_parameter()
     ALPHA = get_float(ALPHA_S);
     DT_ = get_float(DT_S);
     RELABEL = get_int(RELABEL_S);
+    
+    //
+    
 }
 

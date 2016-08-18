@@ -1436,7 +1436,7 @@ void dynamics_mul::displace_dsc(dsc_obj *obj){
             
             if(is_bound(obj, *ni))
             {
-                n_dt /= 10.0;
+                n_dt /= 2.0;
             }
 
             obj->set_destination(*ni, obj->get_pos(*ni) + dis*n_dt);

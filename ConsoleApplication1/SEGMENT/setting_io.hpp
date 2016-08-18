@@ -14,6 +14,8 @@
 #include <string>
 #include <fstream>
 #include <algorithm>
+#include <sstream>
+#include "define.h"
 
 #ifdef WIN32
 #include <ctype.h>
@@ -32,6 +34,12 @@
 #define DT_S                        "time_step"
 #define DISCRETIZE_RES_S           "dsc_init_resolution"
 
+#define REMOVE_SPACE(line) \
+    line.erase(std::remove_if( \
+                        line.begin(), \
+                        line.end(), \
+                        [](char x){return isspace(x);}), \
+                        line.end());
 
 class setting_io
 {
@@ -61,11 +69,13 @@ private:
             
             while(std::getline(infile, line))
             {
-                line.erase(std::remove_if(
-                                          line.begin(),
-                                          line.end(),
-                                          [](char x){return isspace(x);}),
-                           line.end());
+                auto origin = line;
+                
+//                line.erase(std::remove_if(
+//                                          line.begin(),
+//                                          line.end(),
+//                                          [](char x){return isspace(x);}),
+//                           line.end());
                 
                 // Ignore comment with #
                 if (line.size()==0 || line[0] == '#')
@@ -80,7 +90,31 @@ private:
                 std::string key = line.substr(0, line.find(delimiter));
                 std::string value = line.substr(key.size()+1, line.size());
                 
-                _setting.insert(std::make_pair(key, value));
+                REMOVE_SPACE(key);
+                auto tt = key.substr(0, 5);
+                
+                if (key.substr(0, 5) == "phase")
+                {
+                    int p = std::atoi(key.substr(5,6).c_str()); // phase
+                    int x, y;
+                    double r;
+                    std::istringstream is(value.c_str());
+                    is >> x >> y >> r;
+                    
+                    if (_circle_inits.find(p) == _circle_inits.end())
+                    {
+                        std::vector<init_circle> a = {{Vec2(x,y), r}};
+                        _circle_inits.insert(std::make_pair(p, a) );
+                    }else{
+                        init_circle a = {Vec2(x,y), r};
+                        _circle_inits[p].push_back(a);
+                    }
+                }
+                else
+                {
+                    REMOVE_SPACE(value);
+                    _setting.insert(std::make_pair(key, value));
+                }
             }
             
             // Assign parameter

@@ -720,9 +720,59 @@ void interface_dsc::init_dsc(){
             dsc->update_attributes(fkey, 100);
         }
     }
+    dsc->clean_attributes();
     //
+//    dsc->deform();
+    // Initialize if need
+    manual_init_dsc();
     
     printf("Average edge length: %f ; # faces: %d\n", dsc->get_avg_edge_length(), dsc->get_no_faces());
+}
+
+void interface_dsc::manual_init_dsc()
+{
+    
+    // Relabel
+    for (auto tri : dsc->faces())
+    {
+        auto pts = dsc->get_pos(tri);
+        // check if it belong to any circle
+        for (auto & cc : _circle_inits)
+        {
+            auto circles = cc.second;
+            for (int j = 0; j < circles.size(); j++)
+            {
+                auto & circle = circles[j];
+                if(circle.is_in_circle(pts)
+                   && dsc->get_label(tri) != BOUND_FACE){
+                    dsc->update_attributes(tri, cc.first); // Phase 0 is reserved for background
+                }
+            }
+        }
+    }
+    
+    // Deform
+    for (auto v:dsc->vertices())
+    {
+        if (dsc->is_interface(v))
+        {
+            auto pt = dsc->get_pos(v);
+            // check if it belongs to any circle
+            for (auto & cc : _circle_inits)
+            {
+                auto circles = cc.second;
+                for (int j = 0; j < circles.size(); j++)
+                {
+                    auto & circle = circles[j];
+                    if(circle.is_in_circle(pt)){
+                        auto pc = circle.project_to_circle(pt);
+                        dsc->set_destination(v, pc);
+                    }
+                }
+            }
+        }
+    }
+    dsc->deform();
 }
 
 void interface_dsc::threshold_initialization()

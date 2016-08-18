@@ -27,6 +27,16 @@
 #define LOG_PATH "./LOG/"
 #endif
 
+/*********************************************************************/
+/* Type def
+ */
+typedef DSC2D::vec2 Vec2;
+typedef DSC2D::vec3 Vec3;
+typedef DSC2D::DeformableSimplicialComplex dsc_obj;
+typedef dsc_obj::node_key Node_key;
+typedef dsc_obj::face_key Face_key;
+typedef dsc_obj::edge_key Edge_key;
+typedef std::vector<Vec2> Vec2_array;
 
 
 #define PI_V1 3.14159
@@ -34,6 +44,27 @@
 #define USE_SETTING_FILE
 
 #ifdef USE_SETTING_FILE
+
+struct init_circle
+{
+    Vec2 _center;
+    double _radius;
+    
+    bool is_in_circle(Vec2 pt){ return (pt-_center).length() < _radius; }
+    bool is_in_circle(std::vector<Vec2> pts)
+    {
+        for(auto p: pts){
+            if(!is_in_circle(p))
+                return false;
+        }
+        return true;
+    }
+    
+    Vec2 project_to_circle(Vec2 pt)
+    {
+        return _center + (pt - _center)*( _radius / (pt - _center).length());
+    }
+};
 
 extern std::string IMAGE_PATH;
 extern int DISCRETIZE_RES;
@@ -43,6 +74,7 @@ extern float SPLIT_EDGE_COEFFICIENT;
 extern float ALPHA;
 extern float DT_;
 extern bool RELABEL;
+extern std::map<int, std::vector<init_circle>> _circle_inits;
 
 #define STABLE_MOVE 1e-2
 #define BETA    1.0 // external force
@@ -231,16 +263,7 @@ using std::vector;
 using std::cout;
 using std::endl;
 
-/*********************************************************************/
-/* Type def
- */
-typedef DSC2D::vec2 Vec2;
-typedef DSC2D::vec3 Vec3;
-typedef DSC2D::DeformableSimplicialComplex dsc_obj;
-typedef dsc_obj::node_key Node_key;
-typedef dsc_obj::face_key Face_key;
-typedef dsc_obj::edge_key Edge_key;
-typedef std::vector<Vec2> Vec2_array;
+
 
 struct dynamics_param{
     dynamics_param(){}
