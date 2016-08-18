@@ -609,6 +609,26 @@ void interface_dsc::update_title()
 }
 
 interface_dsc::interface_dsc(int &argc, char** argv){
+    
+    
+    // 1. Parser arguments
+    if (argc < 2)
+    {
+        std::cout << "Invalid setting file" << std::endl;
+        exit(1412);
+    }
+    try
+    {
+        setting_io::set_param(argv[1]);
+    }
+    catch (std::exception & e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+    
+    
+    // 2.
+    
     instance = this;
     WIN_SIZE_X = 900;
     WIN_SIZE_Y = 600;
@@ -623,10 +643,10 @@ interface_dsc::interface_dsc(int &argc, char** argv){
     dsc = nullptr;
     
     image_ = std::unique_ptr<image>(new image);
-    if (argc > 1) {
-        image_->load_image(std::string(argv[1]));
-    }else
-    image_->load_image(std::string(DATA_PATH) + IMAGE_NAME);
+//    if (argc > 1) {
+//        image_->load_image(std::string(argv[1]));
+//    }else
+    image_->load_image(IMAGE_PATH);
     
     imageSize = Vec2(image_->width(), image_->height());
 

@@ -8,6 +8,8 @@
 
 #include "setting_io.hpp"
 
+//#ifdef USE_SETTING_FILE
+
 std::string IMAGE_PATH;
 int DISCRETIZE_RES;
 float SMALLEST_SIZE;
@@ -15,6 +17,10 @@ float SPLIT_FACE_COEFFICIENT;
 float SPLIT_EDGE_COEFFICIENT;
 float ALPHA;
 float DT_;
+
+//#endif
+
+std::string setting_io::_file_path;
 
 void setting_io::setup_parameter()
 {
@@ -26,3 +32,4 @@ void setting_io::setup_parameter()
     ALPHA = get_float(ALPHA_S);
     DT_ = get_float(DT_S);
 }
+

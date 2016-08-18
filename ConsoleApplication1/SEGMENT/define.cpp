@@ -97,7 +97,7 @@ dynamics_param g_param(ALPHA, // alpha
                        DT_ // dt
                        );
 
-std::string IMAGE_NAME = IMAGE_PATH;
+//std::string IMAGE_NAME = IMAGE_PATH;
 
 /************************/
 /* test.bmp

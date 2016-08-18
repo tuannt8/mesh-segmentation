@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>00B57E6F-25A7-44BE-AA89-513EFC8C2258</string>
+	<key>IDESourceControlProjectName</key>
+	<string>DSC_seg</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>F29B5E51A5B97DCCD0EC2FAF945213024A5D39C4</key>
+		<string>https://github.com/tuannt8/2D-DSC</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>DSC_seg.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>F29B5E51A5B97DCCD0EC2FAF945213024A5D39C4</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/tuannt8/2D-DSC</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>F29B5E51A5B97DCCD0EC2FAF945213024A5D39C4</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>F29B5E51A5B97DCCD0EC2FAF945213024A5D39C4</string>
+			<key>IDESourceControlWCCName</key>
+			<string>imageSeg</string>
+		</dict>
+	</array>
+</dict>
+</plist>

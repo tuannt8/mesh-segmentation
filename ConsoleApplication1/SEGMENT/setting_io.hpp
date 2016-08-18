@@ -16,14 +16,14 @@
 #include <algorithm>
 
 
-#define IMAGE_PATH_S        "file_path"
+#define IMAGE_PATH_S                "file_path"
 
-#define SMALLEST_SIZE_S     "shortest_edge"
-#define ALPHA_S        "smooth_coefficient"
+#define SMALLEST_SIZE_S             "shortest_edge"
+#define ALPHA_S                     "smooth_coefficient"
 #define SPLIT_EDGE_COEFFICIENT_S        "threshold_adapt_edge"
 #define SPLIT_FACE_COEFFICIENT_S        "threshold_adapt_face"
 
-#define DT_S         "time_step"
+#define DT_S                        "time_step"
 #define DISCRETIZE_RES_S           "dsc_init_resolution"
 
 
@@ -41,13 +41,24 @@ struct value
 
 class setting_io
 {
+    static std::string _file_path;
+    
 public:
     setting_io(){}
     
     ~setting_io(){}
     
+    static void set_param(std::string file_path)
+    {
+        setting_io a;
+        a.load(file_path);
+    }
+    
+private:
     void load(std::string file_path)
     {
+        _file_path = file_path;
+        
         try
         {
             std::ifstream infile(file_path);
@@ -56,11 +67,11 @@ public:
             
             while(std::getline(infile, line))
             {
-//                line.erase(std::remove_if(
-//                                          line.begin(),
-//                                          line.end(),
-//                                          [](char x){return std::isspace(x);}),
-//                           line.end());
+                line.erase(std::remove_if(
+                                          line.begin(),
+                                          line.end(),
+                                          [](char x){return std::isspace(x);}),
+                           line.end());
                 
                 // Ignore comment with #
                 if (line.size()==0 || line[0] == '#')
@@ -111,6 +122,8 @@ private:
     std::map<std::string, std::string> _setting;
     
     void setup_parameter();
+    
+
 };
 
 #endif /* setting_io_hpp */

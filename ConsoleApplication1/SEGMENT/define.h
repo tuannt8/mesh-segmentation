@@ -31,7 +31,7 @@
 
 #define PI_V1 3.14159
 
-//#define USE_SETTING_FILE
+#define USE_SETTING_FILE
 
 #ifdef USE_SETTING_FILE
 
@@ -264,7 +264,7 @@ struct dynamics_param{
 extern int debug_num[10];
 
 // Image to load
-extern std::string IMAGE_NAME;
+//extern std::string IMAGE_NAME;
 // Dynamics parameter
 extern dynamics_param g_param;
 

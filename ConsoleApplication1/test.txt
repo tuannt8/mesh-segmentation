@@ -1,0 +1,12 @@
+# This is a comment
+file_path: DATA/test.png # This is a comment
+
+# Segmentation parameter
+
+shortest_edge: 20
+smooth_coefficient: 0.3
+threshold_adapt_edge: 0.1
+threshold_adapt_face: 0.1
+
+time_step: 1
+dsc_init_resolution: 30
