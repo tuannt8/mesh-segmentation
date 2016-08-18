@@ -28,7 +28,7 @@ private: // Singleton
     void operator = (gl_debug_helper const &) = delete;
     
 private:
-    bool active_ = false;
+    bool active_ = true;
     bool drawing_ = false;
     Vec2 left_down_, right_up_; // The rectangle
     
@@ -66,6 +66,9 @@ public:
     
 private:
     static void update_dsc();
+    
+public:
+    static int _label_idx;
 };
 
 #endif /* defined(__DSC__gl_debug_helper__) */

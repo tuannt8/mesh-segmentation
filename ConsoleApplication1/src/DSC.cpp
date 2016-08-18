@@ -718,10 +718,10 @@ namespace DSC2D
         init_attributes(newf1, get_label(f1));
         init_attributes(newf2, get_label(f2));
         
-        for (auto hew = walker(vid); !hew.full_circle(); hew= hew.circulate_vertex_ccw())
-        {
-            assert(mesh->in_use(hew.face()));
-        }
+//        for (auto hew = walker(vid); !hew.full_circle(); hew= hew.circulate_vertex_ccw())
+//        {
+//            assert(mesh->in_use(hew.face()));
+//        }
         
         update_locally(vid);
         

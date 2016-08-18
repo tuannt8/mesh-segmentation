@@ -19,6 +19,8 @@
 #include <GLUT/glut.h>
 #endif
 
+int gl_debug_helper::_label_idx = 0;
+
 using std::cout;
 using std::endl;
 
@@ -89,13 +91,11 @@ void gl_debug_helper::update_dsc(){
     dsc_obj * dsc = get_instance().s_dsc_;
     
     
-    
-    static int label_count = 0;
-    int new_label = ++label_count;
+
     for (auto fid = dsc->faces_begin(); fid != dsc->faces_end(); fid++) {
         auto pts = dsc->get_pos(*fid);
         if (temp_gdh::tri_box_overlap(ld, ru, pts)) {
-            dsc->set_label(*fid, new_label);
+            dsc->set_label(*fid, _label_idx);
         }
     }
     

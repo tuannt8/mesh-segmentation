@@ -96,19 +96,19 @@ void image::draw_grad(int window_width){
 
 // 0 - 1.0
 double image::get_intensity(int x, int y){
-    if (x < 0 or x > width()
-        or y < 0 or y > height()) {
-        return 0;
+    if (x < 0 or x >= width()
+        or y < 0 or y >= height()) {
+        return 1;
     }
     return ((double)(*this)(x, y)) / (double)MAX_BYTE;
 }
 
 // 0 - 1.0
 double image::get_intensity_f(double x, double y){
-    if (x < 0 or x > width()
-        or y < 0 or y > height())
+    if (x < 0 or x >= width()
+        or y < 0 or y >= height())
     {
-        return 0;
+        return 1;
     }
     
     int x_i = (int)x;

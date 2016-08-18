@@ -27,6 +27,7 @@ void adapt_mesh::split_face(DSC2D::DeformableSimplicialComplex &dsc, image &img)
 //     Auto get threshold
 //     */
     auto c_array = g_param.mean_intensity;
+    c_array[BOUND_FACE] = INFINITY;
 //    double mincij = INFINITY;
 //    
 //    for (auto c1 : c_array)
