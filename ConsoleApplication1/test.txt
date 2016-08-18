@@ -3,10 +3,10 @@ file_path: DATA/test.png # This is a comment
 
 # Segmentation parameter
 
-shortest_edge: 20
-smooth_coefficient: 0.3
-threshold_adapt_edge: 0.1
-threshold_adapt_face: 0.1
+shortest_edge: 5
+smooth_coefficient: 0.3 # The higher the more straight curves
+threshold_adapt_edge: 1 # The smaller, the smoother curves 
+threshold_adapt_face: 0.01 # The smaller, the easier to capture all region
 
 time_step: 1
-dsc_init_resolution: 30
+dsc_init_resolution: 30 # Edge length average, pixels

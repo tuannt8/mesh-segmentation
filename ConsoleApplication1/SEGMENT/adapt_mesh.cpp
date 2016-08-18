@@ -23,31 +23,41 @@ void adapt_mesh::split_face(DSC2D::DeformableSimplicialComplex &dsc, image &img)
 {
     dsc_ = & dsc;
     
-    /**
-     Auto get threshold
-     */
+//    /**
+//     Auto get threshold
+//     */
     auto c_array = g_param.mean_intensity;
-    double mincij = INFINITY;
-    for (int i = 0; i < c_array.size(); i++)
-    {
-        for (int j = 0; j < c_array.size(); j++)
-        {
-            if (i != j && mincij > std::abs(c_array[i] - c_array[j]))
-            {
-                mincij = std::abs(c_array[i] - c_array[j]);
-            }
-        }
-    }
-    assert(mincij > 1e-5);
-
-    double flip_thres = SPLIT_FACE_COEFFICIENT*mincij*mincij;
-    std::cout << "Split thres = " << flip_thres << "; mincij = " << mincij << std::endl;
+//    double mincij = INFINITY;
+//    
+//    for (auto c1 : c_array)
+//    {
+//        for (auto c2 : c_array)
+//        {
+//            if (c1.first != c2.first
+//                && mincij > std::abs(c1.second - c2.second))
+//            {
+//                mincij = std::abs(c1.second - c2.second);
+//            }
+//        }
+//    }
+//    assert(mincij > 1e-5);
+//
+//    double flip_thres = SPLIT_FACE_COEFFICIENT*mincij*mincij;
+//    std::cout << "Split thres = " << flip_thres << "; mincij = " << mincij << std::endl;
+    
+    double flip_thres = SPLIT_FACE_COEFFICIENT;
     
     
     HMesh::FaceAttributeVector<double> variation(dsc_->get_no_faces(), 0);
     std::vector<Face_key> to_split;
     for (auto fkey : dsc_->faces())
     {
+        ///
+        if (dsc_->get_label(fkey) == BOUND_FACE)
+        {
+            continue;
+        }
+        //
         
         auto pts = dsc_->get_pos(fkey);
         
@@ -67,19 +77,31 @@ void adapt_mesh::split_face(DSC2D::DeformableSimplicialComplex &dsc, image &img)
             auto tris = dsc_->get_pos(fkey);
        //     auto area = dsc_->area(fkey);
             
-            
-            for (int i = 0; i < c_array.size(); i++) {
-                double ci = c_array[i];
+            for (auto c : c_array)
+            {
+                double ci = c.second;
                 double c_sum = img.get_tri_differ_f(tris, ci) / area;
                 
                 
                 if (c_sum < min_differ) {
                     min_differ = c_sum;
-                    min_label = i;
+                    min_label = c.first;
                 }
             }
             
-            if(min_label != dsc_->get_label(fkey))
+//            for (int i = 0; i < c_array.size(); i++) {
+//                double ci = c_array[i];
+//                double c_sum = img.get_tri_differ_f(tris, ci) / area;
+//                
+//                
+//                if (c_sum < min_differ) {
+//                    min_differ = c_sum;
+//                    min_label = i;
+//                }
+//            }
+            
+            if(min_label != BOUND_FACE
+               && min_label != dsc_->get_label(fkey))
                 dsc_->update_attributes(fkey, min_label);
             else
             {
@@ -158,6 +180,10 @@ void adapt_mesh::remove_needles(DSC2D::DeformableSimplicialComplex &dsc)
         {
             dsc.remove_degenerate_needle(*fit);
         }
+        else if(dsc.max_angle(*fit, het) > 170*M_PI/180.)
+        {
+            dsc.remove_degenerate_needle2(*fit);
+        }
     }
 }
 
@@ -165,25 +191,31 @@ void adapt_mesh::thinning(DSC2D::DeformableSimplicialComplex &dsc, image &img)
 {
     dsc_ = & dsc;
     
-    /**
-     Auto get threshold
-     */
-    auto c_array = g_param.mean_intensity;
-    double mincij = INFINITY;
-    for (int i = 0; i < c_array.size(); i++)
-    {
-        for (int j = 0; j < c_array.size(); j++)
-        {
-            if (i != j && mincij > std::abs(c_array[i] - c_array[j]))
-            {
-                mincij = std::abs(c_array[i] - c_array[j]);
-            }
-        }
-    }
-    assert(mincij > 1e-5);
+//    /**
+//     Auto get threshold
+//     */
+//    std::map<int, double> c_array = g_param.mean_intensity;
+//
+//    double mincij = INFINITY;
+//    
+//    for (auto c1 : c_array)
+//    {
+//        for (auto c2 : c_array)
+//        {
+//            if (c1.first != c2.first
+//                && mincij > std::abs(c1.second - c2.second))
+//            {
+//                mincij = std::abs(c1.second - c2.second);
+//            }
+//        }
+//    }
+//    
+//    assert(mincij > 1e-5);
+//    
+//    double flip_thres = SPLIT_FACE_COEFFICIENT*(1-SPLIT_FACE_COEFFICIENT)*mincij*mincij;
+//    std::cout << "Flip thres = " << flip_thres << "; mincij = " << mincij << std::endl;
     
-    double flip_thres = SPLIT_FACE_COEFFICIENT*(1-SPLIT_FACE_COEFFICIENT)*mincij*mincij;
-    std::cout << "Flip thres = " << flip_thres << "; mincij = " << mincij << std::endl;
+    double flip_thres = SPLIT_FACE_COEFFICIENT;
     
 //    std::vector<Node_key> to_collapse;
     for (auto nkey : dsc_->vertices())
@@ -228,6 +260,20 @@ void adapt_mesh::thinning(DSC2D::DeformableSimplicialComplex &dsc, image &img)
 
 }
 
+inline bool is_bound(DSC2D::DeformableSimplicialComplex * dsc, HMesh::HalfEdgeID e)
+{
+  //  return false;
+    
+    auto hew = dsc->walker(e);
+    if (dsc->get_label(hew.face()) == BOUND_FACE
+        || dsc->get_label(hew.opp().face()) == BOUND_FACE)
+    {
+        return true;
+    }
+    
+    return false;
+}
+
 void adapt_mesh::split_edge(DSC2D::DeformableSimplicialComplex &dsc, image &img)
 {
     dsc_ = &dsc;
@@ -252,6 +298,8 @@ void adapt_mesh::split_edge(DSC2D::DeformableSimplicialComplex &dsc, image &img)
 
         auto ekey = *ekeyp;
         auto hew = dsc.walker(ekey);
+        
+        
         
         if (! dsc.mesh->in_use(*ekeyp)
             || !dsc.is_interface(ekey)
@@ -290,8 +338,11 @@ void adapt_mesh::split_edge(DSC2D::DeformableSimplicialComplex &dsc, image &img)
         if (dsc.bStable[hew.vertex()] == 1
             && dsc.bStable[hew.opp().vertex()] == 1)
         {
-            if (ev > thres && length > SMALLEST_SIZE) // High energy. Split
+            if (ev > thres && length > SMALLEST_SIZE
+                && !is_bound(&dsc, ekey)) // High energy. Split
             {
+                
+                
                 dsc.split_adpat_mesh(ekey);
                 cout << "Adapt: Split edge " << ekey.get_index() << "; thres = " << thres <<
                     " energy = " << ev << endl;

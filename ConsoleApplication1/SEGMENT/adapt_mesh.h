@@ -14,6 +14,8 @@
 #include "define.h"
 #include "image.h"
 
+#define BOUND_FACE 100
+
 /**
  FUEL CELL
  */

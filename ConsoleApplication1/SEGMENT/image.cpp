@@ -108,7 +108,6 @@ double image::get_intensity_f(double x, double y){
     if (x < 0 or x > width()
         or y < 0 or y > height())
     {
-    //    std::cout << "Out of image [" << x << ", " << y << "]\n";
         return 0;
     }
     

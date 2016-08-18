@@ -115,7 +115,8 @@ void interface_dsc::reshape(int width, int height){
         
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        gluOrtho2D(0, imageSize[0], 0, imageSize[1]);
+//        gluOrtho2D(0, imageSize[0], 0, imageSize[1]);
+        gluOrtho2D(-DISCRETIZE_RES, imageSize[0], -DISCRETIZE_RES, imageSize[1]);
         
         double lx = (gl_ratio < image_ratio)? WIN_SIZE_Y/image_ratio : real_width;
         double ly = (gl_ratio < image_ratio)? WIN_SIZE_Y : real_width*image_ratio;
@@ -643,12 +644,9 @@ interface_dsc::interface_dsc(int &argc, char** argv){
     dsc = nullptr;
     
     image_ = std::unique_ptr<image>(new image);
-//    if (argc > 1) {
-//        image_->load_image(std::string(argv[1]));
-//    }else
     image_->load_image(IMAGE_PATH);
     
-    imageSize = Vec2(image_->width(), image_->height());
+    imageSize = Vec2(image_->width() + 2*DISCRETIZE_RES, image_->height() + 2*DISCRETIZE_RES);
 
     check_gl_error();
     
@@ -689,11 +687,24 @@ interface_dsc::interface_dsc(int &argc, char** argv){
 #pragma mark - Data
 using namespace DSC2D;
 
+bool is_boundary(DeformableSimplicialComplex & dsc, Face_key fkey){
+    for(auto hew = dsc.walker(fkey); !hew.full_circle(); hew = hew.circulate_face_ccw()){
+        if (HMesh::boundary(*dsc.mesh, hew.vertex())) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
 void interface_dsc::init_dsc(){
+    
+    
     double width = imageSize[0];
     double height = imageSize[1];
     
-    DISCRETIZATION = (double) height / (double)DISCRETIZE_RES;
+//    DISCRETIZATION = (double) height / (double)DISCRETIZE_RES;
+    DISCRETIZATION = DISCRETIZE_RES;
     
     width -= 2*DISCRETIZATION;
     height -= 2*DISCRETIZATION;
@@ -701,6 +712,13 @@ void interface_dsc::init_dsc(){
     std::vector<real> points;
     std::vector<int> faces;
     Trializer::trialize(width, height, DISCRETIZATION, points, faces);
+    
+    // Offset the mesh
+    for (auto & p:points)
+    {
+        p -= DISCRETIZE_RES;
+    }
+    //
     
     width += 2*DISCRETIZATION;
     height += 2*DISCRETIZATION;
@@ -713,6 +731,16 @@ void interface_dsc::init_dsc(){
 #ifdef TUAN_MULTI_RES
     dsc->img = &*image_;
 #endif
+    
+    // Label all margin triangle
+    for (auto fkey : dsc->faces())
+    {
+        if (is_boundary(*dsc, fkey))
+        {
+            dsc->update_attributes(fkey, 100);
+        }
+    }
+    //
     
     printf("Average edge length: %f ; # faces: %d\n", dsc->get_avg_edge_length(), dsc->get_no_faces());
 }

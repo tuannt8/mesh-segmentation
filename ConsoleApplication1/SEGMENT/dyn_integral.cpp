@@ -422,7 +422,7 @@ void dyn_integral::optimize_phase(){
 }
 
 bool dyn_integral::is_boundary(Face_key fkey){
-    for(auto hew = s_dsc->walker(fkey); !hew.full_circle(); hew = hew.circulate_vertex_cw()){
+    for(auto hew = s_dsc->walker(fkey); !hew.full_circle(); hew = hew.circulate_face_ccw()){
         if (HMesh::boundary(*s_dsc->mesh, hew.vertex())) {
             return true;
         }
@@ -662,7 +662,9 @@ bool dyn_integral::energy_with_location(double &E, Node_key nkey , Vec2 displace
 }
 
 void dyn_integral::compute_mean_intensity(std::map<int, double> & mean_inten_o){
+    
     std::map<int, int> num_pixel_array;
+    mean_inten_o.clear();
     
     for (auto fid = s_dsc->faces_begin(); fid != s_dsc->faces_end(); fid++) {
         int num_pixel = 0;

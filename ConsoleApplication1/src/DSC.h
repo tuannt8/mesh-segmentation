@@ -928,6 +928,7 @@ namespace DSC2D {
         void refine_without_change_interface();
         
         void remove_degenerate_needle(face_key fkey);
+        void remove_degenerate_needle2(face_key fkey);
         /**
          Set coefficients. Smallest feature size in pixel
          */

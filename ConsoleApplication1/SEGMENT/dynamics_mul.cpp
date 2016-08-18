@@ -52,9 +52,6 @@ void dynamics_mul::update_dsc_explicit(dsc_obj &dsc, image &img){
     
     compute_mean_intensity(mean_inten_);
     
-  //  compute_mean_intensity(mean_inten_);
-    g_param.mean_intensity = mean_inten_; // For drawing
-    
     // 2. Compute intensity force
     //      External force attributes
     compute_intensity_force();
@@ -106,7 +103,6 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
         displace_dsc();
         
         compute_mean_intensity(mean_inten_);
-        g_param.mean_intensity = mean_inten_;
         compute_intensity_force();
         compute_curvature_force();
     
@@ -127,15 +123,13 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
         am.split_edge(*s_dsc, *s_img);
         
         compute_mean_intensity(mean_inten_);
-        g_param.mean_intensity = mean_inten_;
         compute_intensity_force();
         compute_curvature_force();
         
-//        update_vertex_stable();
-//        am.split_face(*s_dsc, *s_img);
+        update_vertex_stable();
+        am.split_face(*s_dsc, *s_img);
         
         compute_mean_intensity(mean_inten_);
-        g_param.mean_intensity = mean_inten_;
         compute_intensity_force();
         compute_curvature_force();
         
@@ -143,7 +137,6 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
         am.thinning(*s_dsc, *s_img);
         
         compute_mean_intensity(mean_inten_);
-        g_param.mean_intensity = mean_inten_;
         compute_intensity_force();
         compute_curvature_force();
 
@@ -273,7 +266,6 @@ void dynamics_mul::update_dsc_area(dsc_obj &dsc, image &img){
     // 1. Update mean intensity
     // map<phase - mean intensity>
     compute_mean_intensity(mean_inten_);
-    g_param.mean_intensity = mean_inten_; // For drawing
     
     //
     for (auto fid = s_dsc->faces_begin(); fid != s_dsc->faces_end(); fid++) {
@@ -375,7 +367,6 @@ void dynamics_mul::update_dsc_explicit_whole_domain(dsc_obj &dsc, image &img){
     // 1. Update mean intensity
     // map<phase - mean intensity>
     compute_mean_intensity(mean_inten_);
-    g_param.mean_intensity = mean_inten_; // For drawing
     
     E1_ = get_total_energy(s_dsc, mean_inten_);
     
@@ -942,7 +933,6 @@ void dynamics_mul::update_dsc_implicit(dsc_obj &dsc, image &img){
     // 1. Update mean intensity
     // map<phase - mean intensity>
     compute_mean_intensity(mean_inten_);
-    g_param.mean_intensity = mean_inten_; // For drawing
     
     
 
@@ -1424,6 +1414,19 @@ void dynamics_mul::displace_dsc_2(){
     s_dsc->deform();
 }
 
+inline bool is_bound(DSC2D::DeformableSimplicialComplex * dsc, HMesh::VertexID n)
+{
+    
+    for (auto hew = dsc->walker(n); !hew.full_circle(); hew = hew.circulate_vertex_ccw())
+    {
+        if (dsc->mesh->in_use(hew.face()) && dsc->get_label(hew.face()) == BOUND_FACE)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 void dynamics_mul::displace_dsc(dsc_obj *obj){
     if (!obj) {
         obj = s_dsc;
@@ -1435,6 +1438,8 @@ void dynamics_mul::displace_dsc(dsc_obj *obj){
     {
         obj->bStable[*ni] = 1;
         
+
+        
         if ((obj->is_interface(*ni) or obj->is_crossing(*ni)))
         {
             Vec2 dis = (obj->get_node_internal_force(*ni)
@@ -1442,6 +1447,11 @@ void dynamics_mul::displace_dsc(dsc_obj *obj){
             assert(dis.length() != NAN);
             
             double n_dt = dt;//s_dsc->time_step(*ni);
+            
+            if(is_bound(obj, *ni))
+            {
+                n_dt /= 10.0;
+            }
 
             obj->set_destination(*ni, obj->get_pos(*ni) + dis*n_dt);
             
@@ -1467,19 +1477,14 @@ void dynamics_mul::compute_mean_intensity(dsc_obj &dsc, image &img)
     s_dsc = &dsc;
     
     compute_mean_intensity(mean_inten_);
-    g_param.mean_intensity = mean_inten_;
 }
 
 void dynamics_mul::compute_mean_intensity(std::map<int, double> & mean_inten_o){
-
-    // hardcode
-    mean_inten_o.insert(std::make_pair(1, 0.5));
-    mean_inten_o.insert(std::make_pair(0, 0.85));
-    return;
-    
     
     std::map<int, double> total_inten_;
     std::map<int, double> total_area;
+    
+    mean_inten_o.clear();
     
     
     for (auto fid = s_dsc->faces_begin(); fid != s_dsc->faces_end(); fid++) {
@@ -1507,6 +1512,10 @@ void dynamics_mul::compute_mean_intensity(std::map<int, double> & mean_inten_o){
     {
         mit->second /= (double)total_area[mit->first];
     }
+    
+//    mean_inten_o[BOUND_FACE] = INFINITY;
+    g_param.mean_intensity = mean_inten_o;
+    
 }
 
 void dynamics_mul::compute_intensity_force_implicit(){

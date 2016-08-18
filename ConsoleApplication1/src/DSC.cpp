@@ -1618,6 +1618,70 @@ namespace DSC2D
         split(ek);
     }
     
+    void DeformableSimplicialComplex::remove_degenerate_needle2(Face_key fkey)
+    {
+        cout << "Remove needle: " << fkey.get_index() << endl;
+        
+        auto edges = sorted_face_edges(fkey);
+        int l = get_label(fkey);
+        
+        {
+            
+        }
+        
+        return;
+        
+        {
+            auto hew1 = walker(edges[2]);
+            auto hew2 = walker(edges[1]);
+            face_key f_out1 = hew1.opp().face();
+            face_key f_out2 = hew2.opp().face();
+            node_key n_out1 = hew1.opp().next().vertex();
+            node_key n_out2 = hew2.opp().next().vertex();
+            
+            if (!mesh->in_use(f_out1) or !mesh->in_use(f_out2)
+                or !mesh->in_use(n_out1) or !mesh->in_use(n_out2))
+            {
+                return;
+            }
+            
+            // Split the two edges
+            node_key n1 = mesh->split_edge(hew1.halfedge());
+            node_key n2 = mesh->split_edge(hew2.halfedge());
+            // Split the faces
+            face_key new_f1 = mesh->split_face_by_edge(f_out1, n_out1, n1);
+            face_key new_f2 = mesh->split_face_by_edge(f_out2, n_out2, n2);
+            face_key new_f_in = mesh->split_face_by_edge(fkey, n1, n2);
+            
+            // collapse edge n1-n2
+            auto hem = walker(n1);
+            for (; !hem.full_circle(); hem = hem.circulate_vertex_ccw())
+            {
+                if (hem.vertex() == n2)
+                {
+                    break;
+                }
+            }
+            mesh->collapse_edge(hem.halfedge(), true);
+            
+            // Update attribute
+            init_attributes(n2);
+            for(auto hew = walker(n2); !hew.full_circle(); hew = hew.circulate_vertex_cw())
+            {
+                //if(hew.halfedge() != n2 && hew.opp().halfedge() != n2)
+                {
+                    init_attributes(hew.halfedge());
+                }
+            }
+            init_attributes(new_f1, get_label(f_out1));
+            init_attributes(new_f2, get_label(f_out2));
+            init_attributes(new_f_in, l);
+            
+            update_locally(n2);
+        }
+        return;
+    }
+    
     void DeformableSimplicialComplex::remove_degenerate_needle(Face_key fkey)
     {
         cout << "Remove needle: " << fkey.get_index() << endl;
