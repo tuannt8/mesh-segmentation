@@ -93,6 +93,47 @@ void Painter::save_painting_no_overwite(int width, int height, std::string folde
     }
 }
 
+void Painter::save_painting_dsc(int originx, int originy, int width, int height, std::string folder){
+    std::ostringstream s;
+    if (folder.length() == 0) {
+        s << "scr";
+    }
+    else {
+        s << folder << "/scr";
+    }
+    
+    // protect old file
+    int count = 0;
+    while (1) {
+        count ++;
+        std::ostringstream temp, name;
+        name << "_" << count << ".png";
+        temp << s.str() << name.str();
+        FILE *f = fopen(temp.str().c_str(), "r");
+        if (f) { // Existed
+            fclose(f);
+            continue;
+        }
+        else{
+            s << name.str();
+            break;
+        }
+        
+        if (count > 100) {
+            std::cout << "Name identical" << std::endl;
+            return;
+        }
+    }
+    
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    int success = SOIL_save_screenshot(s.str().c_str(), SOIL_SAVE_TYPE_PNG, originx, originy, width, height);
+    if(!success)
+    {
+        std::cout << "ERROR: Failed to take screen shot: " << s.str().c_str() << std::endl;
+        return;
+    }
+}
+
 
 void Painter::begin()
 {

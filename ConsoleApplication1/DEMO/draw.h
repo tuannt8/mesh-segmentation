@@ -54,6 +54,7 @@ public:
     
     static void save_painting_no_overwite(int width, int height, std::string folder = std::string(""));
     
+    static void save_painting_dsc(int originx, int originy, int width, int height, std::string folder);
     /**
      Begins drawing.
      */

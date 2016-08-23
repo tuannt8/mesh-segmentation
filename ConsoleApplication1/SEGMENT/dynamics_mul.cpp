@@ -1377,7 +1377,7 @@ void dynamics_mul::compute_curvature_force(){
                     if(p12.length() > 0.001)
                     {
                         p12.normalize();
-                        s_dsc->add_node_internal_force(vkey, p12*g_param.alpha);
+                        s_dsc->add_node_internal_force(vkey, p12*ALPHA);
                     }
                     else
                         cout << "Edge length 0 in bound";
@@ -1428,8 +1428,12 @@ void dynamics_mul::displace_dsc(dsc_obj *obj){
         
         if ((obj->is_interface(*ni) or obj->is_crossing(*ni)))
         {
-            Vec2 dis = (obj->get_node_internal_force(*ni)
-                        + obj->get_node_external_force(*ni));
+            Vec2 dis = obj->get_node_external_force(*ni);
+            
+            if (!is_bound(obj, *ni) || obj->is_crossing(*ni))
+            {
+                dis += obj->get_node_internal_force(*ni);
+            }
             assert(dis.length() != NAN);
             
             double n_dt = dt;//s_dsc->time_step(*ni);

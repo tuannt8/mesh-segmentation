@@ -19,6 +19,8 @@
 
 #include "options_disp.h"
 
+int ox, oy, w,h;
+
 void _check_gl_error(const char *file, int line)
 {
     GLenum err (glGetError());
@@ -125,11 +127,14 @@ void interface_dsc::reshape(int width, int height){
         glViewport(options_disp::width_view + (real_width - lx)/2, (WIN_SIZE_Y - ly)/2, lx, ly);
       //  glutReshapeWindow(WIN_SIZE_X, WIN_SIZE_Y);
         
-        
-        gl_debug_helper::coord_transform(Vec2(options_disp::width_view + (real_width - lx)/2 +DISCRETIZE_RES/2,
-                                              (WIN_SIZE_Y - ly)/2 + DISCRETIZE_RES/2),
-                                         Vec2(imageSize[0] / lx, imageSize[1] / ly),
-                                         WIN_SIZE_Y);
+
+        ox = options_disp::width_view + (real_width - lx)/2 + DISCRETIZE_RES / (imageSize[0] / lx);
+        oy = (WIN_SIZE_Y - ly)/2 + DISCRETIZE_RES / (imageSize[1] / ly);
+        w = lx - 2*DISCRETIZE_RES / (imageSize[0] / lx) + 1;
+        h = ly - 2*DISCRETIZE_RES / (imageSize[1] / ly) + 1;
+
+        gl_debug_helper::coord_transform(Vec2(ox,oy),
+                                         Vec2(imageSize[0] / lx, imageSize[1] / ly), WIN_SIZE_Y);
     }
 }
 
@@ -140,6 +145,8 @@ void interface_dsc::visible(int v){
 //    else
 //        glutIdleFunc(0);
 }
+
+
 
 void interface_dsc::keyboard(unsigned char key, int x, int y){
     
@@ -165,7 +172,7 @@ void interface_dsc::keyboard(unsigned char key, int x, int y){
         }
 
         case '\t':
-            Painter::save_painting_no_overwite(WIN_SIZE_X, WIN_SIZE_Y, "./LOG");
+            Painter::save_painting_dsc(ox, oy, w, h, "./LOG");
             break;
         case 'i':
             dsc->increase_resolution_range();
@@ -724,9 +731,9 @@ void interface_dsc::init_dsc(){
     //
 //    dsc->deform();
     // Initialize if need
-    manual_init_dsc();
+//    manual_init_dsc();
     
-    random_init_dsc(3);
+    random_init_dsc(2);
     
     printf("Average edge length: %f ; # faces: %d\n", dsc->get_avg_edge_length(), dsc->get_no_faces());
 }
