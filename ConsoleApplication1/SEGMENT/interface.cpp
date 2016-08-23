@@ -726,7 +726,24 @@ void interface_dsc::init_dsc(){
     // Initialize if need
     manual_init_dsc();
     
+    random_init_dsc(3);
+    
     printf("Average edge length: %f ; # faces: %d\n", dsc->get_avg_edge_length(), dsc->get_no_faces());
+}
+
+void interface_dsc::random_init_dsc(int nb_phase)
+{
+    // Relabel
+    for (auto tri : dsc->faces())
+    {
+        if (dsc->get_label(tri) != BOUND_FACE)
+        {
+            int idx = rand()%nb_phase;
+            dsc->update_attributes(tri, idx);
+        }
+    }
+    
+    dsc->clean_attributes();
 }
 
 void interface_dsc::manual_init_dsc()

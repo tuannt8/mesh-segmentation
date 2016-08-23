@@ -97,6 +97,7 @@ public:
     void threshold_initialization();
     
     void manual_init_dsc();
+    void random_init_dsc(int nb_phase);
     
     void init_sqaure_boundary();
     void init_boundary();

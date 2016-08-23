@@ -1,24 +1,26 @@
 # This is a comment
-file_path: DATA/star.png # Image file
+file_path: DATA/cement.png # Image file
 
 # Segmentation parameter
 
-shortest_edge: 13
+shortest_edge: 5
 smooth_coefficient: 0.6 # The higher the more straight curves
-threshold_adapt_edge: 20 # The smaller, the smoother curves 
-threshold_adapt_face: 0.001 # The smaller, the easier to capture all region
+threshold_adapt_edge: 1 # The smaller, the smoother curves 
+threshold_adapt_face: 0.01 # The smaller, the easier to capture all region
 
 relabel: 1 # 0-1: Enable relabeling of triangle
 
 time_step: 0.5
-dsc_init_resolution: 40 # Edge length average, pixels
+dsc_init_resolution: 10 # Edge length average, pixels
+
+## The triangle labels will be initialied randomly
+# number_phases_to_segment = 0 to disable initialization and
+#	initialize it manually (In case we want single object segmentation without relabeling).
+number_phases_to_segment: 3 
 
 ## Manual initialization if need
 # Triangle near the point will be labeled
 # Phase 1-9; 0 is the back ground
 # Initialization with circle: [center.x center.y radius]
-
-phase1: 136 169 40
-phase2: 129 55 40
-phase3: 369 58 40
-phase4: 444 326 40
+phase1: 227 180 20
+phase2: 95 120 20
