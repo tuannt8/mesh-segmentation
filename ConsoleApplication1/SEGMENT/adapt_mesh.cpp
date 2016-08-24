@@ -293,7 +293,8 @@ void adapt_mesh::split_edge(DSC2D::DeformableSimplicialComplex &dsc, image &img)
             && dsc.bStable[hew.opp().vertex()] == 1)
         {
             if (ev > thres && length > 2*SMALLEST_SIZE
-                && !is_bound(&dsc, ekey)) // High energy. Split
+//                && !is_bound(&dsc, ekey)
+                ) // High energy. Split
             {
                 
                 

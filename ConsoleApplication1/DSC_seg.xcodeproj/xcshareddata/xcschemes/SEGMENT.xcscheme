@@ -63,7 +63,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "cement.txt"
+            argument = "sound.txt"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

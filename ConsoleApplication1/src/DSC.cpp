@@ -1107,6 +1107,28 @@ namespace DSC2D
                 HMesh::Walker hew = walker(*fi);
                 if(max_angle(*fi, hew) > M_PI * 165. / 180.)
                 {
+                    {
+                        auto midpoint = (get_pos(hew.vertex()) + get_pos(hew.opp().vertex()))/2;
+                        auto pp = get_pos(hew.next().vertex());
+                        if ((midpoint-pp).length() > DEG_LENGTH*AVG_LENGTH)
+                        {
+                            try
+                            {
+                                if(mesh->in_use(*fi) && (
+                                                         (min_angle(*fi) < DEG_ANGLE || area(*fi) < DEG_AREA*AVG_AREA) && !collapse(*fi, true))
+                                   )
+                                {
+                                    collapse(*fi, false);
+                                }
+                            }
+                            catch (std::exception & e)
+                            {
+                                cout << e.what();
+                            }
+                            
+                            continue;
+                        }
+                    }
                     if (!unsafe_editable(hew.halfedge())) {
                         continue;
                     }
@@ -1152,19 +1174,7 @@ namespace DSC2D
                     update_locally(hw.vertex());
                 }
                 
-                try
-                {
-                    if(mesh->in_use(*fi) && (
-                       (min_angle(*fi) < DEG_ANGLE || area(*fi) < DEG_AREA*AVG_AREA) && !collapse(*fi, true))
-                       )
-                    {
-                        collapse(*fi, false);
-                    }
-                }
-                catch (std::exception & e)
-                {
-                    cout << e.what();
-                }
+
                 
 
                 
@@ -1174,6 +1184,21 @@ namespace DSC2D
                     collapse(*fi, false);
                 }
                  */
+            }
+            else{
+                try
+                {
+                    if(mesh->in_use(*fi) && (
+                                             (min_angle(*fi) < DEG_ANGLE || area(*fi) < DEG_AREA*AVG_AREA) && !collapse(*fi, true))
+                       )
+                    {
+                        collapse(*fi, false);
+                    }
+                }
+                catch (std::exception & e)
+                {
+                    cout << e.what();
+                }
             }
         }
     }
