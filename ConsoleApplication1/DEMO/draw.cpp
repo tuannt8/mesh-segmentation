@@ -35,7 +35,7 @@ void Painter::save_painting(int width, int height, std::string folder, int time_
         s << "scr";
     }
     else {
-        s << folder << "/scr";
+        s << folder << "/scr"; 
     }
     
     if (time_step >= 0)
