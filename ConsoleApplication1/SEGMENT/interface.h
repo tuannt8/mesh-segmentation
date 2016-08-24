@@ -103,4 +103,6 @@ public:
     void init_boundary();
     void init_boundary_brain();
     void dynamics_image_seg();
+    
+    void export_dsc();
 };

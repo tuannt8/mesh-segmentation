@@ -20,6 +20,8 @@ float ALPHA;
 float DT_;
 bool RELABEL = true;
 std::map<int , std::vector<init_circle>> _circle_inits;
+int NB_PHASE = 0;
+int ADAPTIVE = 1;
 
 //#endif
 
@@ -35,7 +37,8 @@ void setting_io::setup_parameter()
     ALPHA = get_float(ALPHA_S);
     DT_ = get_float(DT_S);
     RELABEL = get_int(RELABEL_S);
-    
+    NB_PHASE = get_int(NB_PHASE_S);
+    ADAPTIVE = get_int(ADAPTIVE_S);
     //
     
 }

@@ -83,11 +83,8 @@ void adapt_mesh::split_face(DSC2D::DeformableSimplicialComplex &dsc, image &img)
             
             if(min_label != BOUND_FACE
                && min_label != dsc_->get_label(fkey))
-                dsc_->update_attributes(fkey, min_label);
-            else
             {
-                // Consider collapsing the face
-                
+                dsc_->update_attributes(fkey, min_label);
             }
         }else{
         //    auto area = dsc_->area(fkey);
@@ -295,7 +292,7 @@ void adapt_mesh::split_edge(DSC2D::DeformableSimplicialComplex &dsc, image &img)
         if (dsc.bStable[hew.vertex()] == 1
             && dsc.bStable[hew.opp().vertex()] == 1)
         {
-            if (ev > thres && length > SMALLEST_SIZE
+            if (ev > thres && length > 2*SMALLEST_SIZE
                 && !is_bound(&dsc, ekey)) // High energy. Split
             {
                 

@@ -74,6 +74,8 @@ extern float SPLIT_EDGE_COEFFICIENT;
 extern float ALPHA;
 extern float DT_;
 extern bool RELABEL;
+extern int NB_PHASE;
+extern int ADAPTIVE;
 extern std::map<int, std::vector<init_circle>> _circle_inits;
 
 #define STABLE_MOVE 1e-2
@@ -99,6 +101,9 @@ extern std::map<int, std::vector<init_circle>> _circle_inits;
 #define DT_ 0.2
 //#define ADD_NOISE
 #define STABLE_MOVE 1e-2
+
+
+
 
 ///*
 // * Sound

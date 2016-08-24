@@ -38,6 +38,7 @@
 		A635BFA51B4A7766003F2DE4 /* adapt_mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A635BFA31B4A7766003F2DE4 /* adapt_mesh.cpp */; };
 		A64029B21D34E75D00FD18DC /* libpng16.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A64029B11D34E75D00FD18DC /* libpng16.16.dylib */; };
 		A640A0CF1D62EEBE000D7FAA /* setting_io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A640A0CD1D62EEBE000D7FAA /* setting_io.cpp */; };
+		A640A1A01D6DB773000D7FAA /* profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A640A19F1D6DB773000D7FAA /* profile.cpp */; };
 		A64C512E1B54FFD600BDF016 /* options_disp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A64C512D1B54FFD600BDF016 /* options_disp.cpp */; };
 		A663DE681AD6B25B006CC422 /* libX11.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A663DE671AD6B25B006CC422 /* libX11.6.dylib */; };
 		A67962501AB965D400EACF40 /* DSC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7A51F3A517D6386100A8F8F2 /* DSC.cpp */; };
@@ -125,6 +126,8 @@
 		A640A0CD1D62EEBE000D7FAA /* setting_io.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = setting_io.cpp; sourceTree = "<group>"; };
 		A640A0CE1D62EEBE000D7FAA /* setting_io.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = setting_io.hpp; sourceTree = "<group>"; };
 		A640A0D01D64A4E5000D7FAA /* CImg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CImg.h; sourceTree = SOURCE_ROOT; };
+		A640A19E1D6DB773000D7FAA /* profile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = profile.h; sourceTree = "<group>"; };
+		A640A19F1D6DB773000D7FAA /* profile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = profile.cpp; sourceTree = "<group>"; };
 		A64C512C1B54FFB800BDF016 /* options_disp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = options_disp.h; sourceTree = "<group>"; };
 		A64C512D1B54FFD600BDF016 /* options_disp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = options_disp.cpp; sourceTree = "<group>"; };
 		A663DE671AD6B25B006CC422 /* libX11.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libX11.6.dylib; path = ../../../../../opt/X11/lib/libX11.6.dylib; sourceTree = "<group>"; };
@@ -258,6 +261,8 @@
 		A6B45F141A88CC9B0091F5A6 /* SEGMENT */ = {
 			isa = PBXGroup;
 			children = (
+				A640A19E1D6DB773000D7FAA /* profile.h */,
+				A640A19F1D6DB773000D7FAA /* profile.cpp */,
 				A615B7E31ABC8520001E1EA7 /* Lib */,
 				A6B45F1D1A88CDFD0091F5A6 /* interface.h */,
 				A6B45F1E1A88CE120091F5A6 /* interface.cpp */,
@@ -369,7 +374,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 7A51F39217D6383500A8F8F2 /* Build configuration list for PBXProject "DSC_seg_integral_cinema" */;
+			buildConfigurationList = 7A51F39217D6383500A8F8F2 /* Build configuration list for PBXProject "DSC_seg" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -438,6 +443,7 @@
 				A60796651B15CB6E00A70D70 /* dynamics_edge.cpp in Sources */,
 				A635BFA51B4A7766003F2DE4 /* adapt_mesh.cpp in Sources */,
 				A640A0CF1D62EEBE000D7FAA /* setting_io.cpp in Sources */,
+				A640A1A01D6DB773000D7FAA /* profile.cpp in Sources */,
 				A64C512E1B54FFD600BDF016 /* options_disp.cpp in Sources */,
 				A61F33181A937CDF00C5C2F8 /* gl_debug_helper.cpp in Sources */,
 			);
@@ -664,7 +670,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		7A51F39217D6383500A8F8F2 /* Build configuration list for PBXProject "DSC_seg_integral_cinema" */ = {
+		7A51F39217D6383500A8F8F2 /* Build configuration list for PBXProject "DSC_seg" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7A51F39E17D6383500A8F8F2 /* Debug */,

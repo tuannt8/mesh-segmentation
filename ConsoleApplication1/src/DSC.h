@@ -933,6 +933,7 @@ namespace DSC2D {
          Set coefficients. Smallest feature size in pixel
          */
         void set_smallest_feature_size(double length);
+        void set_uniform_smallest_feature(double length);
         
         double get_min_length_ratio(){return MIN_LENGTH;}
         

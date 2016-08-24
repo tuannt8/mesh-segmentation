@@ -34,6 +34,9 @@
 #define DT_S                        "time_step"
 #define DISCRETIZE_RES_S           "dsc_init_resolution"
 
+#define NB_PHASE_S            "number_phases_to_segment"
+#define ADAPTIVE_S            "adaptive_mesh"
+
 #define REMOVE_SPACE(line) \
     line.erase(std::remove_if( \
                         line.begin(), \

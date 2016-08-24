@@ -718,10 +718,6 @@ namespace DSC2D
         init_attributes(newf1, get_label(f1));
         init_attributes(newf2, get_label(f2));
         
-//        for (auto hew = walker(vid); !hew.full_circle(); hew= hew.circulate_vertex_ccw())
-//        {
-//            assert(mesh->in_use(hew.face()));
-//        }
         
         update_locally(vid);
         
@@ -1832,6 +1828,19 @@ namespace DSC2D
         MIN_AREA =  MIN_AREA / 4; 
         
         DEG_AREA = 0.2*MIN_AREA;
+    }
+    
+    void DeformableSimplicialComplex::set_uniform_smallest_feature(double length)
+    {
+        // Length
+        MAX_LENGTH = 1;
+        MIN_LENGTH = length / AVG_LENGTH /2.0;
+        DEG_LENGTH = MIN_LENGTH;// 0.2*MIN_LENGTH;
+        
+        // Area
+        MAX_AREA = 1;
+        MIN_AREA = MIN_LENGTH*MIN_LENGTH;
+        DEG_AREA = MIN_AREA; //0.2*MIN_AREA;
     }
     
     void DeformableSimplicialComplex::set_smallest_feature_size(double length)

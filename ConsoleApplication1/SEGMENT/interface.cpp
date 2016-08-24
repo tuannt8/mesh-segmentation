@@ -19,6 +19,9 @@
 
 #include "options_disp.h"
 
+#include "profile.h"
+#include "define.h"
+
 int ox, oy, w,h;
 
 void _check_gl_error(const char *file, int line)
@@ -154,13 +157,12 @@ void interface_dsc::keyboard(unsigned char key, int x, int y){
         case 'd':
             gl_debug_helper::change_state();
             break;
-        case 'p':
-            gl_debug_helper::print_debug_info_nearest(*dsc);
-            gl_debug_helper::print_image_info(*image_);
+        case 'e':
+            export_dsc();
             break;
         case 'r':
         {
-            //dsc->refine_without_change_interface_dsc();
+            profile::close();
         }
             break;
         case ' ':
@@ -714,7 +716,14 @@ void interface_dsc::init_dsc(){
     dsc = std::unique_ptr<DeformableSimplicialComplex>(
                             new DeformableSimplicialComplex(DISCRETIZATION, points, faces, domain));
     
-    dsc->set_smallest_feature_size(SMALLEST_SIZE);
+    if (ADAPTIVE == 1)
+    {
+        dsc->set_smallest_feature_size(SMALLEST_SIZE);
+    }else
+    {
+        dsc->set_uniform_smallest_feature(SMALLEST_SIZE);
+    }
+    
 #ifdef TUAN_MULTI_RES
     dsc->img = &*image_;
 #endif
@@ -733,13 +742,71 @@ void interface_dsc::init_dsc(){
     // Initialize if need
 //    manual_init_dsc();
     
-    random_init_dsc(2);
+    random_init_dsc(NB_PHASE);
     
     printf("Average edge length: %f ; # faces: %d\n", dsc->get_avg_edge_length(), dsc->get_no_faces());
 }
 
+void interface_dsc::export_dsc()
+{
+    std::map<int, int> node_idx_map;
+    std::vector<Vec2> vertices;
+    int idx = 1;
+    for (auto nkey : dsc->vertices())
+    {
+        if (!HMesh::boundary(*dsc->mesh, nkey))
+        {
+            node_idx_map.insert(std::make_pair(nkey.get_index(), idx));
+            vertices.push_back(dsc->get_pos(nkey));
+            idx++;
+        }
+    }
+    
+    std::ofstream f("mesh.obj");
+    if (f.is_open())
+    {
+        // vertices
+        for (auto v:vertices)
+        {
+            f << "v " << v[0] << " " << v[1] << " 0" << endl;
+        }
+        
+        // triangle
+        for (auto fkey : dsc->faces())
+        {
+            if (dsc->get_label(fkey) != BOUND_FACE)
+            {
+                auto verts = dsc->get_verts(fkey);
+                f << "f " << node_idx_map[verts[0].get_index()] << " "
+                << node_idx_map[verts[1].get_index()] << " "
+                << node_idx_map[verts[2].get_index()] << endl;
+            }
+        }
+        
+        // label
+        for (auto fkey : dsc->faces())
+        {
+            if (dsc->get_label(fkey) != BOUND_FACE)
+            {
+                f << "l " << dsc->get_label(fkey) << endl;
+            }
+        }
+        
+        f.close();
+    }
+    else{
+        cout<<"Fail to write file mesh.obj" << endl;
+    }
+    
+}
+
 void interface_dsc::random_init_dsc(int nb_phase)
 {
+    if (NB_PHASE <= 1)
+    {
+        return;
+    }
+    
     // Relabel
     for (auto tri : dsc->faces())
     {
@@ -751,6 +818,8 @@ void interface_dsc::random_init_dsc(int nb_phase)
     }
     
     dsc->clean_attributes();
+    
+    cout << "Random initialization with " << NB_PHASE << " phases \n";
 }
 
 void interface_dsc::manual_init_dsc()
@@ -865,9 +934,13 @@ void interface_dsc::init_boundary(){
     ObjectGenerator::label_tris(*dsc, faceKeys, 1);
 }
 
+
 void interface_dsc::dynamics_image_seg(){
     // Old approach
     // Edge-based force
+    
+    profile t("Total time");
+    
     dyn_->update_dsc(*dsc, *image_);
     iter ++;
     // Virtual displacement
