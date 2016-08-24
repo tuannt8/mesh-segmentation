@@ -38,7 +38,7 @@ const static DSC2D::vec3 BLACK = DSC2D::vec3(0.);
 const static DSC2D::vec3 DARK_GRAY = DSC2D::vec3(0.5);
 const static DSC2D::vec3 GRAY = DSC2D::vec3(0.8);
 
- 
+
 
 /**
  A painter handles all draw functionality using OpenGL.
@@ -54,7 +54,7 @@ public:
     
     static void save_painting_no_overwite(int width, int height, std::string folder = std::string(""));
     
-    static void save_painting_dsc(int originx, int originy, int width, int height, std::string folder);
+    static void save_painting_dsc(int originx, int originy, int width, int height, std::string folder); 
     /**
      Begins drawing.
      */

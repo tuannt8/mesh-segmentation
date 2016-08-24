@@ -93,7 +93,7 @@ void Painter::save_painting_no_overwite(int width, int height, std::string folde
     }
 }
 
-void Painter::save_painting_dsc(int originx, int originy, int width, int height, std::string folder){
+void Painter::save_painting_dsc(int originx, int originy, int width, int height, std::string folder){ 
     std::ostringstream s;
     if (folder.length() == 0) {
         s << "scr";
