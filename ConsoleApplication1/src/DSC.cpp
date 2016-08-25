@@ -1129,7 +1129,7 @@ namespace DSC2D
                             continue;
                         }
                     }
-                    if (!unsafe_editable(hew.halfedge())) {
+                    if (unsafe_editable(hew.halfedge())) {
                         continue;
                     }
                     
