@@ -177,7 +177,7 @@ void interface_dsc::keyboard(unsigned char key, int x, int y){
             Painter::save_painting_dsc(ox, oy, w, h, "./LOG");
             break;
         case 'i':
-            dsc->increase_resolution_range();
+            dyn_->write_energy();
             break;
         case 'f': // Flipping phase
         {
@@ -204,7 +204,7 @@ void interface_dsc::keyboard(unsigned char key, int x, int y){
             break;
         case 'w': // Split edge
         {
-            dyn_->write_energy();
+            write_triangle_energy();
         }
             break;
         case 'u':
@@ -226,6 +226,8 @@ void interface_dsc::keyboard(unsigned char key, int x, int y){
     
     glutPostRedisplay();
 }
+
+
 
 using namespace DSC2D;
 void interface_dsc::load_dsc()
@@ -340,6 +342,9 @@ void interface_dsc::draw()
 //    }
 //    
     if (options_disp::get_option("Face intensity", false) and dsc) {
+        if(g_param.mean_intensity.size()==0)
+            dyn_->compute_mean_intensity(*dsc, *image_);
+        
         Painter::draw_faces_intensity(*dsc);
     }
     
@@ -355,9 +360,13 @@ void interface_dsc::draw()
 //        Painter::draw_face_label(*dsc);
 //    }
 //    
-//    if(options_disp::get_option("Triangle variation", false)){
-//        draw_tri_variant();
-//    }
+    if(options_disp::get_option("Triangle variation", false)){
+        draw_tri_variant();
+    }
+    
+    if(options_disp::get_option("Triangle MS energy", false)){
+        draw_tri_MS_energy();
+    }
 //
 //    
 //    if(options_disp::get_option("Edge energy", false)){
@@ -397,22 +406,25 @@ void interface_dsc::draw()
     Painter::end();
 }
 
-void interface_dsc::draw_tri_variant(){
+void interface_dsc::draw_tri_MS_energy(){
+    // Energy base on mumfordshah energy
+    dyn_->compute_mean_intensity(*dsc, *image_);
+    auto mean_inten = g_param.mean_intensity;
     for (auto fkey : dsc->faces()){
         auto pts = dsc->get_pos(fkey);
-        /*
-         Shrink the triangle
-         */
-        {
-        auto center = (pts[0] + pts[1] + pts[2]) / 3.0;
-        double aa = 1 - 0.1;
-        pts[0] = center + (pts[0] - center)*aa;
-        pts[1] = center + (pts[1] - center)*aa;
-        pts[2] = center + (pts[2] - center)*aa;
-        }
-        /**/
-        double area;
-        double mi = image_->get_tri_intensity_f(pts, &area); mi /= area;
+//        /*
+//         Shrink the triangle
+//         */
+//        {
+//            auto center = (pts[0] + pts[1] + pts[2]) / 3.0;
+//            double aa = 1 - 0.1;
+//            pts[0] = center + (pts[0] - center)*aa;
+//            pts[1] = center + (pts[1] - center)*aa;
+//            pts[2] = center + (pts[2] - center)*aa;
+//        }
+//        /**/
+        double area = dsc->area(fkey);
+        double mi = mean_inten[dsc->get_label(fkey)];
         double e = image_->get_tri_differ_f(pts, mi)/ (area + SINGULAR_AREA);
         
         auto center = (pts[0] + pts[1] + pts[2])/3.0;
@@ -422,6 +434,73 @@ void interface_dsc::draw_tri_variant(){
         is << e;
         Painter::print_gl(center[0], center[1], is.str().c_str());
     }
+}
+
+void interface_dsc::draw_tri_variant(){
+
+        for (auto fkey : dsc->faces()){
+            auto pts = dsc->get_pos(fkey);
+//            /*
+//             Shrink the triangle
+//             */
+//            {
+//            auto center = (pts[0] + pts[1] + pts[2]) / 3.0;
+//            double aa = 1 - 0.1;
+//            pts[0] = center + (pts[0] - center)*aa;
+//            pts[1] = center + (pts[1] - center)*aa;
+//            pts[2] = center + (pts[2] - center)*aa;
+//            }
+//            /**/
+            double area;
+            double mi = image_->get_tri_intensity_f(pts, &area); mi /= area;
+            double e = image_->get_tri_differ_f(pts, mi)/ (area + SINGULAR_AREA);
+            
+            auto center = (pts[0] + pts[1] + pts[2])/3.0;
+            
+            std::ostringstream is;
+            is.precision(3);
+            is << e;
+            Painter::print_gl(center[0], center[1], is.str().c_str());
+        }
+}
+
+void interface_dsc::write_triangle_energy()
+{
+    std::ofstream f_variant("variant.txt");
+    std::ofstream f_ms("MS.txt");
+    
+    dyn_->compute_mean_intensity(*dsc, *image_);
+    auto mean_inten = g_param.mean_intensity;
+    
+    for (auto fkey : dsc->faces()){
+        
+        if (dsc->get_label(fkey) == BOUND_FACE)
+        {
+            continue;
+        }
+        
+        auto pts = dsc->get_pos(fkey);
+        
+        // variency
+        {
+            double area;
+            double mi = image_->get_tri_intensity_f(pts, &area); mi /= area;
+            double e = image_->get_tri_differ_f(pts, mi)/ (area + SINGULAR_AREA);
+            
+            f_variant << e << std::endl;
+        }
+        
+        // Mumford-Shah energy
+        {
+            double area = dsc->area(fkey);
+            double mi = mean_inten[dsc->get_label(fkey)];
+            double e = image_->get_tri_differ_f(pts, mi)/ (area + SINGULAR_AREA);
+            f_ms << e << std::endl;
+        }
+    }
+    
+    f_variant.close();
+    f_ms.close();
 }
 
 void interface_dsc::draw_edge_energy(){

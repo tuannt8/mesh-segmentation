@@ -87,14 +87,12 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
 {
     auto init_time = std::chrono::system_clock::now();
     
-    int nb_displace = 2;
+    int nb_displace = 10;
 
 
         displace_dsc();
         
-        compute_mean_intensity(mean_inten_);
-        compute_intensity_force();
-        compute_curvature_force();
+
     
     static int count = 0;
     static int count_thin = 0;
@@ -108,11 +106,30 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
         
         count = 0;
         
+        compute_mean_intensity(mean_inten_);
+        compute_intensity_force();
+        compute_curvature_force();
+        
+        update_vertex_stable();
+        am.collapse_interface(*s_dsc, *s_img);
+        
+        compute_mean_intensity(mean_inten_);
+        compute_intensity_force();
+        compute_curvature_force();
+        
         update_vertex_stable();
         am.split_edge(*s_dsc, *s_img);
         
         if(RELABEL)
         {
+            
+            compute_mean_intensity(mean_inten_);
+            compute_intensity_force();
+            compute_curvature_force();
+            
+            update_vertex_stable();
+            am.split_face(*s_dsc, *s_img);
+            
             compute_mean_intensity(mean_inten_);
             compute_intensity_force();
             compute_curvature_force();
@@ -128,16 +145,17 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
             compute_mean_intensity(mean_inten_);
             compute_intensity_force();
             compute_curvature_force();
-        update_vertex_stable();
-        am.thinning(*s_dsc, *s_img);
+            update_vertex_stable();
+            am.thinning(*s_dsc, *s_img);
         }
         
-        compute_mean_intensity(mean_inten_);
-        compute_intensity_force();
-        compute_curvature_force();
-
         am.remove_needles(*s_dsc);
+
     }
+    
+    compute_mean_intensity(mean_inten_);
+    compute_intensity_force();
+    compute_curvature_force();
     
 //    // Displace vertices' positions
 //    static bool inited = false;

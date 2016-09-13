@@ -695,6 +695,9 @@ namespace DSC2D
         face_key f2 = hew.opp().face();
         node_key v2 = hew.opp().next().vertex();
         
+        auto l1 = get_label(f1);
+        auto l2 = get_label(f2);
+        
         if (!mesh->in_use(f1) or !mesh->in_use(f2)
             or !mesh->in_use(v1) or !mesh->in_use(v2))
         {
@@ -715,8 +718,8 @@ namespace DSC2D
                 init_attributes(hew.halfedge());
             }
         }
-        init_attributes(newf1, get_label(f1));
-        init_attributes(newf2, get_label(f2));
+        init_attributes(newf1, l1);
+        init_attributes(newf2, l2);
         
         
         update_locally(vid);
@@ -830,6 +833,7 @@ namespace DSC2D
                     return false;
                 }
             }
+            // end
         }
         else {
             if(unsafe_editable(hew.opp().vertex()))
@@ -1104,34 +1108,38 @@ namespace DSC2D
                     to the long edge
                  */
                 
+                bool modified = false;
+                
                 HMesh::Walker hew = walker(*fi);
                 if(max_angle(*fi, hew) > M_PI * 165. / 180.)
                 {
                     {
-                        auto midpoint = (get_pos(hew.vertex()) + get_pos(hew.opp().vertex()))/2;
-                        auto pp = get_pos(hew.next().vertex());
-                        if ((midpoint-pp).length() > DEG_LENGTH*AVG_LENGTH)
-                        {
-                            try
-                            {
-                                if(mesh->in_use(*fi) && (
-                                                         (min_angle(*fi) < DEG_ANGLE || area(*fi) < DEG_AREA*AVG_AREA) && !collapse(*fi, true))
-                                   )
-                                {
-                                    collapse(*fi, false);
-                                }
-                            }
-                            catch (std::exception & e)
-                            {
-                                cout << e.what();
-                            }
-                            
-                            continue;
-                        }
+//                        auto midpoint = (get_pos(hew.vertex()) + get_pos(hew.opp().vertex()))/2;
+//                        auto pp = get_pos(hew.next().vertex());
+//                        if ((midpoint-pp).length() > MIN_LENGTH*AVG_LENGTH)
+//                        {
+//                            try
+//                            {
+//                                if(mesh->in_use(*fi) && (
+//                                                         (min_angle(*fi) < DEG_ANGLE || area(*fi) < DEG_AREA*AVG_AREA) && !collapse(*fi, true))
+//                                   )
+//                                {
+//                                    collapse(*fi, false);
+//                                }
+//                            }
+//                            catch (std::exception & e)
+//                            {
+//                                cout << e.what();
+//                            }
+//                            
+//                            continue;
+//                        }
                     }
-                    if (unsafe_editable(hew.halfedge())) {
+                    if (!unsafe_editable(hew.halfedge())) {
                         continue;
                     }
+                    
+                    modified = true;
                     
                     // add point to edge
                     face_key f1 = hew.face();
@@ -1173,32 +1181,28 @@ namespace DSC2D
                     mesh->collapse_edge(hw.halfedge());
                     update_locally(hw.vertex());
                 }
-                
-
-                
-
-                
+                else
+                {
+                    try
+                    {
+                        if(mesh->in_use(*fi) && (
+                                                 (min_angle(*fi) < DEG_ANGLE || area(*fi) < DEG_AREA*AVG_AREA) && !collapse(*fi, true))
+                           )
+                        {
+                            collapse(*fi, false);
+                        }
+                    }
+                    catch (std::exception & e)
+                    {
+                        cout << e.what();
+                    }
+                }
                 /** Old code
                 if((min_angle(*fi) < DEG_ANGLE || area(*fi) < DEG_AREA*AVG_AREA) && !collapse(*fi, true))
                 {
                     collapse(*fi, false);
                 }
                  */
-            }
-            else{
-                try
-                {
-                    if(mesh->in_use(*fi) && (
-                                             (min_angle(*fi) < DEG_ANGLE || area(*fi) < DEG_AREA*AVG_AREA) && !collapse(*fi, true))
-                       )
-                    {
-                        collapse(*fi, false);
-                    }
-                }
-                catch (std::exception & e)
-                {
-                    cout << e.what();
-                }
             }
         }
     }

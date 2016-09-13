@@ -631,7 +631,7 @@ namespace DSC2D {
          */
         virtual bool is_movable(edge_key eid) const;
         
-    protected:
+    public:
         
         /**
          Returns whether the vertex with ID vid is editable, but not safe to interface changes i.e. if you edit the vertex you may change the interface.

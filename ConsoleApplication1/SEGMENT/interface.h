@@ -87,9 +87,12 @@ private:
     void draw_test();
     void draw_edge_energy();
     void draw_tri_variant();
+    void draw_tri_MS_energy();
     
     void load_dsc();
     void back_up_dsc();
+    
+    void write_triangle_energy();
     
 #pragma mark - data
 public:

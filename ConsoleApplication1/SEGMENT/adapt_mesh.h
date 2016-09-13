@@ -56,6 +56,7 @@ public:
     void split_edge(DSC2D::DeformableSimplicialComplex &dsc, image &img);
     
     // Split face mannually
+    void collapse_interface(DSC2D::DeformableSimplicialComplex &dsc, image &img);
     void split_face(DSC2D::DeformableSimplicialComplex &dsc, image &img);
     
     // remove steiner vertices

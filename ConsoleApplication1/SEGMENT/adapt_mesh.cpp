@@ -19,12 +19,18 @@ adapt_mesh::~adapt_mesh(){
     
 }
 
+#define PROTECT_BOUND
+
+
+
 void adapt_mesh::split_face(DSC2D::DeformableSimplicialComplex &dsc, image &img)
 {
     dsc_ = & dsc;
     
     auto c_array = g_param.mean_intensity;
+#ifdef PROTECT_BOUND
     c_array[BOUND_FACE] = INFINITY;
+#endif
     
     double flip_thres = SPLIT_FACE_COEFFICIENT;
     
@@ -33,12 +39,12 @@ void adapt_mesh::split_face(DSC2D::DeformableSimplicialComplex &dsc, image &img)
     std::vector<Face_key> to_split;
     for (auto fkey : dsc_->faces())
     {
-        ///
+#ifdef PROTECT_BOUND
         if (dsc_->get_label(fkey) == BOUND_FACE)
         {
             continue;
         }
-        //
+#endif
         
         auto pts = dsc_->get_pos(fkey);
         
@@ -70,19 +76,12 @@ void adapt_mesh::split_face(DSC2D::DeformableSimplicialComplex &dsc, image &img)
                 }
             }
             
-//            for (int i = 0; i < c_array.size(); i++) {
-//                double ci = c_array[i];
-//                double c_sum = img.get_tri_differ_f(tris, ci) / area;
-//                
-//                
-//                if (c_sum < min_differ) {
-//                    min_differ = c_sum;
-//                    min_label = i;
-//                }
-//            }
             
-            if(min_label != BOUND_FACE
-               && min_label != dsc_->get_label(fkey))
+            if(
+//#ifdef PROTECT_BOUND
+               min_label != BOUND_FACE &&
+//#endif
+                min_label != dsc_->get_label(fkey))
             {
                 dsc_->update_attributes(fkey, min_label);
             }
@@ -227,7 +226,72 @@ inline bool is_bound(DSC2D::DeformableSimplicialComplex * dsc, HMesh::HalfEdgeID
     
     return false;
 }
+void adapt_mesh::collapse_interface(DSC2D::DeformableSimplicialComplex &dsc, image &img)
+{
+    dsc_ = & dsc;
 
+    auto mean_inten_ = g_param.mean_intensity;
+    
+    for (auto vkey : dsc.vertices())
+    {
+        if (dsc.is_interface(vkey) && !dsc.is_crossing(vkey))
+        {
+            std::vector<HMesh::Walker> edges;
+            for (auto hew = dsc.walker(vkey); !hew.full_circle(); hew = hew.circulate_vertex_cw())
+            {
+                if (dsc.is_interface(hew.halfedge()))
+                {
+                    edges.push_back(hew);
+                }
+            }
+            assert(edges.size()==2);
+            
+            auto cangle = DSC2D::Util::cos_angle(dsc.get_pos(edges[0].opp().vertex()),
+                                         dsc.get_pos(edges[0].vertex()),
+                                         dsc.get_pos(edges[1].opp().vertex()));
+            if (cangle < dsc.COS_MIN_ANGLE)
+            {
+                // check energy
+                double ev = 0;
+                double c0 = mean_inten_[dsc.get_label(edges[0].face())];
+                double c1 = mean_inten_[dsc.get_label(edges[0].opp().face())];
+                
+                auto p0 = dsc.get_pos(edges[0].opp().vertex());
+                auto p1 = dsc.get_pos(edges[1].opp().vertex());
+                
+                double length = (p1 - p0).length();
+                int N = (int)length;
+                double dl = length/(double)N;
+                for (int i = 0; i <= N; i++) {
+                    auto p = p0 + (p1 - p0)*(i/(double)N)*dl;
+                    double I = img.get_intensity_f(p[0], p[1]);
+                    
+                    // Normalize force
+                    double f = (2*I - c0 - c1) / (c0-c1);
+                    
+                    ev += std::abs(f)*dl;
+                }
+                
+                ev = ev / (length + SINGULAR_EDGE);
+                
+                double thres = SPLIT_EDGE_COEFFICIENT*(c0-c1) * (c0-c1);
+                if (dsc.bStable[vkey] == 1
+                    && ev < thres)
+                {
+                    if (HMesh::precond_collapse_edge(*dsc.mesh, edges[0].halfedge())
+                        && dsc.unsafe_editable(edges[0].halfedge())
+                        && (dsc.is_collapsable(edges[0], true) || dsc.is_collapsable(edges[0].opp(), true))
+                        )
+                    {
+                        dsc.collapse(edges[0].halfedge(), 1);
+                    }
+                }
+            }
+        }
+    }
+    
+    
+}
 void adapt_mesh::split_edge(DSC2D::DeformableSimplicialComplex &dsc, image &img)
 {
     dsc_ = &dsc;
@@ -292,8 +356,8 @@ void adapt_mesh::split_edge(DSC2D::DeformableSimplicialComplex &dsc, image &img)
         if (dsc.bStable[hew.vertex()] == 1
             && dsc.bStable[hew.opp().vertex()] == 1)
         {
-            if (ev > thres && length > 2*SMALLEST_SIZE
-//                && !is_bound(&dsc, ekey)
+            if (ev > thres && length > 3*SMALLEST_SIZE
+                && !is_bound(&dsc, ekey)
                 ) // High energy. Split
             {
                 
@@ -306,9 +370,9 @@ void adapt_mesh::split_edge(DSC2D::DeformableSimplicialComplex &dsc, image &img)
                 // And doesnot reduce mesh quality
                 // conflict with face split
                 
-                if(dsc.collapse(ekey, true))
-                {
-                }
+//                if(dsc.collapse(ekey, true))
+//                {
+//                }
             }
         }
     }

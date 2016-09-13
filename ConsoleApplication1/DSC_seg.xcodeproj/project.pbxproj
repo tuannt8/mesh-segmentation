@@ -42,7 +42,7 @@
 		A64C512E1B54FFD600BDF016 /* options_disp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A64C512D1B54FFD600BDF016 /* options_disp.cpp */; };
 		A663DE681AD6B25B006CC422 /* libX11.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A663DE671AD6B25B006CC422 /* libX11.6.dylib */; };
 		A67962501AB965D400EACF40 /* DSC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7A51F3A517D6386100A8F8F2 /* DSC.cpp */; };
-		A67B0CED1BC569950060D2A8 /* libarmadillo.5.000.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A67B0CEC1BC569950060D2A8 /* libarmadillo.5.000.1.dylib */; };
+		A67B0CED1BC569950060D2A8 /* libarmadillo.5.000.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A67B0CEC1BC569950060D2A8 /* libarmadillo.5.000.1.dylib */; settings = {ATTRIBUTES = (Required, ); }; };
 		A699B3681AE4E7B500522DA2 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A699B3671AE4E7B500522DA2 /* Accelerate.framework */; };
 		A69B8AD71AF7B3690031E45D /* polygon_f.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A69B8AD51AF7B3690031E45D /* polygon_f.cpp */; };
 		A6B45F1F1A88CE120091F5A6 /* interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6B45F1E1A88CE120091F5A6 /* interface.cpp */; };
@@ -55,7 +55,7 @@
 		A6B45F441A88F1BE0091F5A6 /* rotate_function.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7A51F3C717D6393200A8F8F2 /* rotate_function.cpp */; };
 		A6B45F451A88F3910091F5A6 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A51F3B217D6388800A8F8F2 /* OpenGL.framework */; };
 		A6B45F461A88F3990091F5A6 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A51F3B017D6388200A8F8F2 /* GLUT.framework */; };
-		A6B45F471A88F3D80091F5A6 /* GEL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A51F3B417D638B500A8F8F2 /* GEL.framework */; };
+		A6B45F471A88F3D80091F5A6 /* GEL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A51F3B417D638B500A8F8F2 /* GEL.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		A6B460EF1A8CADF30091F5A6 /* helper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6B460ED1A8CADF30091F5A6 /* helper.cpp */; };
 /* End PBXBuildFile section */
 
@@ -132,6 +132,7 @@
 		A64C512D1B54FFD600BDF016 /* options_disp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = options_disp.cpp; sourceTree = "<group>"; };
 		A663DE671AD6B25B006CC422 /* libX11.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libX11.6.dylib; path = ../../../../../opt/X11/lib/libX11.6.dylib; sourceTree = "<group>"; };
 		A67B0CEC1BC569950060D2A8 /* libarmadillo.5.000.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libarmadillo.5.000.1.dylib; path = "../../../armadillo-5.000.1/libarmadillo.5.000.1.dylib"; sourceTree = "<group>"; };
+		A68CB5981D8002760074F232 /* messageBox.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = messageBox.h; sourceTree = "<group>"; };
 		A699B3671AE4E7B500522DA2 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		A69B8AD51AF7B3690031E45D /* polygon_f.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = polygon_f.cpp; sourceTree = "<group>"; };
 		A69B8AD61AF7B3690031E45D /* polygon_f.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = polygon_f.h; sourceTree = "<group>"; };
@@ -289,6 +290,7 @@
 				A64C512D1B54FFD600BDF016 /* options_disp.cpp */,
 				A640A0CD1D62EEBE000D7FAA /* setting_io.cpp */,
 				A640A0CE1D62EEBE000D7FAA /* setting_io.hpp */,
+				A68CB5981D8002760074F232 /* messageBox.h */,
 			);
 			path = SEGMENT;
 			sourceTree = "<group>";
@@ -616,6 +618,7 @@
 					./CImg/libtiff,
 					/opt/X11/include/libpng15,
 				);
+				LD_NO_PIE = YES;
 				LIBRARY_SEARCH_PATHS = (
 					/opt/X11/lib/,
 					/opt/X11/lib,
@@ -655,6 +658,7 @@
 					./CImg/libtiff,
 					/opt/X11/include/libpng15,
 				);
+				LD_NO_PIE = YES;
 				LIBRARY_SEARCH_PATHS = (
 					/opt/X11/lib/,
 					/opt/X11/lib,

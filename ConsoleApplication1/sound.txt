@@ -4,13 +4,13 @@ file_path: DATA/sound.png # Image file
 # Segmentation parameter
 
 shortest_edge: 3
-smooth_coefficient: 0.6 # The higher the more straight curves
+smooth_coefficient: 0.01 # The higher the less noise dependent
 threshold_adapt_edge: 15 # The smaller, the smoother curves 
 threshold_adapt_face: 0.005 # The smaller, the easier to capture all region
 
 relabel: 1 # 0-1: Enable relabeling of triangle
 
-time_step: 1
+time_step: 0.5
 dsc_init_resolution: 40 # Edge length average, pixels
 
 number_phases_to_segment: 3 # 0 for manual initialization
