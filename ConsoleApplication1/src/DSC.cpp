@@ -155,12 +155,23 @@ namespace DSC2D
         for(auto fi = faces_begin(); fi != faces_end(); ++fi)
         {
             switch (get_label(*fi)) {
-                case OUTSIDE:
-                    colors[*fi] = OUTSIDE_FACE_COLOR;
+                    //hard code for cinemax example
+                case 0:
+                    colors[*fi] = vec3(1,0,0);
                     break;
-                default:
-                    colors[*fi] = Util::color(DEFAULT_FACE_COLOR, get_label(*fi));
+                case 1:
+                    colors[*fi] = vec3(0,0,1);
                     break;
+                case 100:
+                    colors[*fi] = vec3(0,0,0);
+                    break;
+                    // end
+//                case OUTSIDE:
+//                    colors[*fi] = OUTSIDE_FACE_COLOR;
+//                    break;
+//                default:
+//                    colors[*fi] = Util::color(DEFAULT_FACE_COLOR, get_label(*fi));
+//                    break;
             }
         }
         return colors;
@@ -341,9 +352,12 @@ namespace DSC2D
     
     bool DeformableSimplicialComplex::save(const char * filePath)
     {
+        HMesh::IDRemap cleanup_map;
+        cleanup_attributes(cleanup_map);
+        
         std::ofstream myfile(filePath);
         if (myfile.is_open()) {
-            myfile << get_no_vertices() << " " << get_no_faces() << "\n";
+
             
             // Write vertices
             std::map<int,int> index_map;
@@ -351,6 +365,15 @@ namespace DSC2D
             for (auto vkey : vertices())
             {
                 index_map.insert(std::make_pair(vkey.get_index(), idx++));
+                auto p = get_pos(vkey);
+//                myfile << p[0] << " " << p[1] << "\n";
+            }
+            
+            myfile << idx << " " << get_no_faces() << "\n";
+            
+            for (auto vkey : vertices())
+            {
+//                index_map.insert(std::make_pair(vkey.get_index(), idx++));
                 auto p = get_pos(vkey);
                 myfile << p[0] << " " << p[1] << "\n";
             }

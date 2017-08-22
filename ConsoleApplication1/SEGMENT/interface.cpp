@@ -120,8 +120,8 @@ void interface_dsc::reshape(int width, int height){
         
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-//        gluOrtho2D(0, imageSize[0], 0, imageSize[1]);
-        gluOrtho2D(-DISCRETIZE_RES, imageSize[0]-DISCRETIZE_RES, -DISCRETIZE_RES, imageSize[1]-DISCRETIZE_RES);
+        gluOrtho2D(0, imageSize[0], 0, imageSize[1]);
+//        gluOrtho2D(-DISCRETIZE_RES, imageSize[0]-DISCRETIZE_RES, -DISCRETIZE_RES, imageSize[1]-DISCRETIZE_RES);
         
         double lx = (gl_ratio < image_ratio)? WIN_SIZE_Y/image_ratio : real_width;
         double ly = (gl_ratio < image_ratio)? WIN_SIZE_Y : real_width*image_ratio;
@@ -188,8 +188,10 @@ void interface_dsc::keyboard(unsigned char key, int x, int y){
             break;
         case 's': // Split edge
         {
-            adapt_mesh am;
-            am.split_edge(*dsc, *image_);
+            static int c = 1;
+            std::ostringstream s;
+            s << "DATA/tues/im_" << c++ << ".png";
+            image_->load_image(s.str());
         }
             break;
         case 'b': // Split edge
@@ -202,6 +204,11 @@ void interface_dsc::keyboard(unsigned char key, int x, int y){
             load_dsc();
         }
             break;
+//        case 'e': // Split edge
+//        {
+//            export_mesh();
+//        }
+//            break;
         case 'w': // Split edge
         {
             write_triangle_energy();
@@ -248,10 +255,13 @@ void interface_dsc::load_dsc()
             myfile >> points[3*i+1];
         }
         std::vector<int> faces; faces.resize(3*nb_face);
+        std::vector<int> labels; labels.resize(nb_face);
         for (int i = 0; i < nb_face; i++) {
             myfile >> faces[3*i];
             myfile >> faces[3*i + 1];
             myfile >> faces[3*i + 2];
+            
+            myfile >> labels[i];
         }
         
         // Init DSC
@@ -267,6 +277,15 @@ void interface_dsc::load_dsc()
         
         dsc = std::unique_ptr<DeformableSimplicialComplex>(
                                                            new DeformableSimplicialComplex(DISCRETIZATION, points, faces, domain));
+        
+        // set label
+        int idx = 0;
+        for (auto fiter = dsc->faces_begin(); fiter != dsc->faces_end(); fiter++)
+        {
+            dsc->update_attributes(*fiter, labels[idx++]);
+        }
+            
+            
 #ifdef TUAN_MULTI_RES
         dsc->img = &*image_;
 #endif
@@ -277,6 +296,39 @@ void interface_dsc::load_dsc()
         std::cout << "Fail to load dsc mesh \n";
     }
 }
+
+void interface_dsc::export_mesh()
+{
+    std::ostringstream os;
+    os << LOG_PATH << "mesh.dsc";
+    
+    std::ofstream myfile(os.str());
+    if (myfile.is_open()) {
+        myfile << dsc->get_no_vertices() << " " << dsc->get_no_faces() << "\n";
+        // Write vertices
+        std::map<int,int> index_map;
+        int idx = 0;
+        for (auto vkey : dsc->vertices())
+        {
+            index_map.insert(std::make_pair(vkey.get_index(), idx++));
+            auto p = dsc->get_pos(vkey);
+            myfile << p[0] << " " << p[1] << "\n";
+        }
+        
+        // write face
+        for (auto fkey : dsc->faces())
+        {
+            auto verts = dsc->get_verts(fkey);
+            myfile << index_map[(int)verts[0].get_index()] << " "
+            << index_map[(int)verts[1].get_index()] << " "
+            << index_map[(int)verts[2].get_index()] << " "
+            << dsc->get_label(fkey) << "\n";
+        }
+        
+        myfile.close();
+    }
+}
+
 void interface_dsc::back_up_dsc()
 {
     std::ostringstream os;
@@ -736,7 +788,10 @@ interface_dsc::interface_dsc(int &argc, char** argv){
     image_ = std::unique_ptr<image>(new image);
     image_->load_image(IMAGE_PATH);
     
-    imageSize = Vec2(image_->width() + 2*DISCRETIZE_RES, image_->height() + 2*DISCRETIZE_RES);
+    
+    imageSize = Vec2(image_->width(), image_->height());
+    // Boundary
+//    imageSize = Vec2(image_->width() + 2*DISCRETIZE_RES, image_->height() + 2*DISCRETIZE_RES);
 
     check_gl_error();
     
@@ -771,9 +826,9 @@ void interface_dsc::init_dsc(){
     double width = imageSize[0];
     double height = imageSize[1];
     
-//    DISCRETIZATION = (double) height / (double)DISCRETIZE_RES;
     DISCRETIZATION = DISCRETIZE_RES;
     
+    // Boundary gap
     width -= 2*DISCRETIZATION;
     height -= 2*DISCRETIZATION;
     
@@ -781,15 +836,18 @@ void interface_dsc::init_dsc(){
     std::vector<int> faces;
     Trializer::trialize(width, height, DISCRETIZATION, points, faces);
     
-    // Offset the mesh
-    for (auto & p:points)
-    {
-        p -= DISCRETIZE_RES;
-    }
-    //
+    // Boundary gap
+//    // Offset the mesh
+//    for (auto & p:points)
+//    {
+//        p -= DISCRETIZE_RES;
+//    }
+//    //
     
+    // Boundary gap
     width += 2*DISCRETIZATION;
     height += 2*DISCRETIZATION;
+    
     DesignDomain *domain = new DesignDomain(DesignDomain::RECTANGLE, width, height, 0 /*,  DISCRETIZATION */);
     
     dsc = std::unique_ptr<DeformableSimplicialComplex>(
@@ -807,15 +865,17 @@ void interface_dsc::init_dsc(){
     dsc->img = &*image_;
 #endif
     
-    // Label all margin triangle
-    for (auto fkey : dsc->faces())
-    {
-        if (is_boundary(*dsc, fkey))
-        {
-            dsc->update_attributes(fkey, 100);
-        }
-    }
-    dsc->clean_attributes();
+    // Boundary gap
+//    // Label all margin triangle
+//    for (auto fkey : dsc->faces())
+//    {
+//        if (is_boundary(*dsc, fkey))
+//        {
+//            dsc->update_attributes(fkey, 100);
+//        }
+//    }
+//    dsc->clean_attributes();
+    
     //
 //    dsc->deform();
     // Initialize if need
@@ -828,12 +888,14 @@ void interface_dsc::init_dsc(){
 
 void interface_dsc::export_dsc()
 {
-    std::map<int, int> node_idx_map;
+    dsc->clean_attributes();
+    
+    std::map<unsigned int, unsigned int> node_idx_map;
     std::vector<Vec2> vertices;
     int idx = 1;
     for (auto nkey : dsc->vertices())
     {
-        if (!HMesh::boundary(*dsc->mesh, nkey))
+//        if (!HMesh::boundary(*dsc->mesh, nkey))
         {
             node_idx_map.insert(std::make_pair(nkey.get_index(), idx));
             vertices.push_back(dsc->get_pos(nkey));
@@ -853,7 +915,7 @@ void interface_dsc::export_dsc()
         // triangle
         for (auto fkey : dsc->faces())
         {
-            if (dsc->get_label(fkey) != BOUND_FACE)
+//            if (dsc->get_label(fkey) != BOUND_FACE)
             {
                 auto verts = dsc->get_verts(fkey);
                 f << "f " << node_idx_map[verts[0].get_index()] << " "
@@ -865,7 +927,7 @@ void interface_dsc::export_dsc()
         // label
         for (auto fkey : dsc->faces())
         {
-            if (dsc->get_label(fkey) != BOUND_FACE)
+//            if (dsc->get_label(fkey) != BOUND_FACE)
             {
                 f << "l " << dsc->get_label(fkey) << endl;
             }

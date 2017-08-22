@@ -91,6 +91,7 @@ private:
     
     void load_dsc();
     void back_up_dsc();
+    void export_mesh();
     
     void write_triangle_energy();
     

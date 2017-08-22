@@ -41,12 +41,12 @@
       </AdditionalOptions>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Release"
+      buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "YES"
-      customWorkingDirectory = "/Users/tuannt8/Documents/Github/mesh-segmentation/ConsoleApplication1"
+      customWorkingDirectory = "/Users/tuannt8/Documents/Github/DSC 2D based/mesh-segmentation/ConsoleApplication1"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
@@ -64,6 +64,10 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "test.txt"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "cinema.txt"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

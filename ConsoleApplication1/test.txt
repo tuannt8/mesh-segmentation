@@ -1,9 +1,9 @@
 # This is a comment
-file_path: DATA/bundle_sum_hann_N.png # Image file
+file_path: DATA/tues/im_1.png# Image file
 
 # Segmentation parameter
 
-shortest_edge: 10
+shortest_edge: 20
 smooth_coefficient: 0.0001 # The higher the more straight curves
 threshold_adapt_edge: 10 # The smaller, the smoother curves 
 threshold_adapt_face: 0.003 # The smaller, the easier to capture all region

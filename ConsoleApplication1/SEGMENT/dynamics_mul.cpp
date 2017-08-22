@@ -130,12 +130,12 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
             update_vertex_stable();
             am.split_face(*s_dsc, *s_img);
             
-            compute_mean_intensity(mean_inten_);
-            compute_intensity_force();
-            compute_curvature_force();
-            
-            update_vertex_stable();
-            am.split_face(*s_dsc, *s_img);
+//            compute_mean_intensity(mean_inten_);
+//            compute_intensity_force();
+//            compute_curvature_force();
+//            
+//            update_vertex_stable();
+//            am.split_face(*s_dsc, *s_img);
         }
 
         
@@ -1441,7 +1441,8 @@ void dynamics_mul::displace_dsc(dsc_obj *obj){
         obj = s_dsc;
     }
 
-    
+    double epsilon = 0.1;
+    auto im_size = s_img->size();
 
     for (auto ni = obj->vertices_begin(); ni != obj->vertices_end(); ni++)
     {
@@ -1451,20 +1452,38 @@ void dynamics_mul::displace_dsc(dsc_obj *obj){
         
         if ((obj->is_interface(*ni) or obj->is_crossing(*ni)))
         {
-            Vec2 dis = obj->get_node_external_force(*ni);
+            Vec2 dis = obj->get_node_external_force(*ni) + obj->get_node_internal_force(*ni);
             
-            if (!is_bound(obj, *ni) || obj->is_crossing(*ni))
+            if (HMesh::boundary(*obj->mesh, *ni))
             {
-                dis += obj->get_node_internal_force(*ni);
+                // Project the direction
+                auto p = obj->get_pos(*ni);
+                if (abs(p[0]) < epsilon || abs(p[0] - im_size[0]) < epsilon)
+                {
+                    // Boundary on x
+                    dis[0] = 0;
+                }
+                if (abs(p[1]) < epsilon || abs(p[1] - im_size[1]) < epsilon)
+                {
+                    dis[1] = 0;
+                }
             }
             assert(dis.length() != NAN);
             
+//            Vec2 dis = obj->get_node_external_force(*ni);
+//            
+//            if (!is_bound(obj, *ni) || obj->is_crossing(*ni))
+//            {
+//                dis += obj->get_node_external_force(*ni) + obj->get_node_internal_force(*ni);
+//            }
+//            assert(dis.length() != NAN);
+            
             double n_dt = dt;//s_dsc->time_step(*ni);
             
-            if(is_bound(obj, *ni))
-            {
-                n_dt /= 2.0;
-            }
+//            if(is_bound(obj, *ni))
+//            {
+//                n_dt /= 2.0;
+//            }
 
             obj->set_destination(*ni, obj->get_pos(*ni) + dis*n_dt);
             
