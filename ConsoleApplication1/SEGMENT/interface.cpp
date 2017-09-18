@@ -93,6 +93,13 @@ void interface_dsc::display(){
     check_gl_error();
     
     if (RUN) {
+//        // Log
+//        static int idx = 0;
+//        std::stringstream name;
+//        name << "vanda/iter_" << idx << ".obj";
+//        export_dsc(name.str().c_str());
+//        idx++;
+        
         dynamics_image_seg();
         glutPostRedisplay();
     }
@@ -858,7 +865,7 @@ void interface_dsc::init_dsc(){
         dsc->set_smallest_feature_size(SMALLEST_SIZE);
     }else
     {
-        dsc->set_uniform_smallest_feature(SMALLEST_SIZE);
+//        dsc->set_uniform_smallest_feature(SMALLEST_SIZE);
     }
     
 #ifdef TUAN_MULTI_RES
@@ -882,13 +889,52 @@ void interface_dsc::init_dsc(){
 //    manual_init_dsc();
     
     random_init_dsc(NB_PHASE);
+//    init_circle(Vec2(280,250), 160);
     
     printf("Average edge length: %f ; # faces: %d\n", dsc->get_avg_edge_length(), dsc->get_no_faces());
 }
 
-void interface_dsc::export_dsc()
+void interface_dsc::init_circle(vec2 center, double radius)
 {
-    dsc->clean_attributes();
+    // set label
+    for (auto fkey : dsc->faces())
+    {
+        auto pts = dsc->get_pos(fkey);
+        bool bInside = true;
+        for (auto pp : pts)
+        {
+            if ((pp-center).length() > radius)
+            {
+                bInside = false;
+                break;
+            }
+        }
+        
+        if (bInside)
+        {
+            dsc->update_attributes(fkey, 1);
+        }
+    }
+    
+    // Update circle
+    for (auto vkey : dsc->vertices())
+    {
+        if (dsc->is_interface(vkey))
+        {
+            auto pos = dsc->get_pos(vkey);
+            auto ll = pos - center;ll.normalize();
+            Vec2 new_pos = center + ll * radius;
+            
+            dsc->set_destination(vkey, new_pos);
+        }
+    }
+    
+    dsc->deform();
+}
+
+void interface_dsc::export_dsc(const char * fileName)
+{
+//    dsc->clean_attributes();
     
     std::map<unsigned int, unsigned int> node_idx_map;
     std::vector<Vec2> vertices;
@@ -903,7 +949,17 @@ void interface_dsc::export_dsc()
         }
     }
     
-    std::ofstream f("mesh.obj");
+    std::ofstream f;
+    
+    if (fileName)
+    {
+        f.open(fileName);
+    }else
+    {
+        f.open("mesh.obj");
+    }
+    
+
     if (f.is_open())
     {
         // vertices
@@ -918,6 +974,7 @@ void interface_dsc::export_dsc()
 //            if (dsc->get_label(fkey) != BOUND_FACE)
             {
                 auto verts = dsc->get_verts(fkey);
+                
                 f << "f " << node_idx_map[verts[0].get_index()] << " "
                 << node_idx_map[verts[1].get_index()] << " "
                 << node_idx_map[verts[2].get_index()] << endl;

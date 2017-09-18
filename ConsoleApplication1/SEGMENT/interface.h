@@ -102,11 +102,12 @@ public:
     
     void manual_init_dsc();
     void random_init_dsc(int nb_phase);
+    void init_circle(Vec2 center, double radius);
     
     void init_sqaure_boundary();
     void init_boundary();
     void init_boundary_brain();
     void dynamics_image_seg();
     
-    void export_dsc();
+    void export_dsc(const char * fileName = nullptr);
 };

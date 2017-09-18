@@ -6,14 +6,14 @@ file_path: DATA/cinemax.png # Image file
 shortest_edge: 3
 smooth_coefficient: 0.1 # The higher the more straight curves
 threshold_adapt_edge: 0.1 # The smaller, the smoother curves 
-threshold_adapt_face: 0.1 # The smaller, the easier to capture all region
+threshold_adapt_face: 0.5 # The smaller, the easier to capture all region
 
 relabel: 1 # 0-1: Enable relabeling of triangle
 
-time_step: 0.7
-dsc_init_resolution: 20 # Edge length average, pixels
+time_step: 0.2
+dsc_init_resolution: 5 # Edge length average, pixels
 
 
 number_phases_to_segment: 2 # 0 for manual initialization
 
-adaptive_mesh: 1
+adaptive_mesh: 0

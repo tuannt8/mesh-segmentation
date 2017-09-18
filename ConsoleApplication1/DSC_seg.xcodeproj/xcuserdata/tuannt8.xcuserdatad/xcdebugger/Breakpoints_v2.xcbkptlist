@@ -16,7 +16,7 @@
             startingLineNumber = "627"
             endingLineNumber = "627"
             landmarkName = "dyn_integral::compute_mean_intensity(std::map&lt;int, double&gt; &amp; mean_inten_o)"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -32,7 +32,23 @@
             startingLineNumber = "373"
             endingLineNumber = "373"
             landmarkName = "dyn_integral::update_dsc(dsc_obj &amp;dsc, image &amp;img)"
-            landmarkType = "5">
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "SEGMENT/adapt_mesh.cpp"
+            timestampString = "525263148.284782"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "301"
+            endingLineNumber = "301"
+            landmarkName = "adapt_mesh::collapse_interface(DSC2D::DeformableSimplicialComplex &amp;dsc, image &amp;img)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

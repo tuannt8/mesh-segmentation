@@ -1885,12 +1885,12 @@ namespace DSC2D
     void DeformableSimplicialComplex::set_uniform_smallest_feature(double length)
     {
         // Length
-        MAX_LENGTH = 1;
+        MAX_LENGTH = 10;
         MIN_LENGTH = length / AVG_LENGTH /2.0;
         DEG_LENGTH = MIN_LENGTH;// 0.2*MIN_LENGTH;
         
         // Area
-        MAX_AREA = 1;
+        MAX_AREA = 10;
         MIN_AREA = MIN_LENGTH*MIN_LENGTH;
         DEG_AREA = MIN_AREA; //0.2*MIN_AREA;
     }

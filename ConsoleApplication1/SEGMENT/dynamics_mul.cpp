@@ -90,7 +90,7 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
     int nb_displace = 10;
 
 
-        displace_dsc();
+    displace_dsc();
         
 
     
@@ -100,6 +100,18 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
     
     // adapt mesh
     adapt_mesh am;
+    
+    if(RELABEL)
+    {
+        
+        compute_mean_intensity(mean_inten_);
+        compute_intensity_force();
+        compute_curvature_force();
+        
+        update_vertex_stable();
+        am.split_face(*s_dsc, *s_img);
+    }
+
     
     if (count > nb_displace)
     {
@@ -120,23 +132,16 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
         update_vertex_stable();
         am.split_edge(*s_dsc, *s_img);
         
-        if(RELABEL)
-        {
-            
-            compute_mean_intensity(mean_inten_);
-            compute_intensity_force();
-            compute_curvature_force();
-            
-            update_vertex_stable();
-            am.split_face(*s_dsc, *s_img);
-            
+//        if(RELABEL)
+//        {
+//            
 //            compute_mean_intensity(mean_inten_);
 //            compute_intensity_force();
 //            compute_curvature_force();
 //            
 //            update_vertex_stable();
 //            am.split_face(*s_dsc, *s_img);
-        }
+//        }
 
         
         
@@ -154,6 +159,7 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
     }
     
     compute_mean_intensity(mean_inten_);
+    std::cout << "Mean intensity: " << mean_inten_[0] << "; " << mean_inten_[1] << endl;
     compute_intensity_force();
     compute_curvature_force();
     
@@ -245,21 +251,27 @@ void dynamics_mul::update_vertex_stable()
             
             double n_dt = dt;
             
-            auto norm = obj->get_normal(*ni);
-            
-            double move = DSC2D::Util::dot(dis, norm)*n_dt;
-            if (obj->is_crossing(*ni))
-            {
-                move = dis.length() * n_dt;
-            }
-            
-            if (move < STABLE_MOVE) // stable
+            if (HMesh::boundary(*obj->mesh, *ni))
             {
                 obj->bStable[*ni] = 1;
-            }
-            else
+            }else
             {
-                obj->bStable[*ni] = 0;
+                auto norm = obj->get_normal(*ni);
+                
+                double move = DSC2D::Util::dot(dis, norm)*n_dt;
+                if (obj->is_crossing(*ni))
+                {
+                    move = dis.length() * n_dt;
+                }
+                
+                if (move < STABLE_MOVE) // stable
+                {
+                    obj->bStable[*ni] = 1;
+                }
+                else
+                {
+                    obj->bStable[*ni] = 0;
+                }
             }
         }
     }
@@ -1441,8 +1453,10 @@ void dynamics_mul::displace_dsc(dsc_obj *obj){
         obj = s_dsc;
     }
 
-    double epsilon = 0.1;
+    double epsilon = 0.03;
     auto im_size = s_img->size();
+    
+    double max_dis = 0;
 
     for (auto ni = obj->vertices_begin(); ni != obj->vertices_end(); ni++)
     {
@@ -1454,10 +1468,15 @@ void dynamics_mul::displace_dsc(dsc_obj *obj){
         {
             Vec2 dis = obj->get_node_external_force(*ni) + obj->get_node_internal_force(*ni);
             
+            
+            // debug
+            auto a1 = obj->get_node_external_force(*ni);
+            auto a2 = obj->get_node_internal_force(*ni);
+            
+            auto p = obj->get_pos(*ni);
             if (HMesh::boundary(*obj->mesh, *ni))
             {
                 // Project the direction
-                auto p = obj->get_pos(*ni);
                 if (abs(p[0]) < epsilon || abs(p[0] - im_size[0]) < epsilon)
                 {
                     // Boundary on x
@@ -1487,8 +1506,16 @@ void dynamics_mul::displace_dsc(dsc_obj *obj){
 
             obj->set_destination(*ni, obj->get_pos(*ni) + dis*n_dt);
             
+            if (max_dis < dis.length()*n_dt)
+            {
+                max_dis = dis.length()*n_dt;
+            }
+            
+            assert(max_dis < 20);
         }
     }
+    
+    std::cout << "Max displacement: " << max_dis << std::endl;
     
     obj->deform();
 }
@@ -1645,10 +1672,10 @@ void dynamics_mul::compute_intensity_force(){
                 
                 double f = 0.0;
                 // Same coefficient
-                f = (2*I - c0 - c1) / (c0-c1) * dl /length;
+                //f = (2*I - c0 - c1) / (c0-c1) * dl /length;
                 
                 // No normalization
-                //f = (2*I - c0 - c1) * (c0-c1) * dl /length;
+                f = (2*I - c0 - c1) * (c0-c1) * dl /length;
                 
                 assert(f != NAN);
                 
