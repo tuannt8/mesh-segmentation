@@ -117,7 +117,7 @@ void adapt_mesh::split_face(DSC2D::DeformableSimplicialComplex &dsc, image &img)
 
             if (bStable > 1)
             {
-                
+                std::cout << "adapt face\n";
                 dsc_->split(fkey);
             }
             else
@@ -266,9 +266,9 @@ void adapt_mesh::collapse_interface(DSC2D::DeformableSimplicialComplex &dsc, ima
             }
             assert(edges.size()==2);
             
-            auto cangle = DSC2D::Util::cos_angle(dsc.get_pos(edges[0].opp().vertex()),
-                                         dsc.get_pos(edges[0].vertex()),
-                                         dsc.get_pos(edges[1].opp().vertex()));
+            auto cangle = DSC2D::Util::cos_angle(dsc.get_pos(edges[0].vertex()),
+                                         dsc.get_pos(edges[0].opp().vertex()),
+                                         dsc.get_pos(edges[1].vertex()));
             if (cangle < dsc.COS_MIN_ANGLE)
             {
                 // check energy
@@ -277,7 +277,7 @@ void adapt_mesh::collapse_interface(DSC2D::DeformableSimplicialComplex &dsc, ima
                 double c1 = mean_inten_[dsc.get_label(edges[0].opp().face())];
                 
                 auto p0 = dsc.get_pos(edges[0].opp().vertex());
-                auto p1 = dsc.get_pos(edges[1].opp().vertex());
+                auto p1 = dsc.get_pos(edges[0].vertex());
                 
                 double length = (p1 - p0).length();
                 int N = (int)length;
@@ -296,7 +296,8 @@ void adapt_mesh::collapse_interface(DSC2D::DeformableSimplicialComplex &dsc, ima
                 
                 double thres = SPLIT_EDGE_COEFFICIENT*(c0-c1) * (c0-c1);
                 if (dsc.bStable[vkey] == 1
-                    && ev < thres)
+                    && ev < thres
+                    )
                 {
                     if (HMesh::precond_collapse_edge(*dsc.mesh, edges[0].halfedge())
                         && dsc.unsafe_editable(edges[0].halfedge())
@@ -380,8 +381,7 @@ void adapt_mesh::split_edge(DSC2D::DeformableSimplicialComplex &dsc, image &img)
 //                && !is_bound(&dsc, ekey)
                 ) // High energy. Split
             {
-                
-                
+                std::cout << "adapt interface\n";
                 dsc.split_adpat_mesh(ekey);
             }
             else // Low energy, consider collapse
@@ -390,9 +390,9 @@ void adapt_mesh::split_edge(DSC2D::DeformableSimplicialComplex &dsc, image &img)
                 // And doesnot reduce mesh quality
                 // conflict with face split
                 
-//                if(dsc.collapse(ekey, true))
-//                {
-//                }
+                if(dsc.collapse(ekey, true))
+                {
+                }
             }
         }
     }

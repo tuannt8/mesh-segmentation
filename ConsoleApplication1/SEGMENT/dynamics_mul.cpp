@@ -87,7 +87,7 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
 {
     auto init_time = std::chrono::system_clock::now();
     
-    int nb_displace = 10;
+    int nb_displace = 4;
 
 
     displace_dsc();
@@ -101,49 +101,60 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
     // adapt mesh
     adapt_mesh am;
     
+if(count < 100)
+{
     if(RELABEL)
     {
-        
         compute_mean_intensity(mean_inten_);
         compute_intensity_force();
         compute_curvature_force();
-        
         update_vertex_stable();
         am.split_face(*s_dsc, *s_img);
-    }
+        
 
+    }
+}
     
-    if (count > nb_displace)
+//    compute_mean_intensity(mean_inten_);
+//    compute_intensity_force();
+//    compute_curvature_force();
+//    update_vertex_stable();
+//    am.split_edge(*s_dsc, *s_img);
+    
+    
+    if (count % nb_displace == 0)
     {
+
+//        count = 0;
+
         
-        count = 0;
+
         
+//        if(count < 200)
+        {
         compute_mean_intensity(mean_inten_);
         compute_intensity_force();
         compute_curvature_force();
-        
+        update_vertex_stable();
+        am.split_edge(*s_dsc, *s_img);
+        }
+
+        compute_mean_intensity(mean_inten_);
+        compute_intensity_force();
+        compute_curvature_force();
         update_vertex_stable();
         am.collapse_interface(*s_dsc, *s_img);
         
-        compute_mean_intensity(mean_inten_);
-        compute_intensity_force();
-        compute_curvature_force();
-        
-        update_vertex_stable();
-        am.split_edge(*s_dsc, *s_img);
-        
 //        if(RELABEL)
 //        {
-//            
 //            compute_mean_intensity(mean_inten_);
 //            compute_intensity_force();
 //            compute_curvature_force();
-//            
 //            update_vertex_stable();
 //            am.split_face(*s_dsc, *s_img);
 //        }
 
-        
+
         
         if(ADAPTIVE == 1)
         {
@@ -155,11 +166,17 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
         }
         
         am.remove_needles(*s_dsc);
-
     }
     
     compute_mean_intensity(mean_inten_);
-    std::cout << "Mean intensity: " << mean_inten_[0] << "; " << mean_inten_[1] << endl;
+    
+    std::cout << "Mean intensity: ";
+    for(auto i : mean_inten_)
+    {
+        std::cout << i.second << " : ";
+    }
+    std::cout<<std::endl;
+    
     compute_intensity_force();
     compute_curvature_force();
     
@@ -176,9 +193,9 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
     time += t.count();
     
     
-    double E, l;
-    get_energy(E, l);
-    data_log.push_back(Vec3(E, l, time));
+//    double E, l;
+//    get_energy(E, l);
+//    data_log.push_back(Vec3(E, l, time));
 //    fprintf(f, "%f %f  %f\n", E, l, time);
 }
 void dynamics_mul::compute_difference()

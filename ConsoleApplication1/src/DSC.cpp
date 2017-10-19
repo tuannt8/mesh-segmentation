@@ -155,12 +155,14 @@ namespace DSC2D
         for(auto fi = faces_begin(); fi != faces_end(); ++fi)
         {
             switch (get_label(*fi)) {
-                    //hard code for cinemax example
                 case 0:
                     colors[*fi] = vec3(1,0,0);
                     break;
                 case 1:
                     colors[*fi] = vec3(0,0,1);
+                    break;
+                case 2:
+                    colors[*fi] = vec3(0,1,0);
                     break;
                 case 100:
                     colors[*fi] = vec3(0,0,0);
@@ -169,9 +171,9 @@ namespace DSC2D
 //                case OUTSIDE:
 //                    colors[*fi] = OUTSIDE_FACE_COLOR;
 //                    break;
-//                default:
-//                    colors[*fi] = Util::color(DEFAULT_FACE_COLOR, get_label(*fi));
-//                    break;
+                default:
+                    colors[*fi] = Util::color(DEFAULT_FACE_COLOR, get_label(*fi));
+                    break;
             }
         }
         return colors;

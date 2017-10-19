@@ -22,6 +22,8 @@
 #include "profile.h"
 #include "define.h"
 
+#include <GLGraphics/SOIL.h>
+
 int ox, oy, w,h;
 
 void _check_gl_error(const char *file, int line)
@@ -100,6 +102,15 @@ void interface_dsc::display(){
 //        export_dsc(name.str().c_str());
 //        idx++;
         
+        // Log the images
+        static int idx = 0;
+        std::stringstream name;
+        name << "LOG/cement/iter_" << idx++ << ".png";
+        if(SOIL_save_screenshot(name.str().c_str(), SOIL_SAVE_TYPE_PNG, ox, oy, w, h))
+        {
+            std::cout<< "Could not save file at " << name.str() << endl;
+        }
+        
         dynamics_image_seg();
         glutPostRedisplay();
     }
@@ -138,13 +149,13 @@ void interface_dsc::reshape(int width, int height){
       //  glutReshapeWindow(WIN_SIZE_X, WIN_SIZE_Y);
         
 
-        ox = options_disp::width_view + (real_width - lx)/2 + DISCRETIZE_RES / (imageSize[0] / lx);
-        oy = (WIN_SIZE_Y - ly)/2 + DISCRETIZE_RES / (imageSize[1] / ly);
-        w = lx - 2*DISCRETIZE_RES / (imageSize[0] / lx) + 1;
-        h = ly - 2*DISCRETIZE_RES / (imageSize[1] / ly) + 1;
+        ox = options_disp::width_view + (real_width - lx)/2;// + DISCRETIZE_RES / ((double)imageSize[0] / lx);
+        oy = (WIN_SIZE_Y - ly)/2;// + DISCRETIZE_RES / ((double)imageSize[1] / ly);
+        w = lx;// - 2*DISCRETIZE_RES / ((double)imageSize[0] / lx) + 1;
+        h = ly;// - 2*DISCRETIZE_RES / ((double)imageSize[1] / ly) + 1;
 
         gl_debug_helper::coord_transform(Vec2(ox,oy),
-                                         Vec2(imageSize[0] / lx, imageSize[1] / ly), WIN_SIZE_Y);
+                                         Vec2((double)imageSize[0] / lx, (double)imageSize[1] / ly), WIN_SIZE_Y);
     }
 }
 
@@ -410,9 +421,11 @@ void interface_dsc::draw()
     if (options_disp::get_option("Edge and vertices ", true) and dsc) {
         glLineWidth(1.0);
         Painter::draw_edges(*dsc);
-        glColor3f(1, 0.0, 0.0);
-        glPointSize(1.0);
-    //    Painter::draw_vertices(*dsc);
+    }
+    
+    if (options_disp::get_option("Interface ", true) and dsc) {
+        glLineWidth(1.0);
+        Painter::draw_interface(*dsc, vec3(1,0,0));
     }
     
 //    if(options_disp::get_option("Phase index", false)){
@@ -426,6 +439,8 @@ void interface_dsc::draw()
     if(options_disp::get_option("Triangle MS energy", false)){
         draw_tri_MS_energy();
     }
+    
+    
 //
 //    
 //    if(options_disp::get_option("Edge energy", false)){

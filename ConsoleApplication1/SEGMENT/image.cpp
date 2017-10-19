@@ -13,8 +13,8 @@
 
 
 
-#define NOISE 5
-#define BLUR 3
+//#define NOISE 5
+//#define BLUR 3
 
 void image::load_image(std::string const file_path){
     try
@@ -22,10 +22,10 @@ void image::load_image(std::string const file_path){
         load(file_path.c_str());
         this->mirror('y');
         
-
-//        blur(BLUR); //isotropically
-//        noise(NOISE);
-
+#ifdef NOISE
+        blur(BLUR); //isotropically
+        noise(NOISE);
+#endif
         
         set_gl_texture();
 //        compute_gradient();
@@ -64,14 +64,14 @@ void image::draw_image(int window_width){
 
         glDisable(GL_TEXTURE_2D);
     
-   //  Draw border
-    glColor3f(1, 0, 0);
-    glBegin(GL_LINE_LOOP);
-    glVertex2f(0.0, 0.0);
-    glVertex2f(w, 0.0);
-    glVertex2f(w, h);
-    glVertex2f(0.0, h);
-    glEnd();
+//   //  Draw border
+//    glColor3f(1, 0, 0);
+//    glBegin(GL_LINE_LOOP);
+//    glVertex2f(0.0, 0.0);
+//    glVertex2f(w, 0.0);
+//    glVertex2f(w, h);
+//    glVertex2f(0.0, h);
+//    glEnd();
 }
 
 void image::draw_grad(int window_width){

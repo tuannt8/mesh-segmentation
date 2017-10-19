@@ -73,13 +73,7 @@ private:
             while(std::getline(infile, line))
             {
                 auto origin = line;
-                
-//                line.erase(std::remove_if(
-//                                          line.begin(),
-//                                          line.end(),
-//                                          [](char x){return isspace(x);}),
-//                           line.end());
-                
+                                
                 // Ignore comment with #
                 if (line.size()==0 || line[0] == '#')
                 {

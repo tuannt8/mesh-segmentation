@@ -93,11 +93,6 @@ void gl_debug_helper::update_dsc(){
     
 
     for (auto fid = dsc->faces_begin(); fid != dsc->faces_end(); fid++) {
-        if (dsc->get_label(*fid) == 100)
-        {
-            continue;
-        }
-        
         auto pts = dsc->get_pos(*fid);
         if (temp_gdh::tri_box_overlap(ld, ru, pts)) {
             dsc->set_label(*fid, _label_idx);
