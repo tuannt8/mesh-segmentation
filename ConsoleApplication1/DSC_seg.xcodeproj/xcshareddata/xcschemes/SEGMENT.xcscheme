@@ -65,48 +65,8 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-<<<<<<< HEAD
             argument = "sound.txt"
-=======
-            argument = "test.txt"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "cinema.txt"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "fuel_cell.txt"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "lenna.txt"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "param.txt"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "sound.txt"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "hamster.txt"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "star.txt"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "cement.txt"
->>>>>>> 5425463637a3c7fb475c13f60b01fd4c6800f4f8
             isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "vanda_60.txt"
-            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>

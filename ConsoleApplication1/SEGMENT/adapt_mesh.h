@@ -71,8 +71,6 @@ private:
     void split_single_edge(Edge_key ekey);
     void add_point_if_need(HMesh::Walker hew);
     bool collapse_edge(HMesh::Walker hew);
-    
-    bool is_touch_dsc_boundary(Face_key fkey);
 };
 
 #endif /* defined(__DSC_seg_integral__adapt_mesh__) */

@@ -87,10 +87,10 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
 {
     auto init_time = std::chrono::system_clock::now();
     
-    int nb_displace = 4;
+    int nb_displace = 10;
 
 
-    displace_dsc();
+        displace_dsc();
         
 
     
@@ -101,60 +101,44 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
     // adapt mesh
     adapt_mesh am;
     
-if(count < 100)
-{
-    if(RELABEL)
+    if (count > nb_displace)
     {
+        
+        count = 0;
+        
         compute_mean_intensity(mean_inten_);
         compute_intensity_force();
         compute_curvature_force();
-        update_vertex_stable();
-        am.split_face(*s_dsc, *s_img);
         
-
-    }
-}
-    
-//    compute_mean_intensity(mean_inten_);
-//    compute_intensity_force();
-//    compute_curvature_force();
-//    update_vertex_stable();
-//    am.split_edge(*s_dsc, *s_img);
-    
-    
-    if (count % nb_displace == 0)
-    {
-
-//        count = 0;
-
-        
-
-        
-//        if(count < 200)
-        {
-        compute_mean_intensity(mean_inten_);
-        compute_intensity_force();
-        compute_curvature_force();
-        update_vertex_stable();
-        am.split_edge(*s_dsc, *s_img);
-        }
-
-        compute_mean_intensity(mean_inten_);
-        compute_intensity_force();
-        compute_curvature_force();
         update_vertex_stable();
         am.collapse_interface(*s_dsc, *s_img);
         
-//        if(RELABEL)
-//        {
-//            compute_mean_intensity(mean_inten_);
-//            compute_intensity_force();
-//            compute_curvature_force();
-//            update_vertex_stable();
-//            am.split_face(*s_dsc, *s_img);
-//        }
+        compute_mean_intensity(mean_inten_);
+        compute_intensity_force();
+        compute_curvature_force();
+        
+        update_vertex_stable();
+        am.split_edge(*s_dsc, *s_img);
+        
+        if(RELABEL)
+        {
+            
+            compute_mean_intensity(mean_inten_);
+            compute_intensity_force();
+            compute_curvature_force();
+            
+            update_vertex_stable();
+            am.split_face(*s_dsc, *s_img);
+            
+            compute_mean_intensity(mean_inten_);
+            compute_intensity_force();
+            compute_curvature_force();
+            
+            update_vertex_stable();
+            am.split_face(*s_dsc, *s_img);
+        }
 
-
+        
         
         if(ADAPTIVE == 1)
         {
@@ -166,17 +150,10 @@ if(count < 100)
         }
         
         am.remove_needles(*s_dsc);
+
     }
     
     compute_mean_intensity(mean_inten_);
-    
-    std::cout << "Mean intensity: ";
-    for(auto i : mean_inten_)
-    {
-        std::cout << i.second << " : ";
-    }
-    std::cout<<std::endl;
-    
     compute_intensity_force();
     compute_curvature_force();
     
@@ -193,9 +170,9 @@ if(count < 100)
     time += t.count();
     
     
-//    double E, l;
-//    get_energy(E, l);
-//    data_log.push_back(Vec3(E, l, time));
+    double E, l;
+    get_energy(E, l);
+    data_log.push_back(Vec3(E, l, time));
 //    fprintf(f, "%f %f  %f\n", E, l, time);
 }
 void dynamics_mul::compute_difference()
@@ -268,27 +245,21 @@ void dynamics_mul::update_vertex_stable()
             
             double n_dt = dt;
             
-            if (HMesh::boundary(*obj->mesh, *ni))
+            auto norm = obj->get_normal(*ni);
+            
+            double move = DSC2D::Util::dot(dis, norm)*n_dt;
+            if (obj->is_crossing(*ni))
+            {
+                move = dis.length() * n_dt;
+            }
+            
+            if (move < STABLE_MOVE) // stable
             {
                 obj->bStable[*ni] = 1;
-            }else
+            }
+            else
             {
-                auto norm = obj->get_normal(*ni);
-                
-                double move = DSC2D::Util::dot(dis, norm)*n_dt;
-                if (obj->is_crossing(*ni))
-                {
-                    move = dis.length() * n_dt;
-                }
-                
-                if (move < STABLE_MOVE) // stable
-                {
-                    obj->bStable[*ni] = 1;
-                }
-                else
-                {
-                    obj->bStable[*ni] = 0;
-                }
+                obj->bStable[*ni] = 0;
             }
         }
     }
@@ -1470,10 +1441,7 @@ void dynamics_mul::displace_dsc(dsc_obj *obj){
         obj = s_dsc;
     }
 
-    double epsilon = 0.03;
-    auto im_size = s_img->size();
     
-    double max_dis = 0;
 
     for (auto ni = obj->vertices_begin(); ni != obj->vertices_end(); ni++)
     {
@@ -1483,56 +1451,25 @@ void dynamics_mul::displace_dsc(dsc_obj *obj){
         
         if ((obj->is_interface(*ni) or obj->is_crossing(*ni)))
         {
-            Vec2 dis = obj->get_node_external_force(*ni) + obj->get_node_internal_force(*ni);
+            Vec2 dis = obj->get_node_external_force(*ni);
             
-            
-            // debug
-            auto a1 = obj->get_node_external_force(*ni);
-            auto a2 = obj->get_node_internal_force(*ni);
-            
-            auto p = obj->get_pos(*ni);
-            if (HMesh::boundary(*obj->mesh, *ni))
+            if (!is_bound(obj, *ni) || obj->is_crossing(*ni))
             {
-                // Project the direction
-                if (abs(p[0]) < epsilon || abs(p[0] - im_size[0]) < epsilon)
-                {
-                    // Boundary on x
-                    dis[0] = 0;
-                }
-                if (abs(p[1]) < epsilon || abs(p[1] - im_size[1]) < epsilon)
-                {
-                    dis[1] = 0;
-                }
+                dis += obj->get_node_internal_force(*ni);
             }
             assert(dis.length() != NAN);
             
-//            Vec2 dis = obj->get_node_external_force(*ni);
-//            
-//            if (!is_bound(obj, *ni) || obj->is_crossing(*ni))
-//            {
-//                dis += obj->get_node_external_force(*ni) + obj->get_node_internal_force(*ni);
-//            }
-//            assert(dis.length() != NAN);
-            
             double n_dt = dt;//s_dsc->time_step(*ni);
             
-//            if(is_bound(obj, *ni))
-//            {
-//                n_dt /= 2.0;
-//            }
+            if(is_bound(obj, *ni))
+            {
+                n_dt /= 2.0;
+            }
 
             obj->set_destination(*ni, obj->get_pos(*ni) + dis*n_dt);
             
-            if (max_dis < dis.length()*n_dt)
-            {
-                max_dis = dis.length()*n_dt;
-            }
-            
-            assert(max_dis < 20);
         }
     }
-    
-    std::cout << "Max displacement: " << max_dis << std::endl;
     
     obj->deform();
 }
@@ -1689,10 +1626,10 @@ void dynamics_mul::compute_intensity_force(){
                 
                 double f = 0.0;
                 // Same coefficient
-                //f = (2*I - c0 - c1) / (c0-c1) * dl /length;
+                f = (2*I - c0 - c1) / (c0-c1) * dl /length;
                 
                 // No normalization
-                f = (2*I - c0 - c1) * (c0-c1) * dl /length;
+                //f = (2*I - c0 - c1) * (c0-c1) * dl /length;
                 
                 assert(f != NAN);
                 

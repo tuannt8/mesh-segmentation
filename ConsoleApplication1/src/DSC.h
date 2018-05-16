@@ -39,7 +39,7 @@ class image;
 #define NB_FORCES 10
 
 struct node_atrr{
-
+    
 };
 
 namespace DSC2D {

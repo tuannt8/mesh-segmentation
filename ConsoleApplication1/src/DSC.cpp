@@ -155,22 +155,9 @@ namespace DSC2D
         for(auto fi = faces_begin(); fi != faces_end(); ++fi)
         {
             switch (get_label(*fi)) {
-                case 0:
-                    colors[*fi] = vec3(1,0,0);
+                case OUTSIDE:
+                    colors[*fi] = OUTSIDE_FACE_COLOR;
                     break;
-                case 1:
-                    colors[*fi] = vec3(0,0,1);
-                    break;
-                case 2:
-                    colors[*fi] = vec3(0,1,0);
-                    break;
-                case 100:
-                    colors[*fi] = vec3(0,0,0);
-                    break;
-                    // end
-//                case OUTSIDE:
-//                    colors[*fi] = OUTSIDE_FACE_COLOR;
-//                    break;
                 default:
                     colors[*fi] = Util::color(DEFAULT_FACE_COLOR, get_label(*fi));
                     break;
@@ -354,12 +341,9 @@ namespace DSC2D
     
     bool DeformableSimplicialComplex::save(const char * filePath)
     {
-        HMesh::IDRemap cleanup_map;
-        cleanup_attributes(cleanup_map);
-        
         std::ofstream myfile(filePath);
         if (myfile.is_open()) {
-
+            myfile << get_no_vertices() << " " << get_no_faces() << "\n";
             
             // Write vertices
             std::map<int,int> index_map;
@@ -367,15 +351,6 @@ namespace DSC2D
             for (auto vkey : vertices())
             {
                 index_map.insert(std::make_pair(vkey.get_index(), idx++));
-                auto p = get_pos(vkey);
-//                myfile << p[0] << " " << p[1] << "\n";
-            }
-            
-            myfile << idx << " " << get_no_faces() << "\n";
-            
-            for (auto vkey : vertices())
-            {
-//                index_map.insert(std::make_pair(vkey.get_index(), idx++));
                 auto p = get_pos(vkey);
                 myfile << p[0] << " " << p[1] << "\n";
             }
@@ -1887,12 +1862,12 @@ namespace DSC2D
     void DeformableSimplicialComplex::set_uniform_smallest_feature(double length)
     {
         // Length
-        MAX_LENGTH = 10;
+        MAX_LENGTH = 1;
         MIN_LENGTH = length / AVG_LENGTH /2.0;
         DEG_LENGTH = MIN_LENGTH;// 0.2*MIN_LENGTH;
         
         // Area
-        MAX_AREA = 10;
+        MAX_AREA = 1;
         MIN_AREA = MIN_LENGTH*MIN_LENGTH;
         DEG_AREA = MIN_AREA; //0.2*MIN_AREA;
     }

@@ -3,10 +3,10 @@ file_path: DATA/hamster.png # Image file
 
 # Segmentation parameter
 
-shortest_edge: 3
+shortest_edge: 5
 smooth_coefficient: 0.01 # The higher the more straight curves
 threshold_adapt_edge: 10 # The smaller, the smoother curves 
-threshold_adapt_face: 0.001 # The smaller, the easier to capture all region
+threshold_adapt_face: 0.002 # The smaller, the easier to capture all region
 
 relabel: 1 # 0-1: Enable relabeling of triangle
 
