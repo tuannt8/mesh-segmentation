@@ -42,7 +42,6 @@
 		A64C512E1B54FFD600BDF016 /* options_disp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A64C512D1B54FFD600BDF016 /* options_disp.cpp */; };
 		A663DE681AD6B25B006CC422 /* libX11.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A663DE671AD6B25B006CC422 /* libX11.6.dylib */; };
 		A67962501AB965D400EACF40 /* DSC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7A51F3A517D6386100A8F8F2 /* DSC.cpp */; };
-		A67B0CED1BC569950060D2A8 /* libarmadillo.5.000.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A67B0CEC1BC569950060D2A8 /* libarmadillo.5.000.1.dylib */; settings = {ATTRIBUTES = (Required, ); }; };
 		A699B3681AE4E7B500522DA2 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A699B3671AE4E7B500522DA2 /* Accelerate.framework */; };
 		A69B8AD71AF7B3690031E45D /* polygon_f.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A69B8AD51AF7B3690031E45D /* polygon_f.cpp */; };
 		A6B45F1F1A88CE120091F5A6 /* interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6B45F1E1A88CE120091F5A6 /* interface.cpp */; };
@@ -131,7 +130,6 @@
 		A64C512C1B54FFB800BDF016 /* options_disp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = options_disp.h; sourceTree = "<group>"; };
 		A64C512D1B54FFD600BDF016 /* options_disp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = options_disp.cpp; sourceTree = "<group>"; };
 		A663DE671AD6B25B006CC422 /* libX11.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libX11.6.dylib; path = ../../../../../opt/X11/lib/libX11.6.dylib; sourceTree = "<group>"; };
-		A67B0CEC1BC569950060D2A8 /* libarmadillo.5.000.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libarmadillo.5.000.1.dylib; path = "../../../armadillo-5.000.1/libarmadillo.5.000.1.dylib"; sourceTree = "<group>"; };
 		A68CB5981D8002760074F232 /* messageBox.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = messageBox.h; sourceTree = "<group>"; };
 		A699B3671AE4E7B500522DA2 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		A69B8AD51AF7B3690031E45D /* polygon_f.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = polygon_f.cpp; sourceTree = "<group>"; };
@@ -171,7 +169,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A67B0CED1BC569950060D2A8 /* libarmadillo.5.000.1.dylib in Frameworks */,
 				A64029B21D34E75D00FD18DC /* libpng16.16.dylib in Frameworks */,
 				A699B3681AE4E7B500522DA2 /* Accelerate.framework in Frameworks */,
 				A663DE681AD6B25B006CC422 /* libX11.6.dylib in Frameworks */,
@@ -189,7 +186,6 @@
 			isa = PBXGroup;
 			children = (
 				A64029B11D34E75D00FD18DC /* libpng16.16.dylib */,
-				A67B0CEC1BC569950060D2A8 /* libarmadillo.5.000.1.dylib */,
 				A6E1B0231B1D9F6B00F31E48 /* libpng15.15.dylib */,
 				A699B3671AE4E7B500522DA2 /* Accelerate.framework */,
 				A663DE671AD6B25B006CC422 /* libX11.6.dylib */,
