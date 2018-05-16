@@ -10,7 +10,7 @@
 
 #include "velocity_function.h"
 #include "DSC.h"
-#include "log.h"
+//#include "log.h"
 #include "texture_helper.h"
 #include "setting_io.hpp"
 #include <memory>
