@@ -28,6 +28,8 @@
 typedef unsigned char BYTE;
 #define MAX_BYTE 255
 
+#define BORDER_INTENSITY 0.5
+
 /*
  Image 
  Dimension: 

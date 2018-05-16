@@ -13,8 +13,8 @@
 
 
 
-#define NOISE 5
-#define BLUR 3
+//#define NOISE 5
+//#define BLUR 3
 
 void image::load_image(std::string const file_path){
     try
@@ -22,10 +22,10 @@ void image::load_image(std::string const file_path){
         load(file_path.c_str());
         this->mirror('y');
         
-
-//        blur(BLUR); //isotropically
-//        noise(NOISE);
-
+#ifdef NOISE
+        blur(BLUR); //isotropically
+        noise(NOISE);
+#endif
         
         set_gl_texture();
 //        compute_gradient();
@@ -64,14 +64,14 @@ void image::draw_image(int window_width){
 
         glDisable(GL_TEXTURE_2D);
     
-   //  Draw border
-    glColor3f(1, 0, 0);
-    glBegin(GL_LINE_LOOP);
-    glVertex2f(0.0, 0.0);
-    glVertex2f(w, 0.0);
-    glVertex2f(w, h);
-    glVertex2f(0.0, h);
-    glEnd();
+//   //  Draw border
+//    glColor3f(1, 0, 0);
+//    glBegin(GL_LINE_LOOP);
+//    glVertex2f(0.0, 0.0);
+//    glVertex2f(w, 0.0);
+//    glVertex2f(w, h);
+//    glVertex2f(0.0, h);
+//    glEnd();
 }
 
 void image::draw_grad(int window_width){
@@ -97,7 +97,7 @@ void image::draw_grad(int window_width){
 double image::get_intensity(int x, int y){
     if (x < 0 or x >= width()
         or y < 0 or y >= height()) {
-        return 1;
+        return BORDER_INTENSITY;
     }
     return ((double)(*this)(x, y)) / (double)MAX_BYTE;
 }
@@ -107,7 +107,7 @@ double image::get_intensity_f(double x, double y){
     if (x < 0 or x >= width()
         or y < 0 or y >= height())
     {
-        return 1;
+        return BORDER_INTENSITY;
     }
     
     int x_i = (int)x;
