@@ -1,0 +1,6 @@
+[submodule "GEL"]
+	path = GEL
+	url = https://github.com/janba/GEL
+[submodule "2D-DSC"]
+	path = 2D-DSC
+	url = https://github.com/tuannt8/2D-DSC
