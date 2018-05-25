@@ -1,5 +1,11 @@
 # 2D image segmentation with triangle mesh
 
+# Run
+
+```shell
+dsc_seg hamster.txt
+```
+
 # Build note
 The project contains some submodules, so clone the project with 
 ```shell
