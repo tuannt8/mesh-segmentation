@@ -11,10 +11,10 @@
 #include "object_generator.h"
 #include "draw.h"
 
-#include "dyn_integral.h"
+
 
 #include "gl_debug_helper.h"
-#include "dynamics_edge.h"
+
 #include "adapt_mesh.h"
 
 #include "options_disp.h"

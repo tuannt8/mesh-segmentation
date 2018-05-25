@@ -25,7 +25,6 @@
 #include <GLUT/glut.h>
 #endif
 
-#include "dynamics.h"
 #include "dynamics_mul.h"
 
 class interface_dsc{
