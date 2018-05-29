@@ -113,7 +113,15 @@ void adapt_mesh::split_face(DSC2D::DeformableSimplicialComplex &dsc, image &img)
     }
 
     
-  //  dsc_->clean_attributes();
+    //  dsc_->clean_attributes();
+}
+
+void adapt_mesh::adapt_triangle(DSC2D::DeformableSimplicialComplex &dsc, image &img)
+{
+    dsc_ = & dsc;
+
+    // Compute triangle energy
+
 }
 
 void adapt_mesh::split_face_and_relabel(DSC2D::DeformableSimplicialComplex &dsc, image &img)

@@ -14,35 +14,8 @@
 #include "define.h"
 #include "image.h"
 
-#define BOUND_FACE 100
+#define BOUND_FACE 0
 
-/**
- FUEL CELL
- */
-//#define FACE_SPLIT_THRES 0.01   // Variation threshold
-//#define EDGE_SPLIT_THRES 0.01   // Energy threshold
-//#define SINGULAR_AREA 4.        // In computation of triangle variation
-//#define SINGULAR_EDGE 3.0
-
-/**
- HAMSTER - GOMU
- */
-//#define FACE_SPLIT_THRES 0.002   // Variation threshold
-//#define EDGE_SPLIT_THRES 0.38   // Energy threshold
-//#define SINGULAR_AREA 4.        // In computation of triangle variation
-//#define SINGULAR_EDGE 3.0
-
-/**
- SOUND IMAGE
- */
-//#define FACE_SPLIT_THRES 0.01   // Variation threshold
-//#define EDGE_SPLIT_THRES 0.2   // Energy threshold
-//#define SINGULAR_AREA 4.        // In computation of triangle variation
-//#define SINGULAR_EDGE 10.0
-
-/**
- DENTAL
- */
 #define SINGULAR_AREA 0.        // In computation of triangle variation
 #define SINGULAR_EDGE (SMALLEST_SIZE / 2.0)
 
@@ -60,6 +33,7 @@ public:
     void split_face(DSC2D::DeformableSimplicialComplex &dsc, image &img);
     
     // remove steiner vertices
+    void adapt_triangle(DSC2D::DeformableSimplicialComplex &dsc, image &img);
     void thinning(DSC2D::DeformableSimplicialComplex &dsc, image &img);
     
     void remove_needles(DSC2D::DeformableSimplicialComplex &dsc);

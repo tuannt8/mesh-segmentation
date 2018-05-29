@@ -23,6 +23,8 @@
 #include <GLUT/glut.h>
 #endif
 
+#define OUT_BOUND_INTENTISY -0.2
+
 #include "CImg.h"
 
 typedef unsigned char BYTE;
@@ -73,6 +75,7 @@ public:
     // get \int (g - ci)^2 d\Omega
     double get_tri_differ_f(Vec2_array tris, double ci);
     // \int g d\Omega
+    double get_tri_varience_f(Vec2_array tris);
     double get_tri_intensity_f(Vec2_array tris, double * area = nullptr);
 
     double get_sum_gradient_tri(Vec2_array tris, double * area = nullptr);

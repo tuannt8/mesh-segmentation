@@ -68,8 +68,8 @@ public:
     /**
      Draw force
      */
-    static void draw_internal_force(const DSC2D::DeformableSimplicialComplex& complex);
-    static void draw_external_force(const DSC2D::DeformableSimplicialComplex& complex);
+    static void draw_internal_force(const DSC2D::DeformableSimplicialComplex& complex, double scale = 1.0);
+    static void draw_external_force(const DSC2D::DeformableSimplicialComplex& complex, double scale = 1.0);
     
     /**
      Draws the simplicial complex.
@@ -122,7 +122,7 @@ public:
     /**
      Draws the arrows given as input with the color given as input.
      */
-    static void draw_arrows(const DSC2D::DeformableSimplicialComplex& complex, const HMesh::VertexAttributeVector<DSC2D::vec2> &arrows, DSC2D::vec3 color = ORANGE);
+    static void draw_arrows(const DSC2D::DeformableSimplicialComplex& complex, const HMesh::VertexAttributeVector<DSC2D::vec2> &arrows, DSC2D::vec3 color = ORANGE, double scale = 1.0);
 
     /**
      Draws the lines given as input with the color given as input.

@@ -11,7 +11,7 @@
 #include "object_generator.h"
 #include "draw.h"
 
-
+#include "otsu_multi.h"
 
 #include "gl_debug_helper.h"
 
@@ -334,13 +334,11 @@ void interface_dsc::draw()
     if (options_disp::get_option("DSC faces", true) and dsc) {
         Painter::draw_faces(*dsc);
     }
-    
-//    draw_test();
-//    
-//    if(options_disp::get_option("Image gradient", false)){
-//        image_->draw_grad(WIN_SIZE_X);
-//    }
-//    
+
+    if (options_disp::get_option("external force", true) and dsc){
+        Painter::draw_external_force(*dsc, 0.6);
+    }
+
     if (options_disp::get_option("Face intensity", false) and dsc) {
         if(g_param.mean_intensity.size()==0)
             dyn_->compute_mean_intensity(*dsc, *image_);
@@ -742,7 +740,8 @@ interface_dsc::interface_dsc(int &argc, char** argv){
     
     init_dsc();
     
-//    threshold_initialization();
+//    random_init_dsc(NB_PHASE); // Work better in case of subdivision approach
+    threshold_initialization();
     
     gl_debug_helper::set_dsc(&(*dsc));
     
@@ -803,25 +802,16 @@ void interface_dsc::init_dsc(){
         dsc->set_uniform_smallest_feature(SMALLEST_SIZE);
     }
     
-#ifdef TUAN_MULTI_RES
-    dsc->img = &*image_;
-#endif
-    
-    // Label all margin triangle
+    // Boundary
     for (auto fkey : dsc->faces())
     {
         if (is_boundary(*dsc, fkey))
         {
-            dsc->update_attributes(fkey, 100);
-        }
+            dsc->update_attributes(fkey, BOUND_FACE);
+        }else
+            dsc->update_attributes(fkey, 1);
     }
     dsc->clean_attributes();
-    //
-//    dsc->deform();
-    // Initialize if need
-//    manual_init_dsc();
-    
-    random_init_dsc(NB_PHASE);
     
     printf("Average edge length: %f ; # faces: %d\n", dsc->get_avg_edge_length(), dsc->get_no_faces());
 }
@@ -881,6 +871,7 @@ void interface_dsc::export_dsc()
 
 void interface_dsc::random_init_dsc(int nb_phase)
 {
+    // Manual initilization
     if (NB_PHASE <= 1)
     {
         return;
@@ -891,7 +882,7 @@ void interface_dsc::random_init_dsc(int nb_phase)
     {
         if (dsc->get_label(tri) != BOUND_FACE)
         {
-            int idx = rand()%nb_phase;
+            int idx = rand()%nb_phase + 1;
             dsc->update_attributes(tri, idx);
         }
     }
@@ -949,26 +940,46 @@ void interface_dsc::manual_init_dsc()
 
 void interface_dsc::threshold_initialization()
 {
-    double c[2] = {0.6, 0.85};
-    for (auto fkey : dsc->faces())
+    // 1. Find threshold with Otsu method
+    //  1.1. Find face intensity histogram
+    std::vector<int> histogram_for_thresholding(256,0);
+
+    HMesh::AttributeVector<double, Face_key> mean_intensity(dsc->get_no_faces(), 0.0);
+    for(Face_key fkey : dsc->faces())
     {
-        
+        if(dsc->get_label(fkey) == BOUND_FACE)
+            continue;
+
         auto pts = dsc->get_pos(fkey);
+
         auto sumIntensity = image_->get_sum_on_tri_intensity(pts);
         double area = dsc->area(fkey);
-        
         double average = sumIntensity / area;
-        
-        int new_label = 0;
-        if (average > 0.8)
-        {
-            new_label = 0;
-        }else
-        {
-            new_label = 1;
-        }
-        
-        dsc->set_label(fkey, new_label);
+
+        mean_intensity[fkey] = average;
+
+        int idx = (int)(average*256);
+        if(idx > 255) idx = 255;
+        histogram_for_thresholding[idx] ++;
+    }
+    //  1.2 Thres hold with Otsu
+    int nb_phases = NB_PHASE;
+    vector<int> thres_hold_array = otsu_muti(histogram_for_thresholding, nb_phases);
+    cout << "Threshold with ";
+    for(auto t : thres_hold_array) cout << t << "; ";
+    cout << endl;
+
+
+    // 2. Relabel triangles
+    for (auto fkey : dsc->faces())
+    {
+        if(dsc->get_label(fkey) == BOUND_FACE)
+            continue;
+
+        auto n_p = std::lower_bound(thres_hold_array.begin(), thres_hold_array.end(), mean_intensity[fkey]*256);
+        int label = (int)(n_p == thres_hold_array.end()?
+                              thres_hold_array.size() : n_p - thres_hold_array.begin()) + 1;
+        dsc->set_label(fkey, label);
     }
     
     dsc->clean_attributes();
@@ -1015,20 +1026,11 @@ void interface_dsc::init_boundary(){
 
 
 void interface_dsc::dynamics_image_seg(){
-    // Old approach
-    // Edge-based force
-    
+
     profile t("Total time");
     
     dyn_->update_dsc(*dsc, *image_);
     iter ++;
-    // Virtual displacement
-    // Compute energy change with assumed movement
-//    static dyn_integral dyn;
-//    dyn.update_dsc(*dsc, *image_);
-
-//    static dynamics_edge dyn;
-//    dyn.update_dsc(*dsc, *image_);
 }
 
 int closest(std::vector<double> & array, double v){

@@ -69,7 +69,7 @@ public:
 #pragma mark - class functions
 public:
     interface_dsc(int &argc, char** argv);
-    virtual ~interface_dsc(){};
+    virtual ~interface_dsc(){}
     
     static interface_dsc* get_instance(){
         return instance;

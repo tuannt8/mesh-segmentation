@@ -21,14 +21,8 @@ void image::load_image(std::string const file_path){
     {
         load(file_path.c_str());
         this->mirror('y');
-        
 
-//        blur(BLUR); //isotropically
-//        noise(NOISE);
-
-        
         set_gl_texture();
-//        compute_gradient();
     }
     catch (std::exception & e)
     {
@@ -107,7 +101,7 @@ double image::get_intensity_f(double x, double y){
     if (x < 0 or x >= width()
         or y < 0 or y >= height())
     {
-        return 1;
+        return OUT_BOUND_INTENTISY;
     }
     
     int x_i = (int)x;
@@ -577,4 +571,11 @@ double image::get_tri_differ_f(Vec2_array tris, double ci) {
     }
 
     return energy * area / (double)(res*res);
+}
+
+double image::get_tri_varience_f(Vec2_array tris)
+{
+    double area;
+    double mean_inten = get_tri_intensity_f(tris, &area); mean_inten /= area;
+    return get_tri_differ_f(tris, mean_inten);
 }

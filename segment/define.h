@@ -272,7 +272,7 @@ using std::endl;
 
 struct dynamics_param{
     dynamics_param(){}
-    dynamics_param(double a, double b, double m){alpha = a; beta = b; mass = m;};
+    dynamics_param(double a, double b, double m){alpha = a; beta = b; mass = m;}
     
     double alpha = 1.0; // Curvature
     double beta = 1.0; // Forth derivative. Keep the curve straight

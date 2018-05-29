@@ -1,0 +1,19 @@
+# This is a comment
+file_path: snowman.png # Image file
+
+# Segmentation parameter
+
+shortest_edge: 1
+smooth_coefficient: 3 # The higher the more straight curves
+threshold_adapt_edge: 0.1 # The smaller, the smoother curves 
+threshold_adapt_face: 2 # The smaller, the easier to capture all region
+
+relabel: 0 # 0-1: Enable relabeling of triangle
+
+time_step: 0.8
+dsc_init_resolution: 40 # Edge length average, pixels
+
+
+number_phases_to_segment: 2 # 0 for manual initialization
+
+adaptive_mesh: 0

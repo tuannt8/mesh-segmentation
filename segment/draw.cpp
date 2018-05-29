@@ -147,13 +147,13 @@ void Painter::end()
     glutSwapBuffers();
 }
 
-void Painter::draw_internal_force(const DSC2D::DeformableSimplicialComplex& complex){
+void Painter::draw_internal_force(const DSC2D::DeformableSimplicialComplex& complex, double scale){
     
-    draw_arrows(complex, complex.get_internal_force(), ORANGE);
+    draw_arrows(complex, complex.get_internal_force(), ORANGE, scale);
 }
 
-void Painter::draw_external_force(const DSC2D::DeformableSimplicialComplex& complex){
-    draw_arrows(complex, complex.get_external_force(), GREEN);
+void Painter::draw_external_force(const DSC2D::DeformableSimplicialComplex& complex, double scale){
+    draw_arrows(complex, complex.get_external_force(), GREEN, scale);
 }
 
 void Painter::draw_complex(const DeformableSimplicialComplex& dsc)
@@ -302,14 +302,14 @@ void Painter::draw_interface(const DeformableSimplicialComplex& dsc, vec3 color)
 	glEnd();
 }
 
-void Painter::draw_arrows(const DeformableSimplicialComplex& dsc, const HMesh::VertexAttributeVector<vec2> &arrows, vec3 color)
+void Painter::draw_arrows(const DeformableSimplicialComplex& dsc, const HMesh::VertexAttributeVector<vec2> &arrows, vec3 color, double scale)
 {
     glColor3d(static_cast<double>(color[0]), static_cast<double>(color[1]), static_cast<double>(color[2]));
     glLineWidth(std::max(std::floor(LINE_WIDTH*dsc.get_avg_edge_length()), 1.));
     vec3 arrow, a_hat, p;
     for(auto vi = dsc.vertices_begin(); vi != dsc.vertices_end(); ++vi)
     {
-        arrow = vec3(arrows[*vi][0], arrows[*vi][1], 0.f);
+        arrow = vec3(arrows[*vi][0], arrows[*vi][1], 0.f)*scale;
         if(arrow.length() > EPSILON)
         {
             a_hat = vec3(-arrow[1], arrow[0], 0.f);
@@ -320,8 +320,8 @@ void Painter::draw_arrows(const DeformableSimplicialComplex& dsc, const HMesh::V
 //            }
 //#endif
             glBegin(GL_LINES);
-            glVertex3d(static_cast<double>(p[0]), static_cast<double>(p[1]), static_cast<double>(p[2]));
-            glVertex3d(static_cast<double>((p + 0.7*arrow)[0]), static_cast<double>((p + 0.7*arrow)[1]), static_cast<double>((p + 0.7*arrow)[2]));
+            glVertex3dv(p.get());
+            glVertex3dv( (p + 0.7*arrow).get());
             glEnd();
             
             glBegin(GL_POLYGON);

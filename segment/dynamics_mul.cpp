@@ -20,6 +20,8 @@
 #include "adapt_mesh.h"
 #include <chrono>
 
+#include "draw.h"
+
 using namespace std;
 
 #define GET_FACE_IDX(fid) (int)s_dsc->get_phase_attr(fid, FACE_IDX][0]
@@ -32,39 +34,39 @@ dynamics_mul::~dynamics_mul(){
     
 }
 
-void dynamics_mul::update_dsc_explicit(dsc_obj &dsc, image &img){
+//void dynamics_mul::update_dsc_explicit(dsc_obj &dsc, image &img){
 
-    if(!s_dsc)
-    {
-        s_img = &img;
-        s_dsc = &dsc;
-        s_dsc->set_default_dt(0.01);
-    }
+//    if(!s_dsc)
+//    {
+//        s_img = &img;
+//        s_dsc = &dsc;
+//        s_dsc->set_default_dt(0.01);
+//    }
     
- //   optimize_phase();
+// //   optimize_phase();
     
-    helper_t::start_timer();
+//    helper_t::start_timer();
     
-    // 4. Update DSC
-    displace_dsc();
+//    // 4. Update DSC
+//    displace_dsc();
     
-//    optimize_phase_with_variant();
+////    optimize_phase_with_variant();
     
-    compute_mean_intensity(mean_inten_);
+//    compute_mean_intensity(mean_inten_);
     
-    // 2. Compute intensity force
-    //      External force attributes
-    compute_intensity_force();
+//    // 2. Compute intensity force
+//    //      External force attributes
+//    compute_intensity_force();
     
-    // 3. Curvature force
-    compute_curvature_force();
+//    // 3. Curvature force
+//    compute_curvature_force();
     
 
     
-    double t = helper_t::get_time_and_start();
+//    double t = helper_t::get_time_and_start();
 
 
-}
+//}
 
 void dynamics_mul::write_energy()
 {
@@ -87,93 +89,93 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
 {
     auto init_time = std::chrono::system_clock::now();
     
-    int nb_displace = 10;
+    int nb_displace = 5;
 
 
-        displace_dsc();
-        
+    // Deform the mesh
+    displace_dsc();
 
-    
+    // Compute the force
+    compute_mean_intensity(mean_inten_);
+    compute_intensity_force();
+    compute_internal_force();
+
+
+
+
     static int count = 0;
     static int count_thin = 0;
     count ++;
     
     // adapt mesh
     adapt_mesh am;
-    
-    if (count > nb_displace)
-    {
-        
-        count = 0;
-        
-        compute_mean_intensity(mean_inten_);
-        compute_intensity_force();
-        compute_curvature_force();
-        
-        update_vertex_stable();
-        am.collapse_interface(*s_dsc, *s_img);
-        
-        compute_mean_intensity(mean_inten_);
-        compute_intensity_force();
-        compute_curvature_force();
-        
-        update_vertex_stable();
-        am.split_edge(*s_dsc, *s_img);
-        
-        if(RELABEL)
-        {
-            
-            compute_mean_intensity(mean_inten_);
-            compute_intensity_force();
-            compute_curvature_force();
-            
-            update_vertex_stable();
-            am.split_face(*s_dsc, *s_img);
-            
-            compute_mean_intensity(mean_inten_);
-            compute_intensity_force();
-            compute_curvature_force();
-            
-            update_vertex_stable();
-            am.split_face(*s_dsc, *s_img);
-        }
 
-        
-        
-        if(ADAPTIVE == 1)
-        {
-            compute_mean_intensity(mean_inten_);
-            compute_intensity_force();
-            compute_curvature_force();
-            update_vertex_stable();
-            am.thinning(*s_dsc, *s_img);
-        }
-        
-        am.remove_needles(*s_dsc);
+    if(RELABEL)
+    {
 
     }
     
-    compute_mean_intensity(mean_inten_);
-    compute_intensity_force();
-    compute_curvature_force();
-    
-//    // Displace vertices' positions
-//    static bool inited = false;
-//    if(!inited)
-//    {
-//        f = fopen("./LOG/MSE.txt", "w");
-//        inited = true;
-//    }
+    if (count++ % nb_displace == 0)
+    {
+
+        adapt_triangle();
+        thinning();
+        
+//        compute_mean_intensity(mean_inten_);
+//        compute_intensity_force();
+//        compute_internal_force();
+        
+//        update_vertex_stable();
+//        am.collapse_interface(*s_dsc, *s_img);
+        
+//        compute_mean_intensity(mean_inten_);
+//        compute_intensity_force();
+//        compute_internal_force();
+        
+//        update_vertex_stable();
+//        am.split_edge(*s_dsc, *s_img);
+        
+//        if(RELABEL)
+//        {
+            
+//            compute_mean_intensity(mean_inten_);
+//            compute_intensity_force();
+//            compute_internal_force();
+            
+//            update_vertex_stable();
+//            am.split_face(*s_dsc, *s_img);
+            
+//            compute_mean_intensity(mean_inten_);
+//            compute_intensity_force();
+//            compute_internal_force();
+            
+//            update_vertex_stable();
+//            am.split_face(*s_dsc, *s_img);
+//        }
+
+        
+        
+//        if(ADAPTIVE == 1)
+//        {
+//            compute_mean_intensity(mean_inten_);
+//            compute_intensity_force();
+//            compute_internal_force();
+//            update_vertex_stable();
+//            am.thinning(*s_dsc, *s_img);
+//        }
+        
+//        am.remove_needles(*s_dsc);
+
+    }
     
     static double time = 0;
     std::chrono::duration<double> t = std::chrono::system_clock::now() - init_time;
     time += t.count();
     
     
-    double E, l;
-    get_energy(E, l);
-    data_log.push_back(Vec3(E, l, time));
-//    fprintf(f, "%f %f  %f\n", E, l, time);
+//    double E, l;
+//    get_energy(E, l);
+//    data_log.push_back(Vec3(E, l, time));
 }
 void dynamics_mul::compute_difference()
 {
@@ -220,11 +222,93 @@ void dynamics_mul::compute_difference()
     } /* for (auto nkey) */
 }
 
+void dynamics_mul::adapt_triangle()
+{
+    HMesh::AttributeVector<double, Face_key> face_energy;
+    for(auto fid : s_dsc->faces())
+    {
+        auto l = s_dsc->get_label(fid);
+        if(l==BOUND_FACE)
+        {
+            continue; // Triangle on domain boundary
+        }
+
+        face_energy[fid] = s_img->get_tri_varience_f(s_dsc->get_pos(fid));
+
+        assert(face_energy[fid] > 1e-8);
+
+    }
+
+    // Relabel it
+    double flip_thres = SPLIT_FACE_COEFFICIENT;
+    HMesh::AttributeVector<int, Face_key> faces_to_split(s_dsc->get_no_faces_allocated(), 0);
+    for(auto fid : s_dsc->faces())
+    {
+        auto l = s_dsc->get_label(fid);
+        if(l==BOUND_FACE)
+        {
+            continue; // Triangle on domain boundary
+        }
+
+        if(face_energy[fid] < flip_thres) // consider flipping
+        {
+            double current_energy = get_energy_assume_label(fid, l);
+
+            for(int i = 1; i < mean_inten_.size(); i++)
+            {
+                if (get_energy_assume_label(fid, i) < current_energy)
+                {
+                    s_dsc->update_attributes(fid, i);
+                    // Update energy
+                    face_energy[fid] = s_img->get_tri_varience_f(s_dsc->get_pos(fid));
+                    break;
+                }
+            }
+        }else
+        {
+            // consider splitting
+            faces_to_split[fid] = 1;
+
+
+        }
+    }
+
+    static bool split = true;
+    if(faces_to_split.size() ==0)
+        split = false;
+    // Splitting
+    if(split)
+    {
+        s_dsc->recursive_split(faces_to_split);
+
+        adapt_mesh am;
+        am.remove_needles(*s_dsc);
+    }
+}
+
+void dynamics_mul::thinning()
+{
+
+}
+
+double dynamics_mul::get_energy_assume_label(Face_key fid, int assumed_label)
+{
+    auto pts = s_dsc->get_pos(fid);
+    double external = s_img->get_tri_differ_f(pts, mean_inten_[assumed_label]);
+    double internal = 0;
+    for(auto hew = s_dsc->walker(fid); !hew.full_circle(); hew = hew.circulate_face_ccw())
+    {
+        if(s_dsc->get_label(hew.opp().face()) != assumed_label)
+            internal += s_dsc->length(hew.halfedge());
+    }
+
+    return external;// + internal * g_param.alpha;
+}
+
 void dynamics_mul::update_dsc(dsc_obj &dsc, image &img){
 
     s_dsc = &dsc;
     s_img = &img;
-    // update_dsc_explicit(dsc, img);
 
     update_dsc_with_adaptive_mesh();
 }
@@ -266,60 +350,60 @@ void dynamics_mul::update_vertex_stable()
     
 }
 
-void dynamics_mul::update_dsc_build_and_solve(dsc_obj &dsc, image &img){
+//void dynamics_mul::update_dsc_build_and_solve(dsc_obj &dsc, image &img){
 
-}
+//}
 
-void dynamics_mul::update_dsc_area(dsc_obj &dsc, image &img){
-    s_img = &img;
-    s_dsc = &dsc;
+//void dynamics_mul::update_dsc_area(dsc_obj &dsc, image &img){
+//    s_img = &img;
+//    s_dsc = &dsc;
     
-    s_dsc->deform();
+//    s_dsc->deform();
     
-    // 1. Update mean intensity
-    // map<phase - mean intensity>
-    compute_mean_intensity(mean_inten_);
+//    // 1. Update mean intensity
+//    // map<phase - mean intensity>
+//    compute_mean_intensity(mean_inten_);
     
-    //
-    for (auto fid = s_dsc->faces_begin(); fid != s_dsc->faces_end(); fid++) {
-        auto node_idxs = s_dsc->get_verts(*fid);
-        std::vector<Vec2> tris = s_dsc->get_pos(*fid);
-        double area = s_dsc->area(*fid);
-        double ci = mean_inten_[s_dsc->get_label(*fid)];
+//    //
+//    for (auto fid = s_dsc->faces_begin(); fid != s_dsc->faces_end(); fid++) {
+//        auto node_idxs = s_dsc->get_verts(*fid);
+//        std::vector<Vec2> tris = s_dsc->get_pos(*fid);
+//        double area = s_dsc->area(*fid);
+//        double ci = mean_inten_[s_dsc->get_label(*fid)];
         
-        Vec2 min(INFINITY, INFINITY), max(-INFINITY, -INFINITY);
-        for (auto p: tris){
-            min[0] = std::min(min[0], p[0]);
-            min[1] = std::min(min[1], p[1]);
-            max[0] = std::max(max[0], p[0]);
-            max[1] = std::max(max[1], p[1]);
-        }
+//        Vec2 min(INFINITY, INFINITY), max(-INFINITY, -INFINITY);
+//        for (auto p: tris){
+//            min[0] = std::min(min[0], p[0]);
+//            min[1] = std::min(min[1], p[1]);
+//            max[0] = std::max(max[0], p[0]);
+//            max[1] = std::max(max[1], p[1]);
+//        }
         
-        // We have to compute further
-        double signed_a = DSC2D::Util::signed_area(tris[0], tris[1], tris[2]) / area;
-        double distance = 10.0; // Belong on how large epsilon is.
-        double epsilon = 1.0;
+//        // We have to compute further
+//        double signed_a = DSC2D::Util::signed_area(tris[0], tris[1], tris[2]) / area;
+//        double distance = 10.0; // Belong on how large epsilon is.
+//        double epsilon = 1.0;
         
-        std::vector<Vec2> p_f(3, Vec2(0.));
-        for (int i = floor(min[0]); i < ceil(max[0]); i++) {
-            for (int j = floor(min[1]); j < ceil(max[1]); j++) {
-                if (helper_t::distance_to_edge(Vec2(i,j), tris) < distance) {
+//        std::vector<Vec2> p_f(3, Vec2(0.));
+//        for (int i = floor(min[0]); i < ceil(max[0]); i++) {
+//            for (int j = floor(min[1]); j < ceil(max[1]); j++) {
+//                if (helper_t::distance_to_edge(Vec2(i,j), tris) < distance) {
                     
-                    Vec2 p_c((double)i,(double)j);
-                    double area[3];
-                    area[0] = DSC2D::Util::signed_area(p_c, tris[1], tris[2])/signed_a;
-                    area[1] = DSC2D::Util::signed_area(tris[0], p_c, tris[2])/signed_a;
-                    area[2] = DSC2D::Util::signed_area(tris[0], tris[1], p_c)/signed_a;
+//                    Vec2 p_c((double)i,(double)j);
+//                    double area[3];
+//                    area[0] = DSC2D::Util::signed_area(p_c, tris[1], tris[2])/signed_a;
+//                    area[1] = DSC2D::Util::signed_area(tris[0], p_c, tris[2])/signed_a;
+//                    area[2] = DSC2D::Util::signed_area(tris[0], tris[1], p_c)/signed_a;
                     
-                    for (int k = 0; k < 3; k++) {
-                        // Compute force
+//                    for (int k = 0; k < 3; k++) {
+//                        // Compute force
                         
-                    }
-                }
-            }
-        }
-    }
-}
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
 
 HMesh::Walker dynamics_mul::pre_edge(dsc_obj *obj, HMesh::Walker hew){
     auto pre_e = hew.circulate_vertex_ccw();
@@ -366,380 +450,380 @@ Vec2 dynamics_mul::get_vertex_norm(dsc_obj *obj, HMesh::Walker hew){
     return N;
 }
 
-void dynamics_mul::update_dsc_explicit_whole_domain(dsc_obj &dsc, image &img){
-    s_img = &img;
-    s_dsc = &dsc;
+//void dynamics_mul::update_dsc_explicit_whole_domain(dsc_obj &dsc, image &img){
+//    s_img = &img;
+//    s_dsc = &dsc;
     
-    E0_ = get_total_energy(s_dsc, mean_inten_);
+//    E0_ = get_total_energy(s_dsc, mean_inten_);
     
-    s_dsc->deform();
+//    s_dsc->deform();
     
 
 
     
-    // 1. Update mean intensity
-    // map<phase - mean intensity>
-    compute_mean_intensity(mean_inten_);
+//    // 1. Update mean intensity
+//    // map<phase - mean intensity>
+//    compute_mean_intensity(mean_inten_);
     
-    E1_ = get_total_energy(s_dsc, mean_inten_);
+//    E1_ = get_total_energy(s_dsc, mean_inten_);
     
-    double delta = 0.;
-    if (dE2 > 0) {
-        dE2 = - std::abs(dE2);
-        double E01 = (E1_ - E0_);
-        delta = (double)-(dE2) / (E01 - dE2) /2.;
-        dt = dt*delta;
-    }
-    printf("%f %f %f %f %f %f\n", E1_, E0_, E1_ - E0_, dE2, delta, dt);
+//    double delta = 0.;
+//    if (dE2 > 0) {
+//        dE2 = - std::abs(dE2);
+//        double E01 = (E1_ - E0_);
+//        delta = (double)-(dE2) / (E01 - dE2) /2.;
+//        dt = dt*delta;
+//    }
+//    printf("%f %f %f %f %f %f\n", E1_, E0_, E1_ - E0_, dE2, delta, dt);
     
-    // 5. Build and solve matrix
+//    // 5. Build and solve matrix
     
-    int width = s_img->width();
-    int height = s_img->height();
+//    int width = s_img->width();
+//    int height = s_img->height();
     
-    /*
-     1. Image gradient force
-     */
-    double max_grad = 0.0;
-    for (auto fid = s_dsc->faces_begin(); fid != s_dsc->faces_end(); fid++) {
-        auto node_idxs = s_dsc->get_verts(*fid);
-        bool bInterface = false;
-        for (auto n: node_idxs) {
-            if (s_dsc->is_interface(n) || s_dsc->is_crossing(n)) {
-                bInterface = true;
-            }
-        }
-        if (!bInterface) {
-            continue;
-        }
+//    /*
+//     1. Image gradient force
+//     */
+//    double max_grad = 0.0;
+//    for (auto fid = s_dsc->faces_begin(); fid != s_dsc->faces_end(); fid++) {
+//        auto node_idxs = s_dsc->get_verts(*fid);
+//        bool bInterface = false;
+//        for (auto n: node_idxs) {
+//            if (s_dsc->is_interface(n) || s_dsc->is_crossing(n)) {
+//                bInterface = true;
+//            }
+//        }
+//        if (!bInterface) {
+//            continue;
+//        }
         
-        auto tris = s_dsc->get_pos(*fid);
-        std::vector<int> idxs = get_vert_idx(node_idxs);
+//        auto tris = s_dsc->get_pos(*fid);
+//        std::vector<int> idxs = get_vert_idx(node_idxs);
         
-        double ci = mean_inten_[s_dsc->get_label(*fid)];
+//        double ci = mean_inten_[s_dsc->get_label(*fid)];
         
-        Vec2 min(INFINITY, INFINITY), max(-INFINITY, -INFINITY);
-        for (auto p: tris){
-            min[0] = std::min(min[0], p[0]);
-            min[1] = std::min(min[1], p[1]);
-            max[0] = std::max(max[0], p[0]);
-            max[1] = std::max(max[1], p[1]);
-        }
+//        Vec2 min(INFINITY, INFINITY), max(-INFINITY, -INFINITY);
+//        for (auto p: tris){
+//            min[0] = std::min(min[0], p[0]);
+//            min[1] = std::min(min[1], p[1]);
+//            max[0] = std::max(max[0], p[0]);
+//            max[1] = std::max(max[1], p[1]);
+//        }
         
-        double area = s_dsc->area(*fid);
+//        double area = s_dsc->area(*fid);
         
-        for (int i = floor(min[0]); i < ceil(max[0]); i++) {
-            for (int j = floor(min[1]); j < ceil(max[1]); j++) {
-                if (helper_t::is_point_in_tri(Vec2(i,j), tris)) {
+//        for (int i = floor(min[0]); i < ceil(max[0]); i++) {
+//            for (int j = floor(min[1]); j < ceil(max[1]); j++) {
+//                if (helper_t::is_point_in_tri(Vec2(i,j), tris)) {
                     
-                    // FORCE
-                    Vec2 f = s_img->grad(i, j) * 2 * (s_img->get_intensity(i, j) - ci);
+//                    // FORCE
+//                    Vec2 f = s_img->grad(i, j) * 2 * (s_img->get_intensity(i, j) - ci);
                     
                     
-                    double l = f.length();
-                    if (max_grad < l) {
-                        max_grad = l;
-                    }
-                    // Barry centric linear interpolation
-                    Vec2 pos = Vec2(i,j) + Vec2(0.5, 0.5);
-                    Vec3 barray_coord;
-                    for (int k = 0; k < 3; k++) {
-                        barray_coord[k] = DSC2D::Util::signed_area(pos,
-                                                                   tris[(k+1)%3],
-                                                                   tris[(k+2)%3])
-                        / DSC2D::Util::signed_area(tris[0],
-                                                   tris[1],
-                                                   tris[2]);
+//                    double l = f.length();
+//                    if (max_grad < l) {
+//                        max_grad = l;
+//                    }
+//                    // Barry centric linear interpolation
+//                    Vec2 pos = Vec2(i,j) + Vec2(0.5, 0.5);
+//                    Vec3 barray_coord;
+//                    for (int k = 0; k < 3; k++) {
+//                        barray_coord[k] = DSC2D::Util::signed_area(pos,
+//                                                                   tris[(k+1)%3],
+//                                                                   tris[(k+2)%3])
+//                        / DSC2D::Util::signed_area(tris[0],
+//                                                   tris[1],
+//                                                   tris[2]);
                         
-                        // Set the force here
-                        s_dsc->add_node_internal_force(
-                                        node_idxs[k], f*barray_coord[k]
-                        );
+//                        // Set the force here
+//                        s_dsc->add_node_internal_force(
+//                                        node_idxs[k], f*barray_coord[k]
+//                        );
                         
-                        double gg = f.length()*f.length()
-                                    *barray_coord[k]*barray_coord[k];
-                //        s_dsc->add_node_force(node_idxs[k], Vec2(gg, gg), E2_GRAD);
+//                        double gg = f.length()*f.length()
+//                                    *barray_coord[k]*barray_coord[k];
+//                //        s_dsc->add_node_force(node_idxs[k], Vec2(gg, gg), E2_GRAD);
                         
-                        s_dsc->add_node_force(node_idxs[k], Vec2(1.0,0.0), V_COUNT);
+//                        s_dsc->add_node_force(node_idxs[k], Vec2(1.0,0.0), V_COUNT);
                         
-                    } /* For three points */
+//                    } /* For three points */
                     
-                } /* If inside */
-            } /* For all point in face */
-        } /* For all point in face */
-    } /* For all faces */
+//                } /* If inside */
+//            } /* For all point in face */
+//        } /* For all point in face */
+//    } /* For all faces */
 
     
-    /*
-     2. Boundary intensity forces
-     */
-    double max_inten = 0.0;
+//    /*
+//     2. Boundary intensity forces
+//     */
+//    double max_inten = 0.0;
     
+////    for (auto eit = s_dsc->halfedges_begin(); eit != s_dsc->halfedges_end(); eit++) {
+////        if(s_dsc->is_interface(*eit)){
+////            auto hew = s_dsc->walker(*eit);
+////
+////            double c = mean_inten_[s_dsc->get_label(hew.face())];
+////            double c_opp = mean_inten_[s_dsc->get_label(hew.opp().face())];
+////
+////            // Loop on the edge
+////            Vec2 p_opp = s_dsc->get_pos(hew.opp().vertex());
+////            Vec2 p = s_dsc->get_pos(hew.vertex());
+////
+////            int length = (int)(p - p_opp).length();
+////
+//////            double area = s_dsc->area(hew.face());
+//////            double area_opp = s_dsc->area(hew.opp().face());
+////
+////            Vec2 norm = get_vertex_norm(s_dsc, hew);
+////            Vec2 norm_pre = get_vertex_norm(s_dsc, pre_edge(s_dsc, hew));
+////
+////            Vec2 L01 = p - p_opp;
+////            L01.normalize();
+////            Vec2 N01(L01[1], -L01[0]);
+////
+////
+////            for (int i = 0; i <= length; i++) {
+////                Vec2 p_cur = p_opp + (p - p_opp)*(double(i)/(double)length);
+////                double I = s_img->get_intensity(p_cur[0], p_cur[1]);
+////
+////                double psi = i / (double)length;
+////                double psi_opp = (length - i) / (double)length;
+////
+////                Vec2 N_cur = psi * norm + psi_opp * norm_pre;
+////                N_cur.normalize();
+////            //    N_cur = N01;
+////                // Normalize force
+////                Vec2 f = N_cur * (c - c_opp) * (4*I - (3*c + c_opp)) / 4.;
+////
+////
+////                double l = f.length();
+////                if (max_inten < l) {
+////                    max_inten = l;
+////                }
+////
+////                s_dsc->add_node_external_force(hew.vertex(), f*psi);
+////                s_dsc->add_node_external_force(hew.opp().vertex(), f*psi_opp );
+////
+////            }
+////        }
+////    }
+    
+//    HMesh::HalfEdgeAttributeVector<int> touched(s_dsc->get_no_halfedges(), 0);
 //    for (auto eit = s_dsc->halfedges_begin(); eit != s_dsc->halfedges_end(); eit++) {
-//        if(s_dsc->is_interface(*eit)){
+//        if(s_dsc->is_interface(*eit) and !touched[*eit]){
 //            auto hew = s_dsc->walker(*eit);
-//            
-//            double c = mean_inten_[s_dsc->get_label(hew.face())];
-//            double c_opp = mean_inten_[s_dsc->get_label(hew.opp().face())];
-//            
+            
+//            double c0 = mean_inten_[s_dsc->get_label(hew.face())];
+//            double c1 = mean_inten_[s_dsc->get_label(hew.opp().face())];
+            
 //            // Loop on the edge
-//            Vec2 p_opp = s_dsc->get_pos(hew.opp().vertex());
-//            Vec2 p = s_dsc->get_pos(hew.vertex());
-//            
-//            int length = (int)(p - p_opp).length();
-//            
-////            double area = s_dsc->area(hew.face());
-////            double area_opp = s_dsc->area(hew.opp().face());
-//            
-//            Vec2 norm = get_vertex_norm(s_dsc, hew);
-//            Vec2 norm_pre = get_vertex_norm(s_dsc, pre_edge(s_dsc, hew));
-//            
-//            Vec2 L01 = p - p_opp;
+//            auto p0 = s_dsc->get_pos(hew.opp().vertex());
+//            auto p1 = s_dsc->get_pos(hew.vertex());
+            
+//            int length = (int)(p1 - p0).length();
+            
+//            double area0 = s_dsc->area(hew.face());
+//            double area1 = s_dsc->area(hew.opp().face());
+//            double avg = (area0 + area1)/2.;
+            
+            
+//            Vec2 L01 = p1 - p0;
 //            L01.normalize();
 //            Vec2 N01(L01[1], -L01[0]);
-//            
-//            
+            
 //            for (int i = 0; i <= length; i++) {
-//                Vec2 p_cur = p_opp + (p - p_opp)*(double(i)/(double)length);
-//                double I = s_img->get_intensity(p_cur[0], p_cur[1]);
-//                
-//                double psi = i / (double)length;
-//                double psi_opp = (length - i) / (double)length;
-//                
-//                Vec2 N_cur = psi * norm + psi_opp * norm_pre;
-//                N_cur.normalize();
-//            //    N_cur = N01;
+//                auto p = p0 + (p1 - p0)*(double(i)/(double)length);
+//                double I = s_img->get_intensity(p[0], p[1]);
+
+                
 //                // Normalize force
-//                Vec2 f = N_cur * (c - c_opp) * (4*I - (3*c + c_opp)) / 4.;
-//                
-//                
+//                Vec2 f = N01 * ( (c0-c1)*(2*I - c0 - c1));// / ((c0-c1)*(c0-c1));
+                
+                
 //                double l = f.length();
 //                if (max_inten < l) {
 //                    max_inten = l;
 //                }
-//                
-//                s_dsc->add_node_external_force(hew.vertex(), f*psi);
-//                s_dsc->add_node_external_force(hew.opp().vertex(), f*psi_opp );
-//                
+
+//                double psi_opp = i/(double)length; // (p - p1).length() / (double)length
+//                double psi = (length - i) / (double)length; // (p - p0).length() / (double)length
+                
+//                s_dsc->add_node_external_force(hew.opp().vertex(), f* psi);
+//                s_dsc->add_node_external_force(hew.vertex(), f* psi_opp);
+                
+//                s_dsc->add_node_force(hew.opp().vertex(), Vec2(0,1), V_COUNT);
+//                s_dsc->add_node_force(hew.vertex(), Vec2(0,1), V_COUNT);
+                
+//                double epsilon = 1.;
+//                double ff0 = (double)f.length()*(double)f.length()*
+//                        std::pow( (p - p1).length() / length , 2) / 2. / epsilon;
+//                double ff1 = f.length()*f.length()*std::pow( (p - p0).length() / length , 2) / 2. / epsilon;
+                
+//                s_dsc->add_node_force(hew.opp().vertex(), Vec2(ff0, ff0), E2_GRAD);
+//                s_dsc->add_node_force(hew.vertex(), Vec2(ff1, ff1), E2_GRAD);
+                
+//            }
+            
+//            // Avoid retouch the edge
+//            touched[*eit] = 1;
+//            touched[hew.opp().halfedge()] = 1;
+//        }
+//    }
+    
+//    /*
+//     3. Area force
+//     */
+//    for (auto fid = s_dsc->faces_begin(); fid != s_dsc->faces_end(); fid++) {
+//        auto node_idxs = s_dsc->get_verts(*fid);
+
+        
+//        std::vector<Vec2> tris = s_dsc->get_pos(*fid);
+//        int i = 0;
+//        for(auto ndd : node_idxs){
+//            tris[i++] = s_dsc->get_pos(ndd);
+//        }
+//        double area = s_dsc->area(*fid);
+//        double ci = mean_inten_[s_dsc->get_label(*fid)];
+        
+//        Vec2 min(INFINITY, INFINITY), max(-INFINITY, -INFINITY);
+//        for (auto p: tris){
+//            min[0] = std::min(min[0], p[0]);
+//            min[1] = std::min(min[1], p[1]);
+//            max[0] = std::max(max[0], p[0]);
+//            max[1] = std::max(max[1], p[1]);
+//        }
+        
+//        double differ = 0.;
+//        double dd[3] = {0., 0. , 0.};
+//        for (int i = floor(min[0]); i < ceil(max[0]); i++) {
+//            for (int j = floor(min[1]); j < ceil(max[1]); j++) {
+//                if (helper_t::is_point_in_tri(Vec2(i,j), tris)) {
+//                    differ += std::pow(( (s_img->get_intensity(i, j)) - ci), 2);
+                    
+//                    double xi[3];
+//                    Vec2 p_c((double)i,(double)j);
+//                    xi[0] = DSC2D::Util::signed_area(p_c, tris[1], tris[2])/
+//                            (double)DSC2D::Util::signed_area(tris[0], tris[1], tris[2]);
+//                    xi[1] = DSC2D::Util::signed_area(tris[0], p_c, tris[2])/
+//                            DSC2D::Util::signed_area(tris[0], tris[1], tris[2]);
+//                    xi[2] = DSC2D::Util::signed_area(tris[0], tris[1], p_c)/
+//                            DSC2D::Util::signed_area(tris[0], tris[1], tris[2]);
+                    
+//                    double aa = std::pow(( (s_img->get_intensity(i, j)) - ci), 2);
+//                    dd[0] += xi[0]*aa/area;
+//                    dd[1] += xi[1]*aa/area;
+//                    dd[2] += xi[2]*aa/area;
+//                }
+//            }
+//        }
+        
+//        differ /= area;
+        
+        
+////        double edge_differ = 0.;
+////        auto hew = s_dsc->walker(*fid);
+////        for (int k = 0; k < 3; k++) {
+////            auto p0 = s_dsc->get_pos(hew.opp().vertex());
+////            auto p1 = s_dsc->get_pos(hew.vertex());
+////
+////            double cj = mean_inten_[s_dsc->get_label(hew.opp().face())];
+////
+////            int length = (int)(p1 - p0).length();
+////
+////            for (int k = 0; k <= length; k++) {
+////                auto p = p0 + (p1-p0)*(k/(double)length);
+////                double I = s_img->get_intensity(p[0], p[1]);
+////                edge_differ += -(2*I-ci-cj)*ci;
+////            }
+////
+////            hew = hew.next();
+////        }
+    
+//     //   differ = edge_differ/area;
+        
+        
+//        // area grad
+//        for (int i = 0; i < 3; i++) {
+//            auto A_idx = node_idxs[i];
+//            auto B_idx = node_idxs[(i+1)%3];
+//            auto C_idx = node_idxs[(i+2)%3];
+            
+//            auto A = s_dsc->get_pos(A_idx);
+//            auto B = s_dsc->get_pos(B_idx);
+//            auto C = s_dsc->get_pos(C_idx);
+            
+//            double delta = DSC2D::Util::dot(A-B, C-B) / ((C-B).length() * (C-B).length());
+//            Vec2 H = B + (C-B) * delta;
+//            Vec2 HA = A - H;
+//            HA.normalize();
+            
+//            Vec2 NAB = B-A;
+//            NAB = Vec2(-NAB[1], NAB[0]);
+//            NAB.normalize();
+//            Vec2 NAC = C-A;
+//            NAC = Vec2(NAC[1], -NAC[0]);
+//            NAC.normalize();
+//            Vec2 N = NAB + NAC;
+//            N.normalize();
+            
+//            Vec2 bisector;
+//            Vec2 AB = B-A;AB.normalize();
+//            Vec2 AC = C-A; AC.normalize();
+//            bisector = (AB+AC); bisector.normalize();
+            
+//            Vec2 f = (C-B).length() * N * dd[i];
+            
+//         //   Vec2 f = -bisector * differ * sqrt(area);
+            
+//            s_dsc->add_node_force(A_idx, f, AREA_FORCE);
+            
+//            if (A_idx.get_index() == debug_num[0]) {
+//                printf("%f %f %f %f \n", A[0], B[0], C[0], f[0]);
+//                printf("%f %f %f %f \n", A[1], B[1], C[1], f[1]);
 //            }
 //        }
 //    }
     
-    HMesh::HalfEdgeAttributeVector<int> touched(s_dsc->get_no_halfedges(), 0);
-    for (auto eit = s_dsc->halfedges_begin(); eit != s_dsc->halfedges_end(); eit++) {
-        if(s_dsc->is_interface(*eit) and !touched[*eit]){
-            auto hew = s_dsc->walker(*eit);
-            
-            double c0 = mean_inten_[s_dsc->get_label(hew.face())];
-            double c1 = mean_inten_[s_dsc->get_label(hew.opp().face())];
-            
-            // Loop on the edge
-            auto p0 = s_dsc->get_pos(hew.opp().vertex());
-            auto p1 = s_dsc->get_pos(hew.vertex());
-            
-            int length = (int)(p1 - p0).length();
-            
-            double area0 = s_dsc->area(hew.face());
-            double area1 = s_dsc->area(hew.opp().face());
-            double avg = (area0 + area1)/2.;
-            
-            
-            Vec2 L01 = p1 - p0;
-            L01.normalize();
-            Vec2 N01(L01[1], -L01[0]);
-            
-            for (int i = 0; i <= length; i++) {
-                auto p = p0 + (p1 - p0)*(double(i)/(double)length);
-                double I = s_img->get_intensity(p[0], p[1]);
-
-                
-                // Normalize force
-                Vec2 f = N01 * ( (c0-c1)*(2*I - c0 - c1));// / ((c0-c1)*(c0-c1));
-                
-                
-                double l = f.length();
-                if (max_inten < l) {
-                    max_inten = l;
-                }
-
-                double psi_opp = i/(double)length; // (p - p1).length() / (double)length
-                double psi = (length - i) / (double)length; // (p - p0).length() / (double)length
-                
-                s_dsc->add_node_external_force(hew.opp().vertex(), f* psi);
-                s_dsc->add_node_external_force(hew.vertex(), f* psi_opp);
-                
-                s_dsc->add_node_force(hew.opp().vertex(), Vec2(0,1), V_COUNT);
-                s_dsc->add_node_force(hew.vertex(), Vec2(0,1), V_COUNT);
-                
-                double epsilon = 1.;
-                double ff0 = (double)f.length()*(double)f.length()*
-                        std::pow( (p - p1).length() / length , 2) / 2. / epsilon;
-                double ff1 = f.length()*f.length()*std::pow( (p - p0).length() / length , 2) / 2. / epsilon;
-                
-                s_dsc->add_node_force(hew.opp().vertex(), Vec2(ff0, ff0), E2_GRAD);
-                s_dsc->add_node_force(hew.vertex(), Vec2(ff1, ff1), E2_GRAD);
-                
-            }
-            
-            // Avoid retouch the edge
-            touched[*eit] = 1;
-            touched[hew.opp().halfedge()] = 1;
-        }
-    }
+//    // Second derivative
     
-    /*
-     3. Area force
-     */
-    for (auto fid = s_dsc->faces_begin(); fid != s_dsc->faces_end(); fid++) {
-        auto node_idxs = s_dsc->get_verts(*fid);
 
+//    double max_move = 0.;
+//    double max_g = 0.;
+//    double max_edge = 0.0;
+//    dE2 = 0;
+//    for (auto nid = s_dsc->vertices_begin(); nid != s_dsc->vertices_end(); nid++) {
         
-        std::vector<Vec2> tris = s_dsc->get_pos(*fid);
-        int i = 0;
-        for(auto ndd : node_idxs){
-            tris[i++] = s_dsc->get_pos(ndd);
-        }
-        double area = s_dsc->area(*fid);
-        double ci = mean_inten_[s_dsc->get_label(*fid)];
-        
-        Vec2 min(INFINITY, INFINITY), max(-INFINITY, -INFINITY);
-        for (auto p: tris){
-            min[0] = std::min(min[0], p[0]);
-            min[1] = std::min(min[1], p[1]);
-            max[0] = std::max(max[0], p[0]);
-            max[1] = std::max(max[1], p[1]);
-        }
-        
-        double differ = 0.;
-        double dd[3] = {0., 0. , 0.};
-        for (int i = floor(min[0]); i < ceil(max[0]); i++) {
-            for (int j = floor(min[1]); j < ceil(max[1]); j++) {
-                if (helper_t::is_point_in_tri(Vec2(i,j), tris)) {
-                    differ += std::pow(( (s_img->get_intensity(i, j)) - ci), 2);
-                    
-                    double xi[3];
-                    Vec2 p_c((double)i,(double)j);
-                    xi[0] = DSC2D::Util::signed_area(p_c, tris[1], tris[2])/
-                            (double)DSC2D::Util::signed_area(tris[0], tris[1], tris[2]);
-                    xi[1] = DSC2D::Util::signed_area(tris[0], p_c, tris[2])/
-                            DSC2D::Util::signed_area(tris[0], tris[1], tris[2]);
-                    xi[2] = DSC2D::Util::signed_area(tris[0], tris[1], p_c)/
-                            DSC2D::Util::signed_area(tris[0], tris[1], tris[2]);
-                    
-                    double aa = std::pow(( (s_img->get_intensity(i, j)) - ci), 2);
-                    dd[0] += xi[0]*aa/area;
-                    dd[1] += xi[1]*aa/area;
-                    dd[2] += xi[2]*aa/area;
-                }
-            }
-        }
-        
-        differ /= area;
-        
-        
-//        double edge_differ = 0.;
-//        auto hew = s_dsc->walker(*fid);
-//        for (int k = 0; k < 3; k++) {
-//            auto p0 = s_dsc->get_pos(hew.opp().vertex());
-//            auto p1 = s_dsc->get_pos(hew.vertex());
-//            
-//            double cj = mean_inten_[s_dsc->get_label(hew.opp().face())];
-//            
-//            int length = (int)(p1 - p0).length();
-//            
-//            for (int k = 0; k <= length; k++) {
-//                auto p = p0 + (p1-p0)*(k/(double)length);
-//                double I = s_img->get_intensity(p[0], p[1]);
-//                edge_differ += -(2*I-ci-cj)*ci;
+//        if (s_dsc->is_interface(*nid)) {
+//            Vec2 ex = s_dsc->get_node_external_force(*nid);
+//            Vec2 in = - s_dsc->get_node_internal_force(*nid);
+//            Vec2 gd = -s_dsc->get_node_force(*nid, AREA_FORCE);
+            
+//      //      double e2 = s_dsc->get_node_force(*nid, E2_GRAD)[0] * 20;
+//            double e2 = 1.;
+            
+////            Vec2 count = s_dsc->get_node_force(*nid, V_COUNT);
+////            ex /= s_dsc->get_node_force(*nid, V_COUNT)[1];
+////            in /= s_dsc->get_node_force(*nid, V_COUNT)[0];
+
+//            Vec2 f = gd ;
+//            Vec2 gE = ex + in + gd;
+//            Vec2 dis = (f  )/e2 ;
+//            dE2 += DSC2D::Util::dot(gE, dis);
+//           // Vec2 dis = ex;
+//            if (max_move < dis.length()) {
+//                max_move = dis.length();
 //            }
-//            
-//            hew = hew.next();
+
+            
+//            s_dsc->set_destination(*nid, s_dsc->get_pos(*nid) + dis);
+//            s_dsc->set_node_external_force(*nid, gd/e2*10.);
+//            s_dsc->set_node_internal_force(*nid, in/e2*5.);
 //        }
+//    }
     
-     //   differ = edge_differ/area;
-        
-        
-        // area grad
-        for (int i = 0; i < 3; i++) {
-            auto A_idx = node_idxs[i];
-            auto B_idx = node_idxs[(i+1)%3];
-            auto C_idx = node_idxs[(i+2)%3];
-            
-            auto A = s_dsc->get_pos(A_idx);
-            auto B = s_dsc->get_pos(B_idx);
-            auto C = s_dsc->get_pos(C_idx);
-            
-            double delta = DSC2D::Util::dot(A-B, C-B) / ((C-B).length() * (C-B).length());
-            Vec2 H = B + (C-B) * delta;
-            Vec2 HA = A - H;
-            HA.normalize();
-            
-            Vec2 NAB = B-A;
-            NAB = Vec2(-NAB[1], NAB[0]);
-            NAB.normalize();
-            Vec2 NAC = C-A;
-            NAC = Vec2(NAC[1], -NAC[0]);
-            NAC.normalize();
-            Vec2 N = NAB + NAC;
-            N.normalize();
-            
-            Vec2 bisector;
-            Vec2 AB = B-A;AB.normalize();
-            Vec2 AC = C-A; AC.normalize();
-            bisector = (AB+AC); bisector.normalize();
-            
-            Vec2 f = (C-B).length() * N * dd[i];
-            
-         //   Vec2 f = -bisector * differ * sqrt(area);
-            
-            s_dsc->add_node_force(A_idx, f, AREA_FORCE);
-            
-            if (A_idx.get_index() == debug_num[0]) {
-                printf("%f %f %f %f \n", A[0], B[0], C[0], f[0]);
-                printf("%f %f %f %f \n", A[1], B[1], C[1], f[1]);
-            }
-        }
-    }
-    
-    // Second derivative
-    
-
-    double max_move = 0.;
-    double max_g = 0.;
-    double max_edge = 0.0;
-    dE2 = 0;
-    for (auto nid = s_dsc->vertices_begin(); nid != s_dsc->vertices_end(); nid++) {
-        
-        if (s_dsc->is_interface(*nid)) {
-            Vec2 ex = s_dsc->get_node_external_force(*nid);
-            Vec2 in = - s_dsc->get_node_internal_force(*nid);
-            Vec2 gd = -s_dsc->get_node_force(*nid, AREA_FORCE);
-            
-      //      double e2 = s_dsc->get_node_force(*nid, E2_GRAD)[0] * 20;
-            double e2 = 1.;
-            
-//            Vec2 count = s_dsc->get_node_force(*nid, V_COUNT);
-//            ex /= s_dsc->get_node_force(*nid, V_COUNT)[1];
-//            in /= s_dsc->get_node_force(*nid, V_COUNT)[0];
-
-            Vec2 f = gd ;
-            Vec2 gE = ex + in + gd;
-            Vec2 dis = (f  )/e2 ;
-            dE2 += DSC2D::Util::dot(gE, dis);
-           // Vec2 dis = ex;
-            if (max_move < dis.length()) {
-                max_move = dis.length();
-            }
-
-            
-            s_dsc->set_destination(*nid, s_dsc->get_pos(*nid) + dis);
-            s_dsc->set_node_external_force(*nid, gd/e2*10.);
-            s_dsc->set_node_internal_force(*nid, in/e2*5.);
-        }
-    }
-    
-    printf("Max move: %f \n", max_move);
-}
+//    printf("Max move: %f \n", max_move);
+//}
 
 bool dynamics_mul::energy_with_location(double &E, Node_key nkey , Vec2 displace, double * real_dis)
 {
@@ -785,73 +869,73 @@ bool dynamics_mul::energy_with_location(double &E, Node_key nkey , Vec2 displace
     }
 }
 
-void dynamics_mul::optimize_phase_with_variant(){
+//void dynamics_mul::optimize_phase_with_variant(){
     
-    // First loop. Phase intensity have not computed
-    if (mean_inten_.size() == 0) {
-        compute_mean_intensity(mean_inten_);
-    }
+//    // First loop. Phase intensity have not computed
+//    if (mean_inten_.size() == 0) {
+//        compute_mean_intensity(mean_inten_);
+//    }
     
-    double varient_thres = 0.0001;
+//    double varient_thres = 0.0001;
     
-    // Optimize later
-    int nb_phase = (int)mean_inten_.size();
-    for (auto fkey : s_dsc->faces()){
-        auto pts = s_dsc->get_pos(fkey);
+//    // Optimize later
+//    int nb_phase = (int)mean_inten_.size();
+//    for (auto fkey : s_dsc->faces()){
+//        auto pts = s_dsc->get_pos(fkey);
         
-        double area;
-        double mi = s_img->get_tri_intensity_f(pts, &area); mi /= area;
-        double e = s_img->get_tri_differ_f(pts, mi);
+//        double area;
+//        double mi = s_img->get_tri_intensity_f(pts, &area); mi /= area;
+//        double e = s_img->get_tri_differ_f(pts, mi);
         
-        if (e < varient_thres) {
-            // Consider flipping phase if possible
-            double minE = INFINITY;
-            int phase_idx = -1;
-            for (int i = 0; i < nb_phase; i++) {
-                double triE = s_img->get_tri_differ_f(pts, mean_inten_[i]);
-                if (triE < minE) {
-                    minE = triE;
-                    phase_idx = i;
-                }
-            }
+//        if (e < varient_thres) {
+//            // Consider flipping phase if possible
+//            double minE = INFINITY;
+//            int phase_idx = -1;
+//            for (int i = 0; i < nb_phase; i++) {
+//                double triE = s_img->get_tri_differ_f(pts, mean_inten_[i]);
+//                if (triE < minE) {
+//                    minE = triE;
+//                    phase_idx = i;
+//                }
+//            }
             
-            if (phase_idx != (int)fkey.get_index()) {
-                // change phase
-                s_dsc->update_attributes(fkey, phase_idx);
-            }
-        }
-    }
-}
+//            if (phase_idx != (int)fkey.get_index()) {
+//                // change phase
+//                s_dsc->update_attributes(fkey, phase_idx);
+//            }
+//        }
+//    }
+//}
 
-void dynamics_mul::optimize_phase(){
-    int nb_phase = (int)mean_inten_.size();
-    while (true) {
-        bool change = false;
+//void dynamics_mul::optimize_phase(){
+//    int nb_phase = (int)mean_inten_.size();
+//    while (true) {
+//        bool change = false;
         
-        for (auto fid = s_dsc->faces_begin(); fid != s_dsc->faces_end(); fid++) {
-            int phase = s_dsc->get_label(*fid);
-            double ci = mean_inten_[s_dsc->get_label(*fid)];
-            double oldE = energy_triangle(*fid, ci, s_dsc->get_label(*fid));
+//        for (auto fid = s_dsc->faces_begin(); fid != s_dsc->faces_end(); fid++) {
+//            int phase = s_dsc->get_label(*fid);
+//            double ci = mean_inten_[s_dsc->get_label(*fid)];
+//            double oldE = energy_triangle(*fid, ci, s_dsc->get_label(*fid));
             
-            for (int i = 0; i < nb_phase; i++) {
-                double cc = mean_inten_[i];
-                if (i != phase) {
-                    double newE = energy_triangle(*fid, cc, i);
-                    if (newE < oldE) {
-                        // change phase to i
-                        s_dsc->set_label(*fid, i);
-                        change = true;
-                        break;
-                    }
-                }
-            }
-        }
+//            for (int i = 0; i < nb_phase; i++) {
+//                double cc = mean_inten_[i];
+//                if (i != phase) {
+//                    double newE = energy_triangle(*fid, cc, i);
+//                    if (newE < oldE) {
+//                        // change phase to i
+//                        s_dsc->set_label(*fid, i);
+//                        change = true;
+//                        break;
+//                    }
+//                }
+//            }
+//        }
         
-        if (!change) {
-            break;
-        }
-    }
-}
+//        if (!change) {
+//            break;
+//        }
+//    }
+//}
 
 double dynamics_mul::energy_triangle(HMesh::FaceID fid, double c,  int new_phase){
     auto tris = s_dsc->get_pos(fid);
@@ -1032,46 +1116,46 @@ double dynamics_mul::optimal_dt(dsc_obj * clone_dsc){
     return -1./2. * dE0 / (E0 - E1 - dE0);
 }
 
-void dynamics_mul::debug_optimum_dt_2(){
+//void dynamics_mul::debug_optimum_dt_2(){
     
-    for (auto ni = s_dsc->vertices_begin(); ni != s_dsc->vertices_end(); ni++) {
-        if (s_dsc->is_interface(*ni)) {
-           // Vec2 s = (s_dsc->get_node_internal_force(*ni) + s_dsc->get_node_external_force(*ni));
+//    for (auto ni = s_dsc->vertices_begin(); ni != s_dsc->vertices_end(); ni++) {
+//        if (s_dsc->is_interface(*ni)) {
+//           // Vec2 s = (s_dsc->get_node_internal_force(*ni) + s_dsc->get_node_external_force(*ni));
             
-            Vec2 s = s_dsc->get_node_external_force(*ni);
+//            Vec2 s = s_dsc->get_node_external_force(*ni);
             
-            // 1. Find furthest movement
-            double alpha_max = furthest_move(*ni, s);
+//            // 1. Find furthest movement
+//            double alpha_max = furthest_move(*ni, s);
             
-            if (alpha_max > 1) {
-                alpha_max = 1;
-            }
+//            if (alpha_max > 1) {
+//                alpha_max = 1;
+//            }
             
-            // 2. Compute energy change
-            double E0 = star_energy(*ni, s_dsc->get_pos(*ni));
-            double E1 = star_energy(*ni, s_dsc->get_pos(*ni) + s*alpha_max/2.0);
-            double E2 = star_energy(*ni, s_dsc->get_pos(*ni) + s*alpha_max);
+//            // 2. Compute energy change
+//            double E0 = star_energy(*ni, s_dsc->get_pos(*ni));
+//            double E1 = star_energy(*ni, s_dsc->get_pos(*ni) + s*alpha_max/2.0);
+//            double E2 = star_energy(*ni, s_dsc->get_pos(*ni) + s*alpha_max);
             
-            CGLA::Mat3x3f A(CGLA::Vec3f(0, 0, 1),
-                            CGLA::Vec3f(alpha_max/2.*alpha_max/2., alpha_max/2., 1),
-                            CGLA::Vec3f(alpha_max*alpha_max, alpha_max, 1));
-            CGLA::Vec3f b(E0, E1, E2);
-            CGLA::Mat3x3f A_i = CGLA::invert(A);
-            CGLA::Vec3f coes = A_i*b;
+//            CGLA::Mat3x3f A(CGLA::Vec3f(0, 0, 1),
+//                            CGLA::Vec3f(alpha_max/2.*alpha_max/2., alpha_max/2., 1),
+//                            CGLA::Vec3f(alpha_max*alpha_max, alpha_max, 1));
+//            CGLA::Vec3f b(E0, E1, E2);
+//            CGLA::Mat3x3f A_i = CGLA::invert(A);
+//            CGLA::Vec3f coes = A_i*b;
             
-            double alpha_g = -1.0/2.0 * coes[1] / coes[0];
+//            double alpha_g = -1.0/2.0 * coes[1] / coes[0];
             
-            if (alpha_g < 0) {
-                alpha_g = 0;
-            }
-            if (alpha_g > 1) {
-                alpha_g = 1;
-            }
+//            if (alpha_g < 0) {
+//                alpha_g = 0;
+//            }
+//            if (alpha_g > 1) {
+//                alpha_g = 1;
+//            }
             
-            s_dsc->set_node_external_force(*ni, s*alpha_g);
-        }
-    }
-}
+//            s_dsc->set_node_external_force(*ni, s*alpha_g);
+//        }
+//    }
+//}
 
 double dynamics_mul::energy_gradient_by_moving_distance(dsc_obj *obj,
                                                         std::map<int, double>  intensity_map){
@@ -1315,32 +1399,32 @@ double dynamics_mul::get_total_energy()
     return g_param.alpha * L + g_param.beta * E;
 }
 
-void dynamics_mul::debug_optimum_dt(){
+//void dynamics_mul::debug_optimum_dt(){
     
-    alpha_map_.clear();
+//    alpha_map_.clear();
     
-    for (auto ni = s_dsc->vertices_begin(); ni != s_dsc->vertices_end(); ni++) {
-        if (s_dsc->is_interface(*ni)) {
-            Vec2 s = (s_dsc->get_node_internal_force(*ni)
-                      + s_dsc->get_node_external_force(*ni));
+//    for (auto ni = s_dsc->vertices_begin(); ni != s_dsc->vertices_end(); ni++) {
+//        if (s_dsc->is_interface(*ni)) {
+//            Vec2 s = (s_dsc->get_node_internal_force(*ni)
+//                      + s_dsc->get_node_external_force(*ni));
             
-            // 1. Find furthest movement
-            double alpha_max = furthest_move(*ni, s);
+//            // 1. Find furthest movement
+//            double alpha_max = furthest_move(*ni, s);
             
-            // 2. Compute energy change
-            double delta_E = energy_change(*ni, s_dsc->get_pos(*ni) + s * alpha_max);
+//            // 2. Compute energy change
+//            double delta_E = energy_change(*ni, s_dsc->get_pos(*ni) + s * alpha_max);
 
-            // 3. Compute partial derivative of E wrt to alpha
-            double ll = curve_length(*ni, s_dsc->get_pos(*ni));
-            double grad_E_a_2 = s.length() * s.length() / ll;
+//            // 3. Compute partial derivative of E wrt to alpha
+//            double ll = curve_length(*ni, s_dsc->get_pos(*ni));
+//            double grad_E_a_2 = s.length() * s.length() / ll;
             
-            // 4. Optimal alpha
-            double alpha_g = 1.0/2.0*(2.0*delta_E - alpha_max*grad_E_a_2)/(delta_E - alpha_max*grad_E_a_2);
+//            // 4. Optimal alpha
+//            double alpha_g = 1.0/2.0*(2.0*delta_E - alpha_max*grad_E_a_2)/(delta_E - alpha_max*grad_E_a_2);
             
             
-        }
-    }
-}
+//        }
+//    }
+//}
 
 double dynamics_mul::furthest_move(Node_key nid, Vec2 direction){
     double max_move = s_dsc->intersection_with_link(nid, s_dsc->get_pos(nid) + direction);
@@ -1383,7 +1467,7 @@ void dynamics_mul::compute_curvature_force_implicit(){
     }
 }
 
-void dynamics_mul::compute_curvature_force(){
+void dynamics_mul::compute_internal_force(){
     
     for (auto vkey : s_dsc->vertices())
     {
@@ -1395,33 +1479,30 @@ void dynamics_mul::compute_curvature_force(){
                 if (s_dsc->is_interface(w.halfedge()))
                 {
                     auto p12 = s_dsc->get_pos(w.vertex()) - s_dsc->get_pos(w.opp().vertex());
-                    
-                    
+
                     if(p12.length() > 0.001)
                     {
                         p12.normalize();
                         s_dsc->add_node_internal_force(vkey, p12*ALPHA);
                     }
                     else
-                        cout << "Edge length 0 in bound";
+                        cout << "Small edge length" <<endl;
                 }
             }
         }
     }
-    
-    // TODO: Should follow the algorithm in the paper
 }
 
-void dynamics_mul::displace_dsc_2(){
-    for (auto ni = s_dsc->vertices_begin(); ni != s_dsc->vertices_end(); ni++) {
-        if (s_dsc->is_interface(*ni)) {
+//void dynamics_mul::displace_dsc_2(){
+//    for (auto ni = s_dsc->vertices_begin(); ni != s_dsc->vertices_end(); ni++) {
+//        if (s_dsc->is_interface(*ni)) {
             
-            s_dsc->set_destination(*ni, s_dsc->get_pos(*ni) + s_dsc->get_node_external_force(*ni));
-        }
-    }
+//            s_dsc->set_destination(*ni, s_dsc->get_pos(*ni) + s_dsc->get_node_external_force(*ni));
+//        }
+//    }
     
-    s_dsc->deform();
-}
+//    s_dsc->deform();
+//}
 
 inline bool is_bound(DSC2D::DeformableSimplicialComplex * dsc, HMesh::VertexID n)
 {
@@ -1436,37 +1517,55 @@ inline bool is_bound(DSC2D::DeformableSimplicialComplex * dsc, HMesh::VertexID n
     return false;
 }
 
+inline void crop(Vec2 & p, Vec2 & bound)
+{
+    for(int i = 0; i < 2; i++)
+    {
+        if(p[i] < 0)
+            p[i] = 0;
+        if(p[i] > bound[i])
+            p[i] = bound[i];
+    }
+}
+
+inline void proximity_snap(Vec2 const & origin, Vec2 & des, Vec2 const & bound)
+{
+    static double eps = SMALLEST_SIZE * 0.1;
+    for(int i = 0; i < 2; i++)
+    {
+        if(origin[i] < eps )
+            des[i] = 0;
+        if( bound[i] - origin[i] < eps)
+            des[i] = bound[i];
+    }
+}
+
 void dynamics_mul::displace_dsc(dsc_obj *obj){
     if (!obj) {
         obj = s_dsc;
     }
 
-    
+    auto bound = s_img->size();
 
     for (auto ni = obj->vertices_begin(); ni != obj->vertices_end(); ni++)
     {
         obj->bStable[*ni] = 1;
         
-
-        
         if ((obj->is_interface(*ni) or obj->is_crossing(*ni)))
         {
-            Vec2 dis = obj->get_node_external_force(*ni);
-            
-            if (!is_bound(obj, *ni) || obj->is_crossing(*ni))
-            {
-                dis += obj->get_node_internal_force(*ni);
-            }
+            Vec2 dis = obj->get_node_external_force(*ni) + obj->get_node_internal_force(*ni)*g_param.alpha;
             assert(dis.length() != NAN);
             
             double n_dt = dt;//s_dsc->time_step(*ni);
             
-            if(is_bound(obj, *ni))
-            {
-                n_dt /= 2.0;
-            }
+            // Crop destination to avoid boundary corruption
+            auto origin = obj->get_pos(*ni);
+            auto des = origin + dis*n_dt;
+            crop(des, bound);
+            proximity_snap(origin, des, bound);
 
-            obj->set_destination(*ni, obj->get_pos(*ni) + dis*n_dt);
+
+            obj->set_destination(*ni, des);
             
         }
     }
@@ -1482,22 +1581,24 @@ void dynamics_mul::compute_mean_intensity(dsc_obj &dsc, image &img)
     compute_mean_intensity(mean_inten_);
 }
 
-void dynamics_mul::compute_mean_intensity(std::map<int, double> & mean_inten_o){
-    
-    std::map<int, double> total_inten_;
+void dynamics_mul::compute_mean_intensity(std::map<int, double> & mean_inten_o)
+{
     std::map<int, double> total_area;
     
     mean_inten_o.clear();
     
     
-    for (auto fid = s_dsc->faces_begin(); fid != s_dsc->faces_end(); fid++) {
+    for (auto fid : s_dsc->faces()) {
+        if(s_dsc->get_label(fid) == BOUND_FACE)
+            continue;
+
         double area = 0.0;
         
-        auto tris = s_dsc->get_pos(*fid);
+        auto tris = s_dsc->get_pos(fid);
         double total_inten = s_img->get_tri_intensity_f(tris, &area);
         
         
-        int phase = s_dsc->get_label(*fid);
+        int phase = s_dsc->get_label(fid);
         if (mean_inten_o.find(phase) != mean_inten_o.end())
         {//Existed
             mean_inten_o[phase] += total_inten;
@@ -1516,7 +1617,12 @@ void dynamics_mul::compute_mean_intensity(std::map<int, double> & mean_inten_o){
         mit->second /= (double)total_area[mit->first];
     }
     
-//    mean_inten_o[BOUND_FACE] = INFINITY;
+    mean_inten_o[BOUND_FACE] = -0.2;
+
+    cout << "Mean intensity: ";
+    for(auto m : mean_inten_o) cout << m.second << " ";
+    cout << endl;
+
     g_param.mean_intensity = mean_inten_o;
     
 }
@@ -1584,13 +1690,12 @@ void dynamics_mul::compute_intensity_force_implicit(){
 }
 
 void dynamics_mul::compute_intensity_force(){
-    HMesh::HalfEdgeAttributeVector<int> touched(s_dsc->get_no_halfedges(), 0);
     
     for (auto eit = s_dsc->halfedges_begin(); eit != s_dsc->halfedges_end(); eit++) {
         auto hew = s_dsc->walker(*eit);
         
         if( s_dsc->is_interface(*eit) and
-           !touched[*eit])
+                hew.halfedge() < hew.opp().halfedge()) // Avoid retouch the edge
         {
             int phase0 = s_dsc->get_label(hew.face());
             int phase1 = s_dsc->get_label(hew.opp().face());
@@ -1604,57 +1709,50 @@ void dynamics_mul::compute_intensity_force(){
             
             double length = (p1 - p0).length();
             
-            if (length < 0.001) {
-                // Avoid retouch the edge
-                touched[*eit] = 1;
-                touched[hew.opp().halfedge()] = 1;
-                continue;
-            }
-            
             double f0 = 0.0, f1 = 0.0;
-            Vec2 fg0(0.0), fg1(0.0);
             
             // Integrate on the edge
-            int N = (int)length;
-            if (N < 3) {
-                N = 3;
-            }
+            int N = ceil(length);
+
             double dl = (double)length / (double)N;
             for (int i = 0; i < N; i++) {
-                auto p = p0 + (p1 - p0)*((i+0.5) / N);
+                auto p = p0 + (p1 - p0)*((double)i / (double)N);
                 double I = s_img->get_intensity_f(p[0], p[1]);
                 
                 double f = 0.0;
                 // Same coefficient
-                f = (2*I - c0 - c1) / (c0-c1) * dl /length;
+//                f = (2*I - c0 - c1) / (c0-c1) * dl;
                 
                 // No normalization
-                //f = (2*I - c0 - c1) * (c0-c1) * dl /length;
+                f = (2*I - c0 - c1) * (c0-c1) * dl;
                 
-                assert(f != NAN);
+                assert(!DSC2D::Util::isnan(f));
                 
                 // Barry Centric coordinate
-                f0 += f*(p-p1).length() / (double)length;
-                f1 += f*(p-p0).length() / (double)length;
+                f0 += f* (p-p1).length() / length;
+                f1 += f* (p-p0).length() / length;
             }
             
-            // Set force
+            // Normal vector from phase0 to phase1
             Vec2 L01 = p1 - p0;
-            L01.normalize();
             Vec2 N01(L01[1], -L01[0]);
+//            auto other_n = s_dsc->get_pos(hew.next().vertex());
+//            N01 = N01 * DSC2D::Util::dot(N01, other_n - p0);
+            N01.normalize();
+
+            if(N01[0] > 0.4)
+            {
+
+            }
             
-            Vec2 f_x0 = N01*f0;// - fg0;
-            Vec2 f_x1 = N01*f1;// - fg1;
+            Vec2 f_x0 = N01*f0;
+            Vec2 f_x1 = N01*f1;
             
             assert(f0 != NAN);
             assert(f1 != NAN);
             
             s_dsc->add_node_external_force(hew.opp().vertex(), f_x0*g_param.beta);
             s_dsc->add_node_external_force(hew.vertex(), f_x1*g_param.beta);
-            
-            // Avoid retouch the edge
-            touched[*eit] = 1;
-            touched[hew.opp().halfedge()] = 1;
         }
     }
     

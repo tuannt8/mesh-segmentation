@@ -86,34 +86,40 @@ private:
      */
     void update_dsc_with_adaptive_mesh();
 private:
-    void update_dsc_explicit_whole_domain(dsc_obj &dsc, image &img);
-    void update_dsc_area(dsc_obj &dsc, image &img);
-    void update_dsc_build_and_solve(dsc_obj &dsc, image &img);
+//    void update_dsc_explicit_whole_domain(dsc_obj &dsc, image &img);
+//    void update_dsc_area(dsc_obj &dsc, image &img);
+//    void update_dsc_build_and_solve(dsc_obj &dsc, image &img);
     
 private:
     void update_probability(dsc_obj &dsc, image &img);
     
 private:
-    void update_dsc_explicit(dsc_obj &dsc, image &img);
+//    void update_dsc_explicit(dsc_obj &dsc, image &img);
     void compute_mean_intensity(std::map<int, double> & mean_inten_o);
     void compute_intensity_force();
     void displace_dsc(dsc_obj *obj = nullptr);
-    void compute_curvature_force();
+    void compute_internal_force();
     
     void compute_difference();
+
+private:
+    void adapt_triangle();
+    void thinning();
+
+    double get_energy_assume_label(Face_key fid, int assumed_label);
     
 public:
     void compute_mean_intensity(dsc_obj &dsc, image &img);
     
 public:
-    void displace_dsc_2();
-    void debug_optimum_dt();
-    void debug_optimum_dt_2();
+//    void displace_dsc_2();
+//    void debug_optimum_dt();
+//    void debug_optimum_dt_2();
     
-    void optimize_phase();
+//    void optimize_phase();
     
     // Phase relabeling with small variant condition
-    void optimize_phase_with_variant();
+//    void optimize_phase_with_variant();
     
     double furthest_move(Node_key nid, Vec2 direction);
     double energy_change(Node_key nid, Vec2 new_pos);
