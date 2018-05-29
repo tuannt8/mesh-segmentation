@@ -106,6 +106,8 @@ private:
     void adapt_triangle();
     void thinning();
 
+    void thinning_interface();
+
     double get_energy_assume_label(Face_key fid, int assumed_label);
     
 public:

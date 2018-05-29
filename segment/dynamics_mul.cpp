@@ -89,7 +89,7 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
 {
     auto init_time = std::chrono::system_clock::now();
     
-    int nb_displace = 5;
+    int nb_displace = 10;
 
 
     // Deform the mesh
@@ -109,63 +109,17 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
     
     // adapt mesh
     adapt_mesh am;
-
-    if(RELABEL)
-    {
-
-    }
     
-    if (count++ % nb_displace == 0)
+    if (++count % nb_displace == 0)
     {
 
-        adapt_triangle();
-        thinning();
-        
-//        compute_mean_intensity(mean_inten_);
-//        compute_intensity_force();
-//        compute_internal_force();
-        
-//        update_vertex_stable();
-//        am.collapse_interface(*s_dsc, *s_img);
-        
-//        compute_mean_intensity(mean_inten_);
-//        compute_intensity_force();
-//        compute_internal_force();
-        
-//        update_vertex_stable();
-//        am.split_edge(*s_dsc, *s_img);
-        
-//        if(RELABEL)
-//        {
-            
-//            compute_mean_intensity(mean_inten_);
-//            compute_intensity_force();
-//            compute_internal_force();
-            
-//            update_vertex_stable();
-//            am.split_face(*s_dsc, *s_img);
-            
-//            compute_mean_intensity(mean_inten_);
-//            compute_intensity_force();
-//            compute_internal_force();
-            
-//            update_vertex_stable();
-//            am.split_face(*s_dsc, *s_img);
-//        }
+        if(ADAPTIVE)
+        {
+            adapt_triangle();
+            thinning();
+        }
 
-        
-        
-//        if(ADAPTIVE == 1)
-//        {
-//            compute_mean_intensity(mean_inten_);
-//            compute_intensity_force();
-//            compute_internal_force();
-//            update_vertex_stable();
-//            am.thinning(*s_dsc, *s_img);
-//        }
-        
-//        am.remove_needles(*s_dsc);
-
+        thinning_interface();
     }
     
     static double time = 0;
@@ -235,8 +189,6 @@ void dynamics_mul::adapt_triangle()
 
         face_energy[fid] = s_img->get_tri_varience_f(s_dsc->get_pos(fid));
 
-        assert(face_energy[fid] > 1e-8);
-
     }
 
     // Relabel it
@@ -268,8 +220,6 @@ void dynamics_mul::adapt_triangle()
         {
             // consider splitting
             faces_to_split[fid] = 1;
-
-
         }
     }
 
@@ -277,7 +227,7 @@ void dynamics_mul::adapt_triangle()
     if(faces_to_split.size() ==0)
         split = false;
     // Splitting
-    if(split)
+    if(split && RELABEL)
     {
         s_dsc->recursive_split(faces_to_split);
 
@@ -288,7 +238,133 @@ void dynamics_mul::adapt_triangle()
 
 void dynamics_mul::thinning()
 {
+    double flip_thres = SPLIT_FACE_COEFFICIENT*1.2;
 
+    // 1. Compute face energy
+    HMesh::AttributeVector<double, Face_key> face_energy;
+    for(auto fid : s_dsc->faces())
+    {
+        auto l = s_dsc->get_label(fid);
+        if(l==BOUND_FACE)
+        {
+            continue; // Triangle on domain boundary
+        }
+
+        face_energy[fid] = s_img->get_tri_varience_f(s_dsc->get_pos(fid));
+    }
+
+    // 2. Find potential collapsing edge
+    vector<Edge_key> edges_to_collapse;
+
+
+    for(auto nid : s_dsc->vertices())
+    {
+        auto shortest_edge = s_dsc->walker(nid);
+        double shortest = INFINITY;
+
+        if(!s_dsc->is_interface(nid)
+                && !HMesh::boundary(*s_dsc->mesh, nid))
+        {
+            bool collapse = true;
+            double shortest = INFINITY;
+            for (auto hew = s_dsc->walker(nid); !hew.full_circle(); hew = hew.circulate_vertex_ccw())
+            {
+                if(face_energy[hew.face()] > flip_thres)
+                {
+                    collapse = false;
+                    break;
+                }
+                if(s_dsc->length(hew.halfedge()) < shortest)
+                {
+                    shortest = s_dsc->length(hew.halfedge());
+                    shortest_edge = hew;
+                }
+            }
+            // Check mesh quality before thinning
+            if(collapse)
+            {
+                auto survive_vertex = shortest_edge.vertex();
+                auto pos = s_dsc->get_pos(survive_vertex);
+                double min_quality = INFINITY;
+                for (auto hew = s_dsc->walker(nid); !hew.full_circle();
+                     hew = hew.circulate_vertex_ccw())
+                {
+                    auto v1 = hew.vertex();
+                    auto v2 =  hew.next().next().vertex();
+                    if(v1.get_index() != survive_vertex.get_index()
+                       && v2.get_index() != survive_vertex.get_index())
+                    {
+                        min_quality = std::min(DSC2D::Util::min_angle(s_dsc->get_pos(v1), s_dsc->get_pos(v2), pos), min_quality);
+                    }
+                }
+
+                if(min_quality > M_PI * 10./180.)
+                    s_dsc->collapse(shortest_edge, 0.0);
+            }
+        }
+    }
+}
+
+void dynamics_mul::thinning_interface()
+{
+    for (auto vkey : s_dsc->vertices())
+    {
+        if (s_dsc->is_interface(vkey) && !s_dsc->is_crossing(vkey))
+        {
+            // interface
+            std::vector<HMesh::Walker> edges;
+            for (auto hew = s_dsc->walker(vkey); !hew.full_circle(); hew = hew.circulate_vertex_cw())
+            {
+                if (s_dsc->is_interface(hew.halfedge()))
+                {
+                    edges.push_back(hew);
+                }
+            }
+            assert(edges.size()==2);
+
+            auto cangle = DSC2D::Util::cos_angle(
+                        s_dsc->get_pos(edges[0].vertex()),
+                        s_dsc->get_pos(edges[0].opp().vertex()),
+                        s_dsc->get_pos(edges[1].vertex()));
+
+            auto shortest_edge =
+                    s_dsc->length(edges[0].halfedge()) <  s_dsc->length(edges[1].halfedge())?
+                        edges[0] : edges[1];
+
+            static double thres = cos(186*M_PI/180.);
+            if (cangle < thres)
+            {
+                // check quality if collapse
+
+                if(shortest_edge.vertex().get_index() != vkey.get_index())
+                    shortest_edge = shortest_edge.opp();
+
+                auto survive_vertex = shortest_edge.opp().vertex();
+                auto pos = s_dsc->get_pos(survive_vertex);
+
+                double min_quality = INFINITY;
+                for (auto hew = s_dsc->walker(vkey); !hew.full_circle();
+                     hew = hew.circulate_vertex_ccw())
+                {
+                    auto v1 = hew.vertex();
+                    auto v2 =  hew.next().vertex();
+
+                    assert(v1.get_index() != vkey.get_index() && v2.get_index() != vkey.get_index());
+
+                    if(v1.get_index() != survive_vertex.get_index()
+                       && v2.get_index() != survive_vertex.get_index())
+                    {
+                        min_quality = std::min(DSC2D::Util::min_angle(s_dsc->get_pos(v1), s_dsc->get_pos(v2), pos), min_quality);
+                    }
+                }
+
+                assert(min_quality < 100);
+
+                if(min_quality > M_PI * 10./180.)
+                    s_dsc->collapse(shortest_edge, 1.0);
+            }
+        }
+    }
 }
 
 double dynamics_mul::get_energy_assume_label(Face_key fid, int assumed_label)
@@ -302,7 +378,7 @@ double dynamics_mul::get_energy_assume_label(Face_key fid, int assumed_label)
             internal += s_dsc->length(hew.halfedge());
     }
 
-    return external;// + internal * g_param.alpha;
+    return external;// + internal * ALPHA;
 }
 
 void dynamics_mul::update_dsc(dsc_obj &dsc, image &img){
@@ -859,7 +935,7 @@ bool dynamics_mul::energy_with_location(double &E, Node_key nkey , Vec2 displace
             differ += total_differ;
         }
         
-        E += differ*g_param.beta + length*g_param.alpha;
+        E += differ*g_param.beta + length*ALPHA;
         return true;
         
     }else{
@@ -1004,46 +1080,46 @@ void dynamics_mul::update_probability(dsc_obj &dsc, image &img){
     
 }
 
-void dynamics_mul::update_dsc_implicit(dsc_obj &dsc, image &img){
-    s_img = &img;
-    s_dsc = &dsc;
+//void dynamics_mul::update_dsc_implicit(dsc_obj &dsc, image &img){
+//    s_img = &img;
+//    s_dsc = &dsc;
     
     
-    helper_t::start_timer();
-    s_dsc->deform();
+//    helper_t::start_timer();
+//    s_dsc->deform();
     
     
     
-//    if(E0_ > 0.){
-//        E1_ = get_total_energy(s_dsc, mean_inten_);
-//        double deltaE = E1_ - E0_;
-//        dt = std::abs(1./2. * (dE_0_*dt) / ( deltaE - dE_0_*dt)*dt);
-//        
-//        if(dt > 4000)
-//            dt = 4000;
-////        if(dt < 1000)
-////            dt = 1000;
-//        printf("dt = %f \n", dt);
-//        
-//    }
+////    if(E0_ > 0.){
+////        E1_ = get_total_energy(s_dsc, mean_inten_);
+////        double deltaE = E1_ - E0_;
+////        dt = std::abs(1./2. * (dE_0_*dt) / ( deltaE - dE_0_*dt)*dt);
+////
+////        if(dt > 4000)
+////            dt = 4000;
+//////        if(dt < 1000)
+//////            dt = 1000;
+////        printf("dt = %f \n", dt);
+////
+////    }
     
-    // 1. Update mean intensity
-    // map<phase - mean intensity>
-    compute_mean_intensity(mean_inten_);
+//    // 1. Update mean intensity
+//    // map<phase - mean intensity>
+//    compute_mean_intensity(mean_inten_);
     
     
 
     
-    // 3. Curvature force
-  //  compute_curvature_force_implicit();
+//    // 3. Curvature force
+//  //  compute_curvature_force_implicit();
     
     
-    // 5. Build and solve matrix
-    indexing_vertices();
-    build_and_solve();
+//    // 5. Build and solve matrix
+//    indexing_vertices();
+//    build_and_solve();
     
-    E0_ = get_total_energy(s_dsc, mean_inten_);
-}
+//    E0_ = get_total_energy(s_dsc, mean_inten_);
+//}
 
 void dynamics_mul::indexing_vertices()
 {
@@ -1373,31 +1449,31 @@ void dynamics_mul::get_energy(double &e_, double &l_)
     l_ = L;
 }
 
-double dynamics_mul::get_total_energy()
-{
-    // intensity difference
-    double E = 0;
-    for (auto fkey : s_dsc->faces())
-    {
-        auto pts = s_dsc->get_pos(fkey);
-        double ci = mean_inten_[s_dsc->get_label(fkey)];
-        E += s_img->get_tri_differ_f(pts, ci);
-    }
+//double dynamics_mul::get_total_energy()
+//{
+//    // intensity difference
+//    double E = 0;
+//    for (auto fkey : s_dsc->faces())
+//    {
+//        auto pts = s_dsc->get_pos(fkey);
+//        double ci = mean_inten_[s_dsc->get_label(fkey)];
+//        E += s_img->get_tri_differ_f(pts, ci);
+//    }
     
-    // Length
-    double L = 0;
-    for (auto ekey : s_dsc->halfedges())
-    {
-        auto hew = s_dsc->walker(ekey);
-        if (hew.vertex().get_index() > hew.opp().vertex().get_index()
-            && s_dsc->is_interface(hew.halfedge()))
-        {
-            L += s_dsc->length(ekey);
-        }
-    }
+//    // Length
+//    double L = 0;
+//    for (auto ekey : s_dsc->halfedges())
+//    {
+//        auto hew = s_dsc->walker(ekey);
+//        if (hew.vertex().get_index() > hew.opp().vertex().get_index()
+//            && s_dsc->is_interface(hew.halfedge()))
+//        {
+//            L += s_dsc->length(ekey);
+//        }
+//    }
     
-    return g_param.alpha * L + g_param.beta * E;
-}
+//    return g_param.alpha * L + g_param.beta * E;
+//}
 
 //void dynamics_mul::debug_optimum_dt(){
     
@@ -1431,41 +1507,41 @@ double dynamics_mul::furthest_move(Node_key nid, Vec2 direction){
     return max_move;
 }
 
-void dynamics_mul::compute_curvature_force_implicit(){
-    for (auto eid = s_dsc->halfedges_begin(); eid != s_dsc->halfedges_end(); eid++) {
+//void dynamics_mul::compute_curvature_force_implicit(){
+//    for (auto eid = s_dsc->halfedges_begin(); eid != s_dsc->halfedges_end(); eid++) {
         
-        if (s_dsc->is_interface(*eid)) {
-            auto hew0 = s_dsc->walker(*eid);
+//        if (s_dsc->is_interface(*eid)) {
+//            auto hew0 = s_dsc->walker(*eid);
             
-            // Find next edge on the boundary
-            auto hew1 = hew0.next().opp();
-            while (1) {
-                if (s_dsc->is_interface(hew1.halfedge())) {
-                    hew1 = hew1.opp();
-                    break;
-                }
+//            // Find next edge on the boundary
+//            auto hew1 = hew0.next().opp();
+//            while (1) {
+//                if (s_dsc->is_interface(hew1.halfedge())) {
+//                    hew1 = hew1.opp();
+//                    break;
+//                }
                 
-                hew1 = hew1.next().opp();
-            }
+//                hew1 = hew1.next().opp();
+//            }
 
             
-            Vec2 p0 = s_dsc->get_pos(hew0.vertex()) - s_dsc->get_pos(hew0.opp().vertex());
-            Vec2 p1 = s_dsc->get_pos(hew1.vertex()) - s_dsc->get_pos(hew1.opp().vertex());
+//            Vec2 p0 = s_dsc->get_pos(hew0.vertex()) - s_dsc->get_pos(hew0.opp().vertex());
+//            Vec2 p1 = s_dsc->get_pos(hew1.vertex()) - s_dsc->get_pos(hew1.opp().vertex());
             
-            Vec2 norm0(p0[1], -p0[0]); norm0.normalize();
-            Vec2 norm1(p1[1], -p1[0]); norm1.normalize();
-            Vec2 norm = norm0 + norm1; norm.normalize();
+//            Vec2 norm0(p0[1], -p0[0]); norm0.normalize();
+//            Vec2 norm1(p1[1], -p1[0]); norm1.normalize();
+//            Vec2 norm = norm0 + norm1; norm.normalize();
             
             
-            double l0 = p0.length();
-            double l1 = p1.length();
-            double angle = std::atan2(CGLA::cross(p0, p1), DSC2D::Util::dot(p0, p1));
-            double curvature = angle / (l0/2.0 + l1/2.0);
+//            double l0 = p0.length();
+//            double l1 = p1.length();
+//            double angle = std::atan2(CGLA::cross(p0, p1), DSC2D::Util::dot(p0, p1));
+//            double curvature = angle / (l0/2.0 + l1/2.0);
             
-            s_dsc->add_node_force(hew0.vertex(), -norm*curvature*s_dsc->get_avg_edge_length()*g_param.alpha, IN_BOUND);
-        }
-    }
-}
+//            s_dsc->add_node_force(hew0.vertex(), -norm*curvature*s_dsc->get_avg_edge_length()*g_param.alpha, IN_BOUND);
+//        }
+//    }
+//}
 
 void dynamics_mul::compute_internal_force(){
     
@@ -1553,7 +1629,7 @@ void dynamics_mul::displace_dsc(dsc_obj *obj){
         
         if ((obj->is_interface(*ni) or obj->is_crossing(*ni)))
         {
-            Vec2 dis = obj->get_node_external_force(*ni) + obj->get_node_internal_force(*ni)*g_param.alpha;
+            Vec2 dis = obj->get_node_external_force(*ni) + obj->get_node_internal_force(*ni)*ALPHA;
             assert(dis.length() != NAN);
             
             double n_dt = dt;//s_dsc->time_step(*ni);
@@ -1570,7 +1646,7 @@ void dynamics_mul::displace_dsc(dsc_obj *obj){
         }
     }
     
-    obj->deform();
+    obj->deform(ADAPTIVE);
 }
 
 void dynamics_mul::compute_mean_intensity(dsc_obj &dsc, image &img)

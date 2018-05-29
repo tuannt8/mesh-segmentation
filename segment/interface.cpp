@@ -207,12 +207,6 @@ void interface_dsc::keyboard(unsigned char key, int x, int y){
             write_triangle_energy();
         }
             break;
-        case 'u':
-            std::cout << g_param.alpha << " - New alpha: ";
-            std::cin >> g_param.alpha;
-            std::cout << g_param.beta << " - New beta: ";
-            std::cin >> g_param.beta;
-            break;
         default:
             break;
     }
@@ -335,7 +329,7 @@ void interface_dsc::draw()
         Painter::draw_faces(*dsc);
     }
 
-    if (options_disp::get_option("external force", true) and dsc){
+    if (options_disp::get_option("external force", false) and dsc){
         Painter::draw_external_force(*dsc, 0.6);
     }
 

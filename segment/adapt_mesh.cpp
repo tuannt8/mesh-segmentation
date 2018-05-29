@@ -147,6 +147,7 @@ struct edge_s_e
 
 void adapt_mesh::remove_needles(DSC2D::DeformableSimplicialComplex &dsc)
 {
+    // TODO: Check inverted triangles when collapsing the two edge
     dsc_ = &dsc;
     
     for (auto fit = dsc.faces_begin(); fit != dsc.faces_end(); fit++)
