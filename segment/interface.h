@@ -105,6 +105,7 @@ public:
     void init_boundary();
     void init_boundary_brain();
     void dynamics_image_seg();
+    void circle_init(Vec2 center, double radius, int label);
     
     void export_dsc();
 };

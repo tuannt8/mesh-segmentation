@@ -691,6 +691,8 @@ void interface_dsc::update_title()
     glutSetWindowTitle(str.c_str());
 }
 
+#define VAND
+
 interface_dsc::interface_dsc(int &argc, char** argv){
     
     
@@ -735,7 +737,13 @@ interface_dsc::interface_dsc(int &argc, char** argv){
     init_dsc();
     
 //    random_init_dsc(NB_PHASE); // Work better in case of subdivision approach
+//    threshold_initialization();
+
+#ifdef VAND
+    circle_init(Vec2(300,300), 150, 2);
+#else
     threshold_initialization();
+#endif
     
     gl_debug_helper::set_dsc(&(*dsc));
     
@@ -824,8 +832,11 @@ void interface_dsc::export_dsc()
             idx++;
         }
     }
-    
-    std::ofstream f("mesh.obj");
+
+    static int mesh_idx = 0;
+    std::stringstream name;
+    name << "LOG/mesh_" << mesh_idx++ << ".obj";
+    std::ofstream f(name.str());
     if (f.is_open())
     {
         // vertices
@@ -997,6 +1008,41 @@ void interface_dsc::thres_hold_init(){
     }
 }
 
+void interface_dsc::circle_init(Vec2 center, double radius, int label)
+{
+    // 1.  Relabel
+    for(auto fid : dsc->faces())
+    {
+        for(auto p : dsc->get_pos(fid))
+        {
+            if((p-center).length() < radius)
+            {
+                dsc->set_label(fid, label);
+            }
+        }
+
+    }
+//    dsc->deform();
+
+    // 2. set circle
+    for(int i = 0; i < 2; i++)
+    {
+    for(auto nid : dsc->vertices())
+    {
+        auto p = dsc->get_pos(nid);
+        if(dsc->is_interface(nid) && (p -center).length() < radius * 1.3)
+        {
+            Vec2 newp = p - center;
+            newp.normalize();
+            newp = center + newp * radius;
+            dsc->set_destination(nid, newp);
+        }
+    }
+
+    dsc->deform();
+}
+}
+
 void interface_dsc::init_sqaure_boundary(){
     Vec2 s = imageSize;// tex->get_image_size();
     double left = 0.2;
@@ -1024,6 +1070,11 @@ void interface_dsc::dynamics_image_seg(){
     profile t("Total time");
     
     dyn_->update_dsc(*dsc, *image_);
+
+    if(iter % 4 == 0)
+    {
+        export_dsc();
+    }
     iter ++;
 }
 

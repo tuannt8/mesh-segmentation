@@ -1,5 +1,5 @@
 # 2D image segmentation with triangle mesh
-
+![demo](/resources/2D-demo.jpg)
 # Run
 
 ```shell
