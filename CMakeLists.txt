@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.6)
-project(dsc_seg)
+project(dsc_seg_2D)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -32,7 +32,6 @@ include_directories(other)
 
 ###################################################
 # Lib png
-# search for pkg-config
 include (FindPkgConfig)
 if (NOT PKG_CONFIG_FOUND)
     message (FATAL_ERROR "pkg-config not found")

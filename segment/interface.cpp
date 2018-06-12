@@ -22,7 +22,13 @@
 #include "profile.h"
 #include "define.h"
 
+#include "object_generator.h"
+
+#include "export.h"
+
 int ox, oy, w,h;
+
+using namespace DSC2D;
 
 void _check_gl_error(const char *file, int line)
 {
@@ -158,7 +164,7 @@ void interface_dsc::keyboard(unsigned char key, int x, int y){
             gl_debug_helper::change_state();
             break;
         case 'e':
-            export_dsc();
+            export_dsc::export_fem(&*dsc, 2, "./LOG/fem");
             break;
         case 'r':
         {
@@ -223,7 +229,7 @@ void interface_dsc::keyboard(unsigned char key, int x, int y){
 
 
 
-using namespace DSC2D;
+
 void interface_dsc::load_dsc()
 {
     std::ostringstream os;
@@ -739,11 +745,9 @@ interface_dsc::interface_dsc(int &argc, char** argv){
 //    random_init_dsc(NB_PHASE); // Work better in case of subdivision approach
 //    threshold_initialization();
 
-#ifdef VAND
-    circle_init(Vec2(300,300), 150, 2);
-#else
     threshold_initialization();
-#endif
+
+//    DSC2D::ObjectGenerator::create_blob(*dsc,  vec2(300,300), 200 ,2);
     
     gl_debug_helper::set_dsc(&(*dsc));
     
@@ -754,7 +758,6 @@ interface_dsc::interface_dsc(int &argc, char** argv){
 }
 
 #pragma mark - Data
-using namespace DSC2D;
 
 bool is_boundary(DeformableSimplicialComplex & dsc, Face_key fkey){
     for(auto hew = dsc.walker(fkey); !hew.full_circle(); hew = hew.circulate_face_ccw()){
