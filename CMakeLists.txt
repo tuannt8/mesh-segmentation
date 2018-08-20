@@ -22,7 +22,7 @@ endif (APPLE)
 find_package (OpenGL)
 find_package (GLEW REQUIRED)
 find_package(GLUT REQUIRED)
-find_package(glfw3)
+find_package(glfw3 3.2 REQUIRED)
 include_directories( ${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIRS} $(GLEW_INCLUDE_DIRS))
 
 
@@ -52,5 +52,5 @@ aux_source_directory(segment SRC)
 add_executable(${EXEC} ${SRC} ${LIBPNG_LINK_FLAGS})
 
 # Link library
-target_link_libraries(${EXEC} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${OPENGL_glu_LIBRARY} 2D-DSC GEL ${COCOA_LIBRARY})
+target_link_libraries(${EXEC} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${OPENGL_glu_LIBRARY} ${GLFW_LIBRARIES} 2D-DSC GEL ${COCOA_LIBRARY})
 

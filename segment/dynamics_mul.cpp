@@ -145,7 +145,7 @@ void dynamics_mul::compute_difference()
 
 void dynamics_mul::adapt_triangle()
 {
-    HMesh::AttributeVector<double, Face_key> face_energy;
+    HMesh::FaceAttributeVector<double> face_energy;
     for(auto fid : s_dsc->faces())
     {
         auto l = s_dsc->get_label(fid);
@@ -160,7 +160,7 @@ void dynamics_mul::adapt_triangle()
 
     // Relabel it
     double flip_thres = SPLIT_FACE_COEFFICIENT;
-    HMesh::AttributeVector<int, Face_key> faces_to_split(s_dsc->get_no_faces_allocated(), 0);
+    HMesh::FaceAttributeVector<int> faces_to_split(s_dsc->get_no_faces_allocated(), 0);
     for(auto fid : s_dsc->faces())
     {
         auto l = s_dsc->get_label(fid);
@@ -208,7 +208,7 @@ void dynamics_mul::thinning()
     double flip_thres = SPLIT_FACE_COEFFICIENT*1.2;
 
     // 1. Compute face energy
-    HMesh::AttributeVector<double, Face_key> face_energy;
+    HMesh::FaceAttributeVector<double> face_energy;
     for(auto fid : s_dsc->faces())
     {
         auto l = s_dsc->get_label(fid);
