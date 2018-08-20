@@ -39,12 +39,16 @@ public:
     void remove_needles(DSC2D::DeformableSimplicialComplex &dsc);
     
     // First step: Split face and relabeling. Not working.
-    void split_face_and_relabel(DSC2D::DeformableSimplicialComplex &dsc, image &img);
+//    void split_face_and_relabel(DSC2D::DeformableSimplicialComplex &dsc, image &img);
 private:
     DSC2D::DeformableSimplicialComplex *dsc_;
     void split_single_edge(Edge_key ekey);
     void add_point_if_need(HMesh::Walker hew);
     bool collapse_edge(HMesh::Walker hew);
+    
+public:// From dense to sparse, another approach
+    void coarsening_triangles(DSC2D::DeformableSimplicialComplex &dsc);
+    void coarsening_interface(DSC2D::DeformableSimplicialComplex &dsc, image &img);
 };
 
 #endif /* defined(__DSC_seg_integral__adapt_mesh__) */

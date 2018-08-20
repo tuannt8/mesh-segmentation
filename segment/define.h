@@ -272,12 +272,7 @@ using std::endl;
 
 struct dynamics_param{
     dynamics_param(){}
-    dynamics_param(double a, double b, double m){alpha = a; beta = b; mass = m;}
-    
-    double alpha = 1.0; // Curvature
-    double beta = 1.0; // Forth derivative. Keep the curve straight
-    double mass = 10.0; // Display scale
-    
+        
     std::map<int, double> mean_intensity;
     
     std::vector<bool> bDisplay;

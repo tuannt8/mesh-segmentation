@@ -39,7 +39,5 @@ void setting_io::setup_parameter()
     RELABEL = get_int(RELABEL_S);
     NB_PHASE = get_int(NB_PHASE_S);
     ADAPTIVE = get_int(ADAPTIVE_S);
-    //
-    
 }
 

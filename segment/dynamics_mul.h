@@ -70,25 +70,12 @@ private:
     std::vector<Vec2> E_grad0_;
     double dt = DT_;
 private:
-    /*
-     Compute on the whole domain
-     */
-    void update_dsc_implicit(dsc_obj &dsc, image &img);
-    void compute_intensity_force_implicit();
-    void compute_curvature_force_implicit();
-    void compute_image_gradient_force_implicit(std::vector<Vec2> & grad_force);
-    void indexing_vertices();
-    std::vector<int> get_vert_idx(std::vector<HMesh::VertexID> vids);
-    void build_and_solve();
+
     
     /*
      Update with adaptive mesh
      */
     void update_dsc_with_adaptive_mesh();
-private:
-//    void update_dsc_explicit_whole_domain(dsc_obj &dsc, image &img);
-//    void update_dsc_area(dsc_obj &dsc, image &img);
-//    void update_dsc_build_and_solve(dsc_obj &dsc, image &img);
     
 private:
     void update_probability(dsc_obj &dsc, image &img);
@@ -111,50 +98,28 @@ private:
     double get_energy_assume_label(Face_key fid, int assumed_label);
     
 public:
-    void compute_mean_intensity(dsc_obj &dsc, image &img);
-    
-public:
-//    void displace_dsc_2();
-//    void debug_optimum_dt();
-//    void debug_optimum_dt_2();
-    
-//    void optimize_phase();
-    
-    // Phase relabeling with small variant condition
-//    void optimize_phase_with_variant();
-    
-    double furthest_move(Node_key nid, Vec2 direction);
-    double energy_change(Node_key nid, Vec2 new_pos);
-    
-    double star_energy(Node_key nid, Vec2 new_pos);
-    // intensity different in node link
-    double intensity_energy(Node_key nid, Vec2 new_pos);
-    // Interface length in node link
-    double curve_length(Node_key nid, Vec2 new_pos);
+//    void compute_mean_intensity(dsc_obj &dsc, image &img);
     
 private: public:
-    double get_total_energy(); // Oct. 20
     void get_energy(double &e_, double &l_); // 25.01.16
-    
-    double get_total_energy(dsc_obj *obj, std::map<int, double>  intesity_map);
-    
-    double energy_gradient_by_moving_distance(dsc_obj *obj, std::map<int, double>  intesity_map);
-    double u_gradient(dsc_obj *obj, std::map<int, double>  intensity_map);
-    double image_gradient_count(dsc_obj *obj, std::map<int, double>  intensity_map);
-    double gradient_length(dsc_obj *obj);
-    void get_curvature(dsc_obj *obj, HMesh::Walker hew, double &Kcur, double &Kpre);
-    double get_curvature(dsc_obj *obj, HMesh::Walker hew);
+
     
     double energy_triangle(HMesh::FaceID fid, double c, int new_phase);
     
-    double optimal_dt(dsc_obj * clone);
+//    double optimal_dt(dsc_obj * clone);
     
     Vec2 get_vertex_norm(dsc_obj *obj, HMesh::Walker hew);
     HMesh::Walker pre_edge(dsc_obj *obj, HMesh::Walker hew);
     HMesh::Walker next_edge(dsc_obj *obj, HMesh::Walker hew);
     
     // Energy within a star of the node
-    bool energy_with_location(double &E, Node_key nkey , Vec2 displace, double * real_dis = nullptr);
+//    bool energy_with_location(double &E, Node_key nkey , Vec2 displace, double * real_dis = nullptr);
+    
+private:// Coarsening approach
+    void relabel_triangles();
+    void thinning_triangles();
+    
+    
 };
 
 #endif /* defined(__DSC__dynamics_mul__) */

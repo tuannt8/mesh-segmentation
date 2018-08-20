@@ -12,7 +12,6 @@
 
 
 adapt_mesh::adapt_mesh(){
-    
 }
 
 adapt_mesh::~adapt_mesh(){
@@ -124,19 +123,19 @@ void adapt_mesh::adapt_triangle(DSC2D::DeformableSimplicialComplex &dsc, image &
 
 }
 
-void adapt_mesh::split_face_and_relabel(DSC2D::DeformableSimplicialComplex &dsc, image &img)
-{
-//    double thres = 0.05; // ratio to average length
-//    while (dsc.get_min_length_ratio() > thres)
-    {
+//void adapt_mesh::split_face_and_relabel(DSC2D::DeformableSimplicialComplex &dsc, image &img)
+//{
+////    double thres = 0.05; // ratio to average length
+////    while (dsc.get_min_length_ratio() > thres)
+//    {
         
-        dsc.increase_resolution_range();
-        dynamics_mul a;
-        a.compute_mean_intensity(dsc, img);
-        split_face(dsc, img);
-        dsc.smooth();
-    }
-}
+//        dsc.increase_resolution_range();
+//        dynamics_mul a;
+//        a.compute_mean_intensity(dsc, img);
+//        split_face(dsc, img);
+//        dsc.smooth();
+//    }
+//}
 
 struct edge_s_e
 {
@@ -403,6 +402,16 @@ bool adapt_mesh::collapse_edge(HMesh::Walker hew)
     }
     
     return false;
+}
+
+void adapt_mesh::coarsening_triangles(DSC2D::DeformableSimplicialComplex &dsc)
+{
+
+}
+
+void adapt_mesh::coarsening_interface(DSC2D::DeformableSimplicialComplex &dsc, image &img)
+{
+    
 }
 
 void adapt_mesh::split_single_edge(Edge_key ekey)

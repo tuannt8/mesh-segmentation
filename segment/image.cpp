@@ -410,55 +410,55 @@ double image::get_sum_on_tri_variation(Vec2_array tris, double pixel_gap){
 //    return sum;
 }
 
-double image::get_sum_gradient_tri(Vec2_array tris, double * area){
-    double gE = 0;
-    Vec2 min(INFINITY, INFINITY), max(-INFINITY, -INFINITY);
-    for (auto p: tris){
-        min[0] = std::min(min[0], p[0]);
-        min[1] = std::min(min[1], p[1]);
-        max[0] = std::max(max[0], p[0]);
-        max[1] = std::max(max[1], p[1]);
-    }
+//double image::get_sum_gradient_tri(Vec2_array tris, double * area){
+//    double gE = 0;
+//    Vec2 min(INFINITY, INFINITY), max(-INFINITY, -INFINITY);
+//    for (auto p: tris){
+//        min[0] = std::min(min[0], p[0]);
+//        min[1] = std::min(min[1], p[1]);
+//        max[0] = std::max(max[0], p[0]);
+//        max[1] = std::max(max[1], p[1]);
+//    }
     
-    int t_pixel = 0;
+//    int t_pixel = 0;
     
-    for (int i = floor(min[0]); i < ceil(max[0]); i++) {
-        for (int j = floor(min[1]); j < ceil(max[1]); j++) {
-            if (helper_t::is_point_in_tri(Vec2(i,j), tris)) {
-                t_pixel ++;
-                gE += grad(i, j).length();
-            }
-        }
-    }
+//    for (int i = floor(min[0]); i < ceil(max[0]); i++) {
+//        for (int j = floor(min[1]); j < ceil(max[1]); j++) {
+//            if (helper_t::is_point_in_tri(Vec2(i,j), tris)) {
+//                t_pixel ++;
+//                gE += grad(i, j).length();
+//            }
+//        }
+//    }
     
-    return gE/t_pixel;
-}
+//    return gE/t_pixel;
+//}
 
-void image::get_tri_differ(Vec2_array tris, int *total_pixel, double * total_differ, double ci){
-    Vec2 min(INFINITY, INFINITY), max(-INFINITY, -INFINITY);
-    for (auto p: tris){
-        min[0] = std::min(min[0], p[0]);
-        min[1] = std::min(min[1], p[1]);
-        max[0] = std::max(max[0], p[0]);
-        max[1] = std::max(max[1], p[1]);
-    }
+//void image::get_tri_differ(Vec2_array tris, int *total_pixel, double * total_differ, double ci){
+//    Vec2 min(INFINITY, INFINITY), max(-INFINITY, -INFINITY);
+//    for (auto p: tris){
+//        min[0] = std::min(min[0], p[0]);
+//        min[1] = std::min(min[1], p[1]);
+//        max[0] = std::max(max[0], p[0]);
+//        max[1] = std::max(max[1], p[1]);
+//    }
     
-    int t_pixel = 0;
-    double total_diff = 0.0;
+//    int t_pixel = 0;
+//    double total_diff = 0.0;
     
-    for (int i = floor(min[0]); i < ceil(max[0]); i++) {
-        for (int j = floor(min[1]); j < ceil(max[1]); j++) {
-            if (helper_t::is_point_in_tri(Vec2(i,j), tris)) {
-                t_pixel ++;
-                total_diff += (ci - get_intensity(i, j)) * (ci - get_intensity(i, j));
-            }
-        }
-    }
+//    for (int i = floor(min[0]); i < ceil(max[0]); i++) {
+//        for (int j = floor(min[1]); j < ceil(max[1]); j++) {
+//            if (helper_t::is_point_in_tri(Vec2(i,j), tris)) {
+//                t_pixel ++;
+//                total_diff += (ci - get_intensity(i, j)) * (ci - get_intensity(i, j));
+//            }
+//        }
+//    }
     
-    *total_differ = total_diff;
-    if(total_pixel)
-        *total_pixel = t_pixel;
-}
+//    *total_differ = total_diff;
+//    if(total_pixel)
+//        *total_pixel = t_pixel;
+//}
 
 
 void image::compute_gradient(){
