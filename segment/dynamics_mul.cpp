@@ -586,8 +586,6 @@ void dynamics_mul::coarsening_triangles()
         }
     }
     
-    cout << count << " faces marked for subdivision" << endl;
-    
     s_dsc->recursive_split(faces_to_split);
 }
 
@@ -597,10 +595,6 @@ void dynamics_mul::thinning_triangles()
     
     auto thres_hold = get_energy_thres();
     double min_area = SMALLEST_SIZE*SMALLEST_SIZE*0.5;
-    
-    cout << "Threshold: " << thres_hold[0] << "; " << thres_hold[1] << "; " << thres_hold[2] << "; " << thres_hold[3] << endl;
-    cout << "Min area: " << min_area << endl;
-    cout << s_dsc->get_no_faces_allocated() << " triangles" << endl;
     
     // Mark the triangles that are homeogeneous
     HMesh::AttributeVector<int, Face_key> face_can_collapse(s_dsc->get_no_faces_allocated(), 0);
@@ -622,8 +616,7 @@ void dynamics_mul::thinning_triangles()
         }
     }
     
-    std::cout<< count << " triangles can be collapsed" << std::endl;
-    
+
     // Collapse interior vertices
     count = 0;
     int cc = 0;
@@ -664,29 +657,21 @@ void dynamics_mul::thinning_triangles()
         }
     }
     
-    cout << count << " edges collapsed / " << cc << " marked" << endl;
-    for(auto s : state)
-        cout << s << "; ";
-    cout << endl;
 }
 
 bool dynamics_mul::collapse_edge(Edge_key ek, Node_key n_to_remove)
 {   
-
-    
     auto hew = s_dsc->walker(ek);
     if(hew.vertex().get_index() != n_to_remove.get_index())
         hew = hew.opp();
     
     if (!precond_collapse_edge(*s_dsc->mesh, hew.halfedge()) || !s_dsc->unsafe_editable(hew.halfedge()))
     {
-        state[0]++;
         return false;
     }    
     
     if(!s_dsc->is_collapsable(hew, true))
     {
-        state[1]++;
         return false;
     }
     
@@ -707,14 +692,12 @@ bool dynamics_mul::collapse_edge(Edge_key ek, Node_key n_to_remove)
     // Check the quality after collapsing
     Vec2 p_new = s_dsc->get_pos(hew.opp().vertex());
     double q = s_dsc->min_quality(eids0, s_dsc->get_pos(n_to_remove), p_new);
-    cout << q << " ";
+
     if(q > s_dsc->MIN_ANGLE)
     {
-        state[2]++;
         return s_dsc->collapse(hew, 0);
     }
     
-    state[3]++;
     return false;
 }
 
