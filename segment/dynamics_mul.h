@@ -52,7 +52,7 @@ public:
     void update_vertex_stable();
     
     void write_energy();
-private:
+
     // temporary variable
     dsc_obj * s_dsc;
     image * s_img;
@@ -80,9 +80,9 @@ private:
 private:
     void update_probability(dsc_obj &dsc, image &img);
     
-private:
+public:
 //    void update_dsc_explicit(dsc_obj &dsc, image &img);
-    void compute_mean_intensity(std::map<int, double> & mean_inten_o);
+    void compute_mean_intensity();
     void compute_intensity_force();
     void displace_dsc(dsc_obj *obj = nullptr);
     void compute_internal_force();
@@ -115,10 +115,20 @@ private: public:
     // Energy within a star of the node
 //    bool energy_with_location(double &E, Node_key nkey , Vec2 displace, double * real_dis = nullptr);
     
-private:// Coarsening approach
-    void relabel_triangles();
-    void thinning_triangles();
     
+    void relabel_triangles(); // Purely base on MS energy
+
+    /******************************/
+    // Coarsening approach
+    /******************************/
+    std::map<int,double> get_energy_thres();
+    void coarsening_triangles();
+
+    /******************************/
+    // Thinning approach
+    /******************************/
+    void thinning_triangles();
+    bool collapse_edge(Edge_key ek, Node_key n_to_remove);
     
 };
 

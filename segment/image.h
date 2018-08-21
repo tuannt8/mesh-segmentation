@@ -83,6 +83,7 @@ public:
     void debug_integral(Vec2_array tris);
     
     // Get value on the whole triangle
+    // See https://goo.gl/MZTqWq
     template <typename T>
     T get_sum_on_tri(Vec2_array tris, std::function<T(Vec2)> get_v);
     
@@ -105,7 +106,7 @@ public:
     double get_edge_energy(Vec2 p1, Vec2 p2, double spread);
     
     // total intensity inside a triangle
-    void get_tri_intensity(Vec2_array tris, int * total_pixel, double * total_intensity);
+//    void get_tri_intensity(Vec2_array tris, int * total_pixel, double * total_intensity);
     
     // Intensity differ with assumed mean intensity.
     void get_tri_differ(Vec2_array tris, int *total_pixel, double * total_differ, double ci);

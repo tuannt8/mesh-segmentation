@@ -168,15 +168,7 @@ double image::get_tri_intensity_f(Vec2_array tris, double * area_in){
             
         }
     }
-//    for (double ep1 = step/2.0; ep1 < 1.0; ep1 += step){
-//        for(double ep2 = 1 - ep1 - step/2.0; ep2 > 0; ep2 -= step){
-//            double ep3 = 1 - ep1 - ep2;
-//            Vec2 pt = tris[0]*ep1 + tris[1]*ep2 + tris[2]*ep3;
-//            inten += get_intensity_f(pt[0], pt[1]);
-//        }
-//
-//    }
-    
+
     if (area_in) {
         *area_in = area;
     }
@@ -184,30 +176,30 @@ double image::get_tri_intensity_f(Vec2_array tris, double * area_in){
     return inten * area / (double)(res*res);
 }
 
-void image::get_tri_intensity(Vec2_array tris, int * total_pixel, double * total_intensity){
-    Vec2 min(INFINITY, INFINITY), max(-INFINITY, -INFINITY);
-    for (auto p: tris){
-        min[0] = std::min(min[0], p[0]);
-        min[1] = std::min(min[1], p[1]);
-        max[0] = std::max(max[0], p[0]);
-        max[1] = std::max(max[1], p[1]);
-    }
+//void image::get_tri_intensity(Vec2_array tris, int * total_pixel, double * total_intensity){
+//    Vec2 min(INFINITY, INFINITY), max(-INFINITY, -INFINITY);
+//    for (auto p: tris){
+//        min[0] = std::min(min[0], p[0]);
+//        min[1] = std::min(min[1], p[1]);
+//        max[0] = std::max(max[0], p[0]);
+//        max[1] = std::max(max[1], p[1]);
+//    }
     
-    int t_pixel = 0;
-    double total_inten = 0.0;
+//    int t_pixel = 0;
+//    double total_inten = 0.0;
     
-    for (int i = floor(min[0]); i < ceil(max[0]); i++) {
-        for (int j = floor(min[1]); j < ceil(max[1]); j++) {
-            if (helper_t::is_point_in_tri(Vec2(i,j), tris)) {
-                t_pixel ++;
-                total_inten += get_intensity(i, j);
-            }
-        }
-    }
+//    for (int i = floor(min[0]); i < ceil(max[0]); i++) {
+//        for (int j = floor(min[1]); j < ceil(max[1]); j++) {
+//            if (helper_t::is_point_in_tri(Vec2(i,j), tris)) {
+//                t_pixel ++;
+//                total_inten += get_intensity(i, j);
+//            }
+//        }
+//    }
     
-    *total_intensity = total_inten;
-    *total_pixel = t_pixel;
-}
+//    *total_intensity = total_inten;
+//    *total_pixel = t_pixel;
+//}
 
 inline Vec2 get_coord_barry(Vec2_array & tris, double xi1, double xi2) {
     return tris[0]*xi1 + tris[1]*xi2 + tris[2]*(1- xi1 -xi2);
@@ -274,33 +266,33 @@ T image::get_sum_on_tri(Vec2_array tris, std::function<T(Vec2)> get_v){
     return sum;
 }
 
-intensity_out image::get_tri_differ(Vec2_array tris, double ci){
-    Vec2 min(INFINITY, INFINITY), max(-INFINITY, -INFINITY);
-    for (auto p: tris){
-        min[0] = std::min(min[0], p[0]);
-        min[1] = std::min(min[1], p[1]);
-        max[0] = std::max(max[0], p[0]);
-        max[1] = std::max(max[1], p[1]);
-    }
+//intensity_out image::get_tri_differ(Vec2_array tris, double ci){
+//    Vec2 min(INFINITY, INFINITY), max(-INFINITY, -INFINITY);
+//    for (auto p: tris){
+//        min[0] = std::min(min[0], p[0]);
+//        min[1] = std::min(min[1], p[1]);
+//        max[0] = std::max(max[0], p[0]);
+//        max[1] = std::max(max[1], p[1]);
+//    }
     
-    int t_pixel = 0;
-    double total_diff = 0.0;
+//    int t_pixel = 0;
+//    double total_diff = 0.0;
     
-    for (int i = floor(min[0]); i < ceil(max[0]); i++) {
-        for (int j = floor(min[1]); j < ceil(max[1]); j++) {
-            if (helper_t::is_point_in_tri(Vec2(i,j), tris)) {
-                t_pixel ++;
-                total_diff += (ci - get_intensity(i, j)) * (ci - get_intensity(i, j));
-            }
-        }
-    }
+//    for (int i = floor(min[0]); i < ceil(max[0]); i++) {
+//        for (int j = floor(min[1]); j < ceil(max[1]); j++) {
+//            if (helper_t::is_point_in_tri(Vec2(i,j), tris)) {
+//                t_pixel ++;
+//                total_diff += (ci - get_intensity(i, j)) * (ci - get_intensity(i, j));
+//            }
+//        }
+//    }
     
-    intensity_out out;
-    out.total_pixel = t_pixel;
-    out.total_differ = total_diff;
+//    intensity_out out;
+//    out.total_pixel = t_pixel;
+//    out.total_differ = total_diff;
     
-    return out;
-}
+//    return out;
+//}
 
 double image::smooth_filter(double xi1, double xi2, double xi3, double gap){
     double xi123 = xi1 * xi2 * xi3;

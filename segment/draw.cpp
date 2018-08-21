@@ -226,7 +226,7 @@ void Painter::draw_vertices(const DeformableSimplicialComplex& dsc)
 void Painter::print_gl(const double &x, const double &y, const char* str){
     glRasterPos2f(x, y);
     for (const char *c = str; *c != '\0'; c++) {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *c);
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10, *c);
     }
 }
 

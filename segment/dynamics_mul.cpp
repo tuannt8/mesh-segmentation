@@ -22,6 +22,8 @@
 
 #include "draw.h"
 
+vector<int> state(5,0);
+
 using namespace std;
 
 #define GET_FACE_IDX(fid) (int)s_dsc->get_phase_attr(fid, FACE_IDX][0]
@@ -63,7 +65,7 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
     displace_dsc();
 
     // Compute the force
-    compute_mean_intensity(mean_inten_);
+    compute_mean_intensity();
     compute_intensity_force();
     compute_internal_force();
 
@@ -79,14 +81,19 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
     
     if (++count % nb_displace == 0)
     {
-
+        relabel_triangles();
+        
+        compute_mean_intensity();
+        coarsening_triangles();
+        thinning_triangles();
+        
         if(ADAPTIVE)
         {
-            adapt_triangle();
-            thinning();
+//            adapt_triangle();
+//            thinning();
         }
 
-        thinning_interface();
+//        thinning_interface();
     }
     
     static double time = 0;
@@ -337,7 +344,7 @@ void dynamics_mul::thinning_interface()
 double dynamics_mul::get_energy_assume_label(Face_key fid, int assumed_label)
 {
     auto pts = s_dsc->get_pos(fid);
-    double external = s_img->get_tri_differ_f(pts, mean_inten_[assumed_label]);
+    double external = s_img->get_sum_on_tri_differ(pts, mean_inten_[assumed_label]);
     double internal = 0;
     for(auto hew = s_dsc->walker(fid); !hew.full_circle(); hew = hew.circulate_face_ccw())
     {
@@ -498,13 +505,217 @@ void dynamics_mul::relabel_triangles()
 {
     for(auto fid : s_dsc->faces())
     {
+        auto current_label = s_dsc->get_label(fid);
+        if(current_label == BOUND_FACE)
+            continue;
         
+        int mean_label = -1;
+        double mean_E = INFINITY;
+        for(int ll = 1; ll < mean_inten_.size(); ll++)
+        {
+            double E = get_energy_assume_label(fid, ll);
+            if(mean_E > E)
+            {
+                mean_E = E;
+                mean_label = ll;
+            }
+        }
+        
+        if(current_label != mean_label)
+        {
+            s_dsc->set_label(fid, mean_label);
+        }
     }
+}
+
+std::map<int,double> dynamics_mul::get_energy_thres()
+{
+    std::map<int,double> e_thres;
+    for(auto phase = mean_inten_.begin(); phase != mean_inten_.end(); phase ++)
+    {
+        auto c = phase->first;
+        double mean_differ = INFINITY;
+        
+        for(int ll = 1; ll < mean_inten_.size(); ll++)
+//                (auto other_phase = mean_inten_.begin(); other_phase != mean_inten_.end(); other_phase ++)
+        {
+            if(ll != phase->first)
+            {
+                mean_differ = std::min(mean_differ, 
+                  (mean_inten_[ll] - phase->second)*(mean_inten_[ll] - phase->second)
+                                       );
+            }
+        }
+        
+        e_thres.insert(std::make_pair(phase->first, mean_differ));
+    }
+    
+    double mean_area = SMALLEST_SIZE*SMALLEST_SIZE*0.5;
+    double mean_circum = 3*SMALLEST_SIZE;
+    for(auto & et : e_thres )
+    {
+        et.second = et.second * mean_area + mean_circum*ALPHA;
+    }
+    
+    return e_thres;
+}
+
+void dynamics_mul::coarsening_triangles()
+{
+    auto thres_hold = get_energy_thres();
+    double mean_area = SMALLEST_SIZE*SMALLEST_SIZE*0.5;
+    
+    HMesh::AttributeVector<int, Face_key> faces_to_split(s_dsc->get_no_faces_allocated(), 0);
+    int count = 0;
+    for(auto fid : s_dsc->faces())
+    {
+        if(s_dsc->area(fid) < mean_area)
+            continue;
+        
+        auto l = s_dsc->get_label(fid);
+        
+        // Compute the variance
+        auto tris = s_dsc->get_pos(fid);
+        auto mean_c = s_img->get_sum_on_tri_intensity(tris) / s_dsc->area(fid);
+        auto ext_E = s_img->get_sum_on_tri_differ(tris, mean_c);
+        
+        if(ext_E > thres_hold[l]) // Consider splitting
+        {
+            count ++;
+            faces_to_split[fid] = 1;
+        }
+    }
+    
+    cout << count << " faces marked for subdivision" << endl;
+    
+    s_dsc->recursive_split(faces_to_split);
 }
 
 void dynamics_mul::thinning_triangles()
 {
+    state = vector<int>(5,0);
     
+    auto thres_hold = get_energy_thres();
+    double min_area = SMALLEST_SIZE*SMALLEST_SIZE*0.5;
+    
+    cout << "Threshold: " << thres_hold[0] << "; " << thres_hold[1] << "; " << thres_hold[2] << "; " << thres_hold[3] << endl;
+    cout << "Min area: " << min_area << endl;
+    cout << s_dsc->get_no_faces_allocated() << " triangles" << endl;
+    
+    // Mark the triangles that are homeogeneous
+    HMesh::AttributeVector<int, Face_key> face_can_collapse(s_dsc->get_no_faces_allocated(), 0);
+    
+    int count = 0;
+    for(auto fid : s_dsc->faces())
+    {        
+        auto l = s_dsc->get_label(fid);
+        
+        // Compute the variance
+        auto tris = s_dsc->get_pos(fid);
+        auto mean_c = s_img->get_sum_on_tri_intensity(tris) / s_dsc->area(fid);
+        auto ext_E = s_img->get_sum_on_tri_differ(tris, mean_c);
+        
+        if(ext_E < thres_hold[l]) // Consider splitting
+        {
+            face_can_collapse[fid] = 1;
+            count ++;
+        }
+    }
+    
+    std::cout<< count << " triangles can be collapsed" << std::endl;
+    
+    // Collapse interior vertices
+    count = 0;
+    int cc = 0;
+    for(auto vid : s_dsc->vertices())
+    {
+        bool can_collaspe = true;
+        for(auto hew = s_dsc->walker(vid); !hew.full_circle(); hew = hew.circulate_face_ccw())
+        {
+            if(face_can_collapse[hew.face()] == 1)
+            {
+                can_collaspe = false;
+                break;
+            }
+        }
+        
+        if(can_collaspe)
+        {
+           cc++;
+                        
+            // Collapse the shortest edge
+            // Not the optimal choice, but we priorize performance
+            double shortest_length = INFINITY;
+            Edge_key shortest_edge;
+            for(auto hew = s_dsc->walker(vid); !hew.full_circle(); hew = hew.circulate_vertex_ccw())
+            {
+                auto length = s_dsc->length(hew.halfedge());
+                if(length < shortest_length)
+                {
+                    shortest_length = length;
+                    shortest_edge = hew.halfedge();
+                }
+            }
+            
+
+            
+            if(collapse_edge(shortest_edge, vid))
+                count++;
+        }
+    }
+    
+    cout << count << " edges collapsed / " << cc << " marked" << endl;
+    for(auto s : state)
+        cout << s << "; ";
+    cout << endl;
+}
+
+bool dynamics_mul::collapse_edge(Edge_key ek, Node_key n_to_remove)
+{   
+
+    
+    auto hew = s_dsc->walker(ek);
+    if(hew.vertex().get_index() != n_to_remove.get_index())
+        hew = hew.opp();
+    
+    if (!precond_collapse_edge(*s_dsc->mesh, hew.halfedge()) || !s_dsc->unsafe_editable(hew.halfedge()))
+    {
+        state[0]++;
+        return false;
+    }    
+    
+    if(!s_dsc->is_collapsable(hew, true))
+    {
+        state[1]++;
+        return false;
+    }
+    
+    // Find neighbors
+    std::vector<Node_key> nids = {hew.opp().vertex(), hew.vertex()};
+    std::vector<Face_key> e_fids = {hew.face(), hew.opp().face()};
+    std::vector<Edge_key> eids0, eids1;
+    
+    for(auto hw = s_dsc->walker(hew.halfedge()); !hw.full_circle(); hw = hw.circulate_vertex_cw())
+    {
+        if(hw.face() != e_fids[0] && hw.face() != e_fids[1])
+        {
+            eids0.push_back(hw.next().halfedge());
+        }
+    }
+
+    
+    // Check the quality after collapsing
+    Vec2 p_new = s_dsc->get_pos(hew.opp().vertex());
+    double q = s_dsc->min_quality(eids0, s_dsc->get_pos(n_to_remove), p_new);
+    cout << q << " ";
+    if(q > s_dsc->MIN_ANGLE)
+    {
+        state[2]++;
+        return s_dsc->collapse(hew, 0);
+    }
+    
+    state[3]++;
+    return false;
 }
 
 double dynamics_mul::energy_triangle(HMesh::FaceID fid, double c,  int new_phase){
@@ -751,8 +962,10 @@ void dynamics_mul::displace_dsc(dsc_obj *obj){
 //    compute_mean_intensity(mean_inten_);
 //}
 
-void dynamics_mul::compute_mean_intensity(std::map<int, double> & mean_inten_o)
+void dynamics_mul::compute_mean_intensity()
 {
+    std::map<int, double> mean_inten_o;
+    
     std::map<int, double> total_area;
     
     mean_inten_o.clear();
@@ -794,7 +1007,7 @@ void dynamics_mul::compute_mean_intensity(std::map<int, double> & mean_inten_o)
     cout << endl;
 
     g_param.mean_intensity = mean_inten_o;
-    
+    mean_inten_ = mean_inten_o;
 }
 
 //void dynamics_mul::compute_intensity_force_implicit(){

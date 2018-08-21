@@ -192,8 +192,11 @@ void interface_dsc::keyboard(unsigned char key, int x, int y){
             break;
         case 's': // Split edge
         {
-            adapt_mesh am;
-            am.split_edge(*dsc, *image_);
+            dyn_->s_dsc = &(*dsc);
+            dyn_->s_img = &(*image_);
+        
+            dyn_->compute_mean_intensity();
+            dyn_->thinning_triangles();
         }
             break;
         case 'b': // Split edge
@@ -206,10 +209,14 @@ void interface_dsc::keyboard(unsigned char key, int x, int y){
             load_dsc();
         }
             break;
-//        case 'w': // Split edge
-//        {
-//            write_triangle_energy();
-//        }
+        case 'w': // Split edge
+        {
+            dyn_->s_dsc = &(*dsc);
+            dyn_->s_img = &(*image_);
+        
+            dyn_->compute_mean_intensity();
+            dyn_->coarsening_triangles();
+        }
             break;
         default:
             break;
@@ -369,17 +376,17 @@ void interface_dsc::draw()
 //        draw_edge_energy();
 //    }
 //    
-//    if(options_disp::get_option("Vertices index", false)){
-//        glColor3f(1, 0, 0);
-//        Painter::draw_vertices_index(*dsc);
-//    }
+    if(options_disp::get_option("Vertices index", false)){
+        glColor3f(1, 0, 0);
+        Painter::draw_vertices_index(*dsc);
+    }
     
-//    if(options_disp::get_option("Edge index", false)){
-//        glColor3f(1, 0, 0);
-//        // Painter::draw_vertices_index(*dsc);
-//        // Painter::draw_faces_index(*dsc);
-//        Painter::draw_edges_index(*dsc);
-//    }
+    if(options_disp::get_option("Edge index", false)){
+        glColor3f(1, 1, 0);
+        // Painter::draw_vertices_index(*dsc);
+        // Painter::draw_faces_index(*dsc);
+        Painter::draw_edges_index(*dsc);
+    }
     
 //    if (options_disp::get_option("Face index")){
 //        Painter::draw_faces_index(*dsc);
@@ -992,12 +999,8 @@ void interface_dsc::threshold_initialization()
 }
 
 void interface_dsc::thres_hold_init(){
-    for (auto fid = dsc->faces_begin(); fid != dsc->faces_end(); fid++) {
-        auto tris = dsc->get_pos(*fid);
-        int totalPixel = 0;
-        double total_inten = 0.0;
-        image_->get_tri_intensity(tris, & totalPixel, & total_inten);
-        double mean_c = total_inten / (double)totalPixel;
+    for (auto fid = dsc->faces_begin(); fid != dsc->faces_end(); fid++) {   
+        double mean_c = image_->get_sum_on_tri_intensity(dsc->get_pos(*fid)) / dsc->area(*fid);
         
         if (mean_c < 0.2) {
             dsc->set_label(*fid, 0);
