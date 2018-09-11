@@ -122,7 +122,9 @@ private: public:
     // Coarsening approach
     /******************************/
     std::map<int,double> get_energy_thres();
-    void coarsening_triangles();
+//    void subdivide_triangles();
+    
+    void subdivide_triangles();
 
     /******************************/
     // Thinning approach

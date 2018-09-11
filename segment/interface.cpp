@@ -211,11 +211,7 @@ void interface_dsc::keyboard(unsigned char key, int x, int y){
             break;
         case 'w': // Split edge
         {
-            dyn_->s_dsc = &(*dsc);
-            dyn_->s_img = &(*image_);
-        
-            dyn_->compute_mean_intensity();
-            dyn_->coarsening_triangles();
+
         }
             break;
         default:
@@ -746,13 +742,10 @@ interface_dsc::interface_dsc(int &argc, char** argv){
     check_gl_error();
     
     init_dsc();
-    
-//    random_init_dsc(NB_PHASE); // Work better in case of subdivision approach
-//    threshold_initialization();
 
+//    random_init_dsc(NB_PHASE);
     threshold_initialization();
 
-//    DSC2D::ObjectGenerator::create_blob(*dsc,  vec2(300,300), 200 ,2);
     
     gl_debug_helper::set_dsc(&(*dsc));
     

@@ -58,7 +58,7 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
 {
     auto init_time = std::chrono::system_clock::now();
     
-    int nb_displace = 2;
+    int nb_displace = 5;
 
 
     // Deform the mesh
@@ -75,16 +75,16 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
     static int count = 0;
     static int count_thin = 0;
     count ++;
-    
-    // adapt mesh
-    adapt_mesh am;
+
+    relabel_triangles();    
     
     if (++count % nb_displace == 0)
     {
-        relabel_triangles();
+
         
         compute_mean_intensity();
-        coarsening_triangles();
+        subdivide_triangles();
+       
         thinning_triangles();
         
         if(ADAPTIVE)
@@ -152,131 +152,131 @@ void dynamics_mul::compute_difference()
 
 void dynamics_mul::adapt_triangle()
 {
-    HMesh::FaceAttributeVector<double> face_energy;
-    for(auto fid : s_dsc->faces())
-    {
-        auto l = s_dsc->get_label(fid);
-        if(l==BOUND_FACE)
-        {
-            continue; // Triangle on domain boundary
-        }
+//    HMesh::FaceAttributeVector<double> face_energy;
+//    for(auto fid : s_dsc->faces())
+//    {
+//        auto l = s_dsc->get_label(fid);
+//        if(l==BOUND_FACE)
+//        {
+//            continue; // Triangle on domain boundary
+//        }
 
-        face_energy[fid] = s_img->get_tri_varience_f(s_dsc->get_pos(fid));
+//        face_energy[fid] = s_img->get_tri_varience_f(s_dsc->get_pos(fid));
 
-    }
+//    }
 
-    // Relabel it
-    double flip_thres = SPLIT_FACE_COEFFICIENT;
-    HMesh::FaceAttributeVector<int> faces_to_split(s_dsc->get_no_faces_allocated(), 0);
-    for(auto fid : s_dsc->faces())
-    {
-        auto l = s_dsc->get_label(fid);
-        if(l==BOUND_FACE)
-        {
-            continue; // Triangle on domain boundary
-        }
+//    // Relabel it
+//    double flip_thres = SPLIT_FACE_COEFFICIENT;
+//    HMesh::FaceAttributeVector<int> faces_to_split(s_dsc->get_no_faces_allocated(), 0);
+//    for(auto fid : s_dsc->faces())
+//    {
+//        auto l = s_dsc->get_label(fid);
+//        if(l==BOUND_FACE)
+//        {
+//            continue; // Triangle on domain boundary
+//        }
 
-        if(face_energy[fid] < flip_thres) // consider flipping
-        {
-            double current_energy = get_energy_assume_label(fid, l);
+//        if(face_energy[fid] < flip_thres) // consider flipping
+//        {
+//            double current_energy = get_energy_assume_label(fid, l);
 
-            for(int i = 1; i < mean_inten_.size(); i++)
-            {
-                if (get_energy_assume_label(fid, i) < current_energy)
-                {
-                    s_dsc->update_attributes(fid, i);
-                    // Update energy
-                    face_energy[fid] = s_img->get_tri_varience_f(s_dsc->get_pos(fid));
-                    break;
-                }
-            }
-        }else
-        {
-            // consider splitting
-            faces_to_split[fid] = 1;
-        }
-    }
+//            for(int i = 1; i < mean_inten_.size(); i++)
+//            {
+//                if (get_energy_assume_label(fid, i) < current_energy)
+//                {
+//                    s_dsc->update_attributes(fid, i);
+//                    // Update energy
+//                    face_energy[fid] = s_img->get_tri_varience_f(s_dsc->get_pos(fid));
+//                    break;
+//                }
+//            }
+//        }else
+//        {
+//            // consider splitting
+//            faces_to_split[fid] = 1;
+//        }
+//    }
 
-    static bool split = true;
-    if(faces_to_split.size() ==0)
-        split = false;
-    // Splitting
-    if(split && RELABEL)
-    {
-        s_dsc->recursive_split(faces_to_split);
+//    static bool split = true;
+//    if(faces_to_split.size() ==0)
+//        split = false;
+//    // Splitting
+//    if(split && RELABEL)
+//    {
+//        s_dsc->recursive_split(faces_to_split);
 
-        adapt_mesh am;
-        am.remove_needles(*s_dsc);
-    }
+//        adapt_mesh am;
+//        am.remove_needles(*s_dsc);
+//    }
 }
 
 void dynamics_mul::thinning()
 {
-    double flip_thres = SPLIT_FACE_COEFFICIENT*1.2;
+//    double flip_thres = SPLIT_FACE_COEFFICIENT*1.2;
 
-    // 1. Compute face energy
-    HMesh::FaceAttributeVector<double> face_energy;
-    for(auto fid : s_dsc->faces())
-    {
-        auto l = s_dsc->get_label(fid);
-        if(l==BOUND_FACE)
-        {
-            continue; // Triangle on domain boundary
-        }
+//    // 1. Compute face energy
+//    HMesh::FaceAttributeVector<double> face_energy;
+//    for(auto fid : s_dsc->faces())
+//    {
+//        auto l = s_dsc->get_label(fid);
+//        if(l==BOUND_FACE)
+//        {
+//            continue; // Triangle on domain boundary
+//        }
 
-        face_energy[fid] = s_img->get_tri_varience_f(s_dsc->get_pos(fid));
-    }
+//        face_energy[fid] = s_img->get_tri_varience_f(s_dsc->get_pos(fid));
+//    }
 
-    // 2. Find potential collapsing edge
-    vector<Edge_key> edges_to_collapse;
+//    // 2. Find potential collapsing edge
+//    vector<Edge_key> edges_to_collapse;
 
 
-    for(auto nid : s_dsc->vertices())
-    {
-        auto shortest_edge = s_dsc->walker(nid);
-        double shortest = INFINITY;
+//    for(auto nid : s_dsc->vertices())
+//    {
+//        auto shortest_edge = s_dsc->walker(nid);
+//        double shortest = INFINITY;
 
-        if(!s_dsc->is_interface(nid)
-                && !HMesh::boundary(*s_dsc->mesh, nid))
-        {
-            bool collapse = true;
-            double shortest = INFINITY;
-            for (auto hew = s_dsc->walker(nid); !hew.full_circle(); hew = hew.circulate_vertex_ccw())
-            {
-                if(face_energy[hew.face()] > flip_thres)
-                {
-                    collapse = false;
-                    break;
-                }
-                if(s_dsc->length(hew.halfedge()) < shortest)
-                {
-                    shortest = s_dsc->length(hew.halfedge());
-                    shortest_edge = hew;
-                }
-            }
-            // Check mesh quality before thinning
-            if(collapse)
-            {
-                auto survive_vertex = shortest_edge.vertex();
-                auto pos = s_dsc->get_pos(survive_vertex);
-                double min_quality = INFINITY;
-                for (auto hew = s_dsc->walker(nid); !hew.full_circle();
-                     hew = hew.circulate_vertex_ccw())
-                {
-                    auto v1 = hew.vertex();
-                    auto v2 =  hew.next().next().vertex();
-                    if(v1.get_index() != survive_vertex.get_index()
-                       && v2.get_index() != survive_vertex.get_index())
-                    {
-                        min_quality = std::min(DSC2D::Util::min_angle(s_dsc->get_pos(v1), s_dsc->get_pos(v2), pos), min_quality);
-                    }
-                }
+//        if(!s_dsc->is_interface(nid)
+//                && !HMesh::boundary(*s_dsc->mesh, nid))
+//        {
+//            bool collapse = true;
+//            double shortest = INFINITY;
+//            for (auto hew = s_dsc->walker(nid); !hew.full_circle(); hew = hew.circulate_vertex_ccw())
+//            {
+//                if(face_energy[hew.face()] > flip_thres)
+//                {
+//                    collapse = false;
+//                    break;
+//                }
+//                if(s_dsc->length(hew.halfedge()) < shortest)
+//                {
+//                    shortest = s_dsc->length(hew.halfedge());
+//                    shortest_edge = hew;
+//                }
+//            }
+//            // Check mesh quality before thinning
+//            if(collapse)
+//            {
+//                auto survive_vertex = shortest_edge.vertex();
+//                auto pos = s_dsc->get_pos(survive_vertex);
+//                double min_quality = INFINITY;
+//                for (auto hew = s_dsc->walker(nid); !hew.full_circle();
+//                     hew = hew.circulate_vertex_ccw())
+//                {
+//                    auto v1 = hew.vertex();
+//                    auto v2 =  hew.next().next().vertex();
+//                    if(v1.get_index() != survive_vertex.get_index()
+//                       && v2.get_index() != survive_vertex.get_index())
+//                    {
+//                        min_quality = std::min(DSC2D::Util::min_angle(s_dsc->get_pos(v1), s_dsc->get_pos(v2), pos), min_quality);
+//                    }
+//                }
 
-                if(min_quality > M_PI * 10./180.)
-                    s_dsc->collapse(shortest_edge, 0.0);
-            }
-        }
-    }
+//                if(min_quality > M_PI * 10./180.)
+//                    s_dsc->collapse(shortest_edge, 0.0);
+//            }
+//        }
+//    }
 }
 
 void dynamics_mul::thinning_interface()
@@ -560,7 +560,7 @@ std::map<int,double> dynamics_mul::get_energy_thres()
     return e_thres;
 }
 
-void dynamics_mul::coarsening_triangles()
+void dynamics_mul::subdivide_triangles()
 {
     auto thres_hold = get_energy_thres();
     double mean_area = SMALLEST_SIZE*SMALLEST_SIZE*0.5;

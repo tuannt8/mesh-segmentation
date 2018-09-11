@@ -22,98 +22,98 @@ adapt_mesh::~adapt_mesh(){
 
 
 
-void adapt_mesh::split_face(DSC2D::DeformableSimplicialComplex &dsc, image &img)
-{
-    dsc_ = & dsc;
+//void adapt_mesh::split_face(DSC2D::DeformableSimplicialComplex &dsc, image &img)
+//{
+//    dsc_ = & dsc;
     
-    auto c_array = g_param.mean_intensity;
-#ifdef PROTECT_BOUND
-    c_array[BOUND_FACE] = INFINITY;
-#endif
-    
-    double flip_thres = SPLIT_FACE_COEFFICIENT;
-    
-    
-    HMesh::FaceAttributeVector<double> variation(dsc_->get_no_faces(), 0);
-    std::vector<Face_key> to_split;
-    for (auto fkey : dsc_->faces())
-    {
-#ifdef PROTECT_BOUND
-        if (dsc_->get_label(fkey) == BOUND_FACE)
-        {
-            continue;
-        }
-#endif
-        
-        auto pts = dsc_->get_pos(fkey);
-        
-        double area;
-        double mi = img.get_tri_intensity_f(pts, &area); mi /= area;
-
-        
-        double e = img.get_tri_differ_f(pts, mi)/ (area + SINGULAR_AREA);
-        
-        variation[fkey] = e;
-        if (e < flip_thres)
-        {
-            // Consider flipping
-            int min_label = -1;
-            double min_differ = INFINITY;
-
-            auto tris = dsc_->get_pos(fkey);
-       //     auto area = dsc_->area(fkey);
-            
-            for (auto c : c_array)
-            {
-                double ci = c.second;
-                double c_sum = img.get_tri_differ_f(tris, ci) / area;
-                
-                
-                if (c_sum < min_differ) {
-                    min_differ = c_sum;
-                    min_label = c.first;
-                }
-            }
-            
-            
-            if(
+//    auto c_array = g_param.mean_intensity;
 //#ifdef PROTECT_BOUND
-               min_label != BOUND_FACE &&
+//    c_array[BOUND_FACE] = INFINITY;
 //#endif
-                min_label != dsc_->get_label(fkey))
-            {
-                dsc_->update_attributes(fkey, min_label);
-            }
-        }else{
-        //    auto area = dsc_->area(fkey);
-            if (area < SMALLEST_SIZE*SMALLEST_SIZE / 2.0)
-            {
-                continue;
-            }
+    
+//    double flip_thres = SPLIT_FACE_COEFFICIENT;
+    
+    
+//    HMesh::FaceAttributeVector<double> variation(dsc_->get_no_faces(), 0);
+//    std::vector<Face_key> to_split;
+//    for (auto fkey : dsc_->faces())
+//    {
+//#ifdef PROTECT_BOUND
+//        if (dsc_->get_label(fkey) == BOUND_FACE)
+//        {
+//            continue;
+//        }
+//#endif
+        
+//        auto pts = dsc_->get_pos(fkey);
+        
+//        double area;
+//        double mi = img.get_tri_intensity_f(pts, &area); mi /= area;
 
-            // Only split stable triangle
-            // Triangle with 3 stable edge
-            int bStable = 0;
-            for (auto w = dsc_->walker(fkey); !w.full_circle(); w = w.circulate_face_ccw())
-            {
-                bStable += dsc_->bStable[w.vertex()];
-            }
+        
+//        double e = img.get_tri_differ_f(pts, mi)/ (area + SINGULAR_AREA);
+        
+//        variation[fkey] = e;
+//        if (e < flip_thres)
+//        {
+//            // Consider flipping
+//            int min_label = -1;
+//            double min_differ = INFINITY;
 
-            if (bStable > 1)
-            {
+//            auto tris = dsc_->get_pos(fkey);
+//       //     auto area = dsc_->area(fkey);
+            
+//            for (auto c : c_array)
+//            {
+//                double ci = c.second;
+//                double c_sum = img.get_tri_differ_f(tris, ci) / area;
                 
-                dsc_->split(fkey);
-            }
-            else
-            {
+                
+//                if (c_sum < min_differ) {
+//                    min_differ = c_sum;
+//                    min_label = c.first;
+//                }
+//            }
+            
+            
+//            if(
+////#ifdef PROTECT_BOUND
+//               min_label != BOUND_FACE &&
+////#endif
+//                min_label != dsc_->get_label(fkey))
+//            {
+//                dsc_->update_attributes(fkey, min_label);
+//            }
+//        }else{
+//        //    auto area = dsc_->area(fkey);
+//            if (area < SMALLEST_SIZE*SMALLEST_SIZE / 2.0)
+//            {
+//                continue;
+//            }
 
-            }
-        }
-    }
+//            // Only split stable triangle
+//            // Triangle with 3 stable edge
+//            int bStable = 0;
+//            for (auto w = dsc_->walker(fkey); !w.full_circle(); w = w.circulate_face_ccw())
+//            {
+//                bStable += dsc_->bStable[w.vertex()];
+//            }
+
+//            if (bStable > 1)
+//            {
+                
+//                dsc_->split(fkey);
+//            }
+//            else
+//            {
+
+//            }
+//        }
+//    }
 
     
-    //  dsc_->clean_attributes();
-}
+//    //  dsc_->clean_attributes();
+//}
 
 void adapt_mesh::adapt_triangle(DSC2D::DeformableSimplicialComplex &dsc, image &img)
 {
@@ -171,55 +171,55 @@ void adapt_mesh::remove_needles(DSC2D::DeformableSimplicialComplex &dsc)
     }
 }
 
-void adapt_mesh::thinning(DSC2D::DeformableSimplicialComplex &dsc, image &img)
-{
-    dsc_ = & dsc;
+//void adapt_mesh::thinning(DSC2D::DeformableSimplicialComplex &dsc, image &img)
+//{
+//    dsc_ = & dsc;
 
     
-    double flip_thres = SPLIT_FACE_COEFFICIENT;
+//    double flip_thres = SPLIT_FACE_COEFFICIENT;
     
-//    std::vector<Node_key> to_collapse;
-    for (auto nkey : dsc_->vertices())
-    {
-        if (dsc_->is_interface(nkey)
-            || HMesh::boundary(*dsc_->mesh, nkey))
-        {
-            continue;
-        }
+////    std::vector<Node_key> to_collapse;
+//    for (auto nkey : dsc_->vertices())
+//    {
+//        if (dsc_->is_interface(nkey)
+//            || HMesh::boundary(*dsc_->mesh, nkey))
+//        {
+//            continue;
+//        }
         
-        // Check if the one ring have low variation
-        bool low_var = true;
-        auto smallest = dsc_->walker(nkey);
-        double shortest = INFINITY;
-        for (auto hew = dsc_->walker(nkey); !hew.full_circle(); hew = hew.circulate_vertex_ccw())
-        {
-            auto fkey = hew.face();
-            auto pts = dsc_->get_pos(fkey);
-            double area;
-            double mi = img.get_tri_intensity_f(pts, &area); mi /= area;
-            double e = img.get_tri_differ_f(pts, mi)/ (area + SINGULAR_AREA);
+//        // Check if the one ring have low variation
+//        bool low_var = true;
+//        auto smallest = dsc_->walker(nkey);
+//        double shortest = INFINITY;
+//        for (auto hew = dsc_->walker(nkey); !hew.full_circle(); hew = hew.circulate_vertex_ccw())
+//        {
+//            auto fkey = hew.face();
+//            auto pts = dsc_->get_pos(fkey);
+//            double area;
+//            double mi = img.get_tri_intensity_f(pts, &area); mi /= area;
+//            double e = img.get_tri_differ_f(pts, mi)/ (area + SINGULAR_AREA);
             
-            if (e > flip_thres)
-            {
-                low_var = false;
-            }
+//            if (e > flip_thres)
+//            {
+//                low_var = false;
+//            }
             
-            if (dsc_->length(hew.halfedge()) < shortest)
-            {
-                shortest = dsc_->length(hew.halfedge());
-                smallest = hew;
-            }
-        }
+//            if (dsc_->length(hew.halfedge()) < shortest)
+//            {
+//                shortest = dsc_->length(hew.halfedge());
+//                smallest = hew;
+//            }
+//        }
         
-        if (low_var)
-        {
-            dsc_->collapse(smallest.halfedge(), true);
-            //dsc.collapse(smallest, 0.0);
-        }
-    }
+//        if (low_var)
+//        {
+//            dsc_->collapse(smallest.halfedge(), true);
+//            //dsc.collapse(smallest, 0.0);
+//        }
+//    }
     
 
-}
+//}
 
 inline bool is_bound(DSC2D::DeformableSimplicialComplex * dsc, HMesh::HalfEdgeID e)
 {

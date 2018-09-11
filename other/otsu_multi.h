@@ -1,10 +1,7 @@
 //
 //  otsu_multi.h
 //  DSC_segment
-//
-//  Created by Tuan Nguyen Trung on 6/14/17.
-//  Copyright © 2017 Asger Nyman Christiansen. All rights reserved.
-//
+
 
 #ifndef otsu_multi_h
 #define otsu_multi_h
@@ -45,12 +42,12 @@ inline std::vector<double> buildTables(std::vector<int> histogram)
         
         for (int v = u + 1; v < histogram.size(); v++)
         {
-            if(std::abs(P[v] - P[u]) > 0.000001)
+//            if(std::abs(P[v] - P[u]) > 0.000001)
                 hLine[v] = (S[v] - S[u])*(S[v] - S[u]) / (P[v] - P[u]);
-            else
-            {
+//            else
+//            {
                 
-            }
+//            }
         }
     }
     
@@ -86,7 +83,7 @@ void for_loop(double *maxSum,
             if (*maxSum < sum) {
                 // Return calculated threshold.
 //                *thresholds = index->mid(1, thresholds->size());
-                *thresholds = std::vector<int>(index->begin() + 1, index->begin()+1+thresholds->size());
+                *thresholds = std::vector<int>(&index->at(1), &index->at(1+thresholds->size()) );
                 *maxSum = sum;
             }
         } else
