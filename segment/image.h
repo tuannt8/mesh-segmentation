@@ -23,7 +23,6 @@
 #include <GLUT/glut.h>
 #endif
 
-#define OUT_BOUND_INTENTISY -0.2
 
 #include "CImg.h"
 

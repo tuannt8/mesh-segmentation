@@ -11,7 +11,13 @@
 #include "helper.h"
 #include <math.h>
 
+#define CROP_W(x) \
+    if(x<0)x=0; \
+    if(x >= width()) x= width();
 
+#define CROP_H(x) \
+    if(x<0)x=0; \
+    if(x >= height()) x= height();
 
 #define NOISE 5
 #define BLUR 3
@@ -89,21 +95,20 @@ void image::draw_grad(int window_width){
 
 // 0 - 1.0
 double image::get_intensity(int x, int y){
-    if (x < 0 or x >= width()
-        or y < 0 or y >= height()) {
-        return 1;
-    }
+
+    CROP_W(x);
+    CROP_H(y);
+    
     return ((double)(*this)(x, y)) / (double)MAX_BYTE;
 }
 
 // 0 - 1.0
 double image::get_intensity_f(double x, double y){
-    if (x < 0 or x >= width()
-        or y < 0 or y >= height())
-    {
-        return OUT_BOUND_INTENTISY;
-    }
     
+    
+    CROP_W(x);
+    CROP_H(y);
+            
     int x_i = (int)x;
     int y_i = (int)y;
     double ep_x = x - x_i;

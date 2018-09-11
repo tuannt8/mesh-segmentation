@@ -76,7 +76,7 @@ void animate_(){
 void glutMouseFunc_(int button, int state, int x, int y){
     gl_debug_helper::mouseDown(button, state, x, y);
     options_disp::mouse_func(button, state, x, y);
-};;
+}
 
 
 void glutMotion_(int x, int y){
@@ -127,7 +127,7 @@ void interface_dsc::reshape(int width, int height){
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
 //        gluOrtho2D(0, imageSize[0], 0, imageSize[1]);
-        gluOrtho2D(-DISCRETIZE_RES, imageSize[0]-DISCRETIZE_RES, -DISCRETIZE_RES, imageSize[1]-DISCRETIZE_RES);
+        gluOrtho2D(0, imageSize[0], 0, imageSize[1]);
         
         double lx = (gl_ratio < image_ratio)? WIN_SIZE_Y/image_ratio : real_width;
         double ly = (gl_ratio < image_ratio)? WIN_SIZE_Y : real_width*image_ratio;
@@ -268,9 +268,7 @@ void interface_dsc::load_dsc()
         
         dsc = std::unique_ptr<DeformableSimplicialComplex>(
                                                            new DeformableSimplicialComplex(DISCRETIZATION, points, faces, domain));
-#ifdef TUAN_MULTI_RES
-        dsc->img = &*image_;
-#endif
+
         gl_debug_helper::set_dsc(&(*dsc));
         
         myfile.close();
@@ -354,24 +352,7 @@ void interface_dsc::draw()
         glPointSize(1.0);
     //    Painter::draw_vertices(*dsc);
     }
-    
-//    if(options_disp::get_option("Phase index", false)){
-//        Painter::draw_face_label(*dsc);
-//    }
-//    
-    if(options_disp::get_option("Triangle variation", false)){
-        draw_tri_variant();
-    }
-    
-//    if(options_disp::get_option("Triangle MS energy", false)){
-//        draw_tri_MS_energy();
-//    }
-//
-//    
-//    if(options_disp::get_option("Edge energy", false)){
-//        draw_edge_energy();
-//    }
-//    
+   
     if(options_disp::get_option("Vertices index", false)){
         glColor3f(1, 0, 0);
         Painter::draw_vertices_index(*dsc);
@@ -405,102 +386,6 @@ void interface_dsc::draw()
     Painter::end();
 }
 
-//void interface_dsc::draw_tri_MS_energy(){
-//    // Energy base on mumfordshah energy
-//    dyn_->compute_mean_intensity(*dsc, *image_);
-//    auto mean_inten = g_param.mean_intensity;
-//    for (auto fkey : dsc->faces()){
-//        auto pts = dsc->get_pos(fkey);
-////        /*
-////         Shrink the triangle
-////         */
-////        {
-////            auto center = (pts[0] + pts[1] + pts[2]) / 3.0;
-////            double aa = 1 - 0.1;
-////            pts[0] = center + (pts[0] - center)*aa;
-////            pts[1] = center + (pts[1] - center)*aa;
-////            pts[2] = center + (pts[2] - center)*aa;
-////        }
-////        /**/
-//        double area = dsc->area(fkey);
-//        double mi = mean_inten[dsc->get_label(fkey)];
-//        double e = image_->get_tri_differ_f(pts, mi)/ (area + SINGULAR_AREA);
-        
-//        auto center = (pts[0] + pts[1] + pts[2])/3.0;
-        
-//        std::ostringstream is;
-//        is.precision(3);
-//        is << e;
-//        Painter::print_gl(center[0], center[1], is.str().c_str());
-//    }
-//}
-
-void interface_dsc::draw_tri_variant(){
-
-        for (auto fkey : dsc->faces()){
-            auto pts = dsc->get_pos(fkey);
-//            /*
-//             Shrink the triangle
-//             */
-//            {
-//            auto center = (pts[0] + pts[1] + pts[2]) / 3.0;
-//            double aa = 1 - 0.1;
-//            pts[0] = center + (pts[0] - center)*aa;
-//            pts[1] = center + (pts[1] - center)*aa;
-//            pts[2] = center + (pts[2] - center)*aa;
-//            }
-//            /**/
-            double area;
-            double mi = image_->get_tri_intensity_f(pts, &area); mi /= area;
-            double e = image_->get_tri_differ_f(pts, mi)/ (area + SINGULAR_AREA);
-            
-            auto center = (pts[0] + pts[1] + pts[2])/3.0;
-            
-            std::ostringstream is;
-            is.precision(3);
-            is << e;
-            Painter::print_gl(center[0], center[1], is.str().c_str());
-        }
-}
-
-//void interface_dsc::write_triangle_energy()
-//{
-//    std::ofstream f_variant("variant.txt");
-//    std::ofstream f_ms("MS.txt");
-    
-//    dyn_->compute_mean_intensity(*dsc, *image_);
-//    auto mean_inten = g_param.mean_intensity;
-    
-//    for (auto fkey : dsc->faces()){
-        
-//        if (dsc->get_label(fkey) == BOUND_FACE)
-//        {
-//            continue;
-//        }
-        
-//        auto pts = dsc->get_pos(fkey);
-        
-//        // variency
-//        {
-//            double area;
-//            double mi = image_->get_tri_intensity_f(pts, &area); mi /= area;
-//            double e = image_->get_tri_differ_f(pts, mi)/ (area + SINGULAR_AREA);
-            
-//            f_variant << e << std::endl;
-//        }
-        
-//        // Mumford-Shah energy
-//        {
-//            double area = dsc->area(fkey);
-//            double mi = mean_inten[dsc->get_label(fkey)];
-//            double e = image_->get_tri_differ_f(pts, mi)/ (area + SINGULAR_AREA);
-//            f_ms << e << std::endl;
-//        }
-//    }
-    
-//    f_variant.close();
-//    f_ms.close();
-//}
 
 void interface_dsc::draw_edge_energy(){
     
@@ -589,22 +474,6 @@ void interface_dsc::draw_test(){
             Painter::print_gl(center[0], center[1], is.str().c_str());
         }
     }
-
-//    if (options_disp::get_option("Edge energy", false)) {
-//        for (auto ekey : dsc->halfedges()){
-//            auto hew = dsc->walker(ekey);
-//            if (dsc->is_interface_dsc(ekey) and
-//                hew.vertex().get_index() > hew.opp().vertex().get_index())
-//            {
-//                auto pts = dsc->get_pos(ekey);
-//                double energy = std::abs(image_->get_edge_energy(pts[0], pts[1], 1));
-//                auto c = (pts[0] + pts[1])/2;
-//                std::ostringstream str;
-//                str << energy;
-//                Painter::print_gl(c[0], c[1], str.str().c_str());
-//            }
-//        }
-//    }
 
 }
 
@@ -737,7 +606,7 @@ interface_dsc::interface_dsc(int &argc, char** argv){
     image_ = std::unique_ptr<image>(new image);
     image_->load_image(IMAGE_PATH);
     
-    imageSize = Vec2(image_->width() + 2*DISCRETIZE_RES, image_->height() + 2*DISCRETIZE_RES);
+    imageSize = Vec2(image_->width(), image_->height());
 
     check_gl_error();
     
@@ -776,19 +645,19 @@ void interface_dsc::init_dsc(){
 //    DISCRETIZATION = (double) height / (double)DISCRETIZE_RES;
     DISCRETIZATION = DISCRETIZE_RES;
     
-    width -= 2*DISCRETIZATION;
-    height -= 2*DISCRETIZATION;
+//    width -= 2*DISCRETIZATION;
+//    height -= 2*DISCRETIZATION;
     
     std::vector<real> points;
     std::vector<int> faces;
     Trializer::trialize(width, height, DISCRETIZATION, points, faces);
     
-    // Offset the mesh
-    for (auto & p:points)
-    {
-        p -= DISCRETIZE_RES;
-    }
-    //
+//    // Offset the mesh
+//    for (auto & p:points)
+//    {
+//        p -= DISCRETIZE_RES;
+//    }
+//    //
     
     width += 2*DISCRETIZATION;
     height += 2*DISCRETIZATION;
@@ -805,16 +674,16 @@ void interface_dsc::init_dsc(){
         dsc->set_uniform_smallest_feature(SMALLEST_SIZE);
     }
     
-    // Boundary
-    for (auto fkey : dsc->faces())
-    {
-        if (is_boundary(*dsc, fkey))
-        {
-            dsc->update_attributes(fkey, BOUND_FACE);
-        }else
-            dsc->update_attributes(fkey, 1);
-    }
-    dsc->clean_attributes();
+//    // Boundary
+//    for (auto fkey : dsc->faces())
+//    {
+//        if (is_boundary(*dsc, fkey))
+//        {
+//            dsc->update_attributes(fkey, BOUND_FACE);
+//        }else
+//            dsc->update_attributes(fkey, 1);
+//    }
+//    dsc->clean_attributes();
     
     printf("Average edge length: %f ; # faces: %d\n", dsc->get_avg_edge_length(), dsc->get_no_faces());
 }
@@ -886,7 +755,7 @@ void interface_dsc::random_init_dsc(int nb_phase)
     // Relabel
     for (auto tri : dsc->faces())
     {
-        if (dsc->get_label(tri) != BOUND_FACE)
+//        if (dsc->get_label(tri) != BOUND_FACE)
         {
             int idx = rand()%nb_phase + 1;
             dsc->update_attributes(tri, idx);
@@ -953,11 +822,12 @@ void interface_dsc::threshold_initialization()
     HMesh::AttributeVector<double, Face_key> mean_intensity(dsc->get_no_faces(), 0.0);
     for(Face_key fkey : dsc->faces())
     {
-        if(dsc->get_label(fkey) == BOUND_FACE)
-            continue;
-
         auto pts = dsc->get_pos(fkey);
 
+        if(pts[0][1] > 200)
+        {
+                
+        }
         auto sumIntensity = image_->get_sum_on_tri_intensity(pts);
         double area = dsc->area(fkey);
         double average = sumIntensity / area;
@@ -979,9 +849,6 @@ void interface_dsc::threshold_initialization()
     // 2. Relabel triangles
     for (auto fkey : dsc->faces())
     {
-        if(dsc->get_label(fkey) == BOUND_FACE)
-            continue;
-
         auto n_p = std::lower_bound(thres_hold_array.begin(), thres_hold_array.end(), mean_intensity[fkey]*256);
         int label = (int)(n_p == thres_hold_array.end()?
                               thres_hold_array.size() : n_p - thres_hold_array.begin()) + 1;
