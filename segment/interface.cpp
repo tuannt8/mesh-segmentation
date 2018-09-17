@@ -91,8 +91,6 @@ void interface_dsc::display(){
         return;
     }
     
-
-    
     draw();
     update_title();
     
@@ -619,8 +617,8 @@ interface_dsc::interface_dsc(int &argc, char** argv){
     gl_debug_helper::set_dsc(&(*dsc));
     
     reshape(WIN_SIZE_X, WIN_SIZE_Y);
-    display();
-    
+//    display();
+    glutPostRedisplay();
     
 }
 
@@ -819,43 +817,39 @@ void interface_dsc::threshold_initialization()
     //  1.1. Find face intensity histogram
     std::vector<int> histogram_for_thresholding(256,0);
 
-    HMesh::AttributeVector<double, Face_key> mean_intensity(dsc->get_no_faces(), 0.0);
+    HMesh::AttributeVector<int, Face_key> mean_intensity(dsc->get_no_faces(), 0.0);
+    
     for(Face_key fkey : dsc->faces())
     {
         auto pts = dsc->get_pos(fkey);
 
-        if(pts[0][1] > 200)
-        {
-                
-        }
         auto sumIntensity = image_->get_sum_on_tri_intensity(pts);
         double area = dsc->area(fkey);
-        double average = sumIntensity / area;
-
-        mean_intensity[fkey] = average;
-
-        int idx = (int)(average*256);
-        if(idx > 255) idx = 255;
-        histogram_for_thresholding[idx] ++;
+        double average = sumIntensity / area * 255;
+        if(average > 255) average = 255;
+        
+        mean_intensity[fkey] = (int)average;
+        histogram_for_thresholding[average] ++;
     }
     //  1.2 Thres hold with Otsu
     int nb_phases = NB_PHASE;
     vector<int> thres_hold_array = otsu_muti(histogram_for_thresholding, nb_phases);
+//    vector<int>  thres_hold_array = {26, 77, 130, 180, 221}; // hard code
+    
     cout << "Threshold with ";
     for(auto t : thres_hold_array) cout << t << "; ";
     cout << endl;
 
-
     // 2. Relabel triangles
     for (auto fkey : dsc->faces())
     {
-        auto n_p = std::lower_bound(thres_hold_array.begin(), thres_hold_array.end(), mean_intensity[fkey]*256);
-        int label = (int)(n_p == thres_hold_array.end()?
-                              thres_hold_array.size() : n_p - thres_hold_array.begin()) + 1;
-        dsc->set_label(fkey, label);
+        auto n_p = std::lower_bound(thres_hold_array.begin(), thres_hold_array.end(), mean_intensity[fkey]);
+
+        dsc->set_label(fkey, (int)(n_p - thres_hold_array.begin()));
     }
     
-    dsc->clean_attributes();
+    dsc->update_attributes();
+//    dsc->clean_attributes();
 }
 
 void interface_dsc::thres_hold_init(){

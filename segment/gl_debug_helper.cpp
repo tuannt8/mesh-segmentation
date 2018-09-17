@@ -104,7 +104,7 @@ void gl_debug_helper::update_dsc(){
         }
     }
     
-    dsc->clean_attributes();
+    dsc->update_attributes();
 }
 
 void gl_debug_helper::mouseDown(int button, int state, int x, int y){

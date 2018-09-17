@@ -13,14 +13,6 @@
 #include "define.h"
 #include "image.h"
 
-//#define EX_BOUND 1
-//#define IN_BOUND 2
-//#define IMAGE_GRAD 3
-//#define INDEX_VERT 4
-//#define FORCE_TEMP 5
-//#define V_COUNT 6
-//#define E2 7
-
 enum {
     EX_BOUND = 0,
     IN_BOUND,
@@ -77,6 +69,10 @@ private:
      */
     void update_dsc_with_adaptive_mesh();
     
+    Vec2 get_node_displacement(Node_key vid);
+    
+    HMesh::VertexAttributeVector<Vec2> internal_node_forces;
+    HMesh::VertexAttributeVector<Vec2> external_node_forces;
 private:
     void update_probability(dsc_obj &dsc, image &img);
     
@@ -102,7 +98,7 @@ public:
     
 private: public:
     void get_energy(double &e_, double &l_); // 25.01.16
-
+    
     
     double energy_triangle(HMesh::FaceID fid, double c, int new_phase);
     
@@ -130,7 +126,7 @@ private: public:
     // Thinning approach
     /******************************/
     void thinning_triangles();
-    bool collapse_edge(Edge_key ek, Node_key n_to_remove);
+    bool collapse_edge(Edge_key ek, Node_key n_to_remove, bool safe = true);
     
 };
 

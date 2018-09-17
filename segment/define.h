@@ -74,9 +74,7 @@ extern int NB_PHASE;
 extern int ADAPTIVE;
 extern std::map<int, std::vector<init_circle>> _circle_inits;
 
-#define STABLE_MOVE 1e-2
-#define BETA    1.0 // external force
-
+#define STABLE_MOVE 1e-2 // ???
 
 using std::vector;
 using std::cout;
