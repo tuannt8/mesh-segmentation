@@ -112,7 +112,7 @@ private: public:
 //    bool energy_with_location(double &E, Node_key nkey , Vec2 displace, double * real_dis = nullptr);
     
     
-    void relabel_triangles(); // Purely base on MS energy
+    int relabel_triangles(); // Purely base on MS energy
 
     /******************************/
     // Coarsening approach
@@ -125,7 +125,7 @@ private: public:
     /******************************/
     // Thinning approach
     /******************************/
-    void thinning_triangles();
+    void thinning_triangles(bool colapse_all =  false);
     bool collapse_edge(Edge_key ek, Node_key n_to_remove, bool safe = true);
     
 };

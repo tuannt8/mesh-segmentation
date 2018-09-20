@@ -40,7 +40,7 @@ void Painter::save_painting(int width, int height, std::string folder, int time_
     
     if (time_step >= 0)
     {
-        s << std::string(Util::concat4digits("_", time_step));
+        s << std::string(DSC2D::Util::concat4digits("_", time_step));
     }
     s << ".png";
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
@@ -183,7 +183,7 @@ void Painter::draw_domain(const DesignDomain& domain, vec3 color)
         p0 = corners[j%corners.size()];
         p1 = corners[i];
         p2 = corners[(j+2)%corners.size()];
-        if (!Util::is_left_of(p0, p1, p2))
+        if (!DSC2D::Util::is_left_of(p0, p1, p2))
         {
             cor = vec3(p0[0], p0[1], 0.);
             glVertex3d(static_cast<double>(cor[0]), static_cast<double>(cor[1]), static_cast<double>(cor[2]));
@@ -408,6 +408,53 @@ void Painter::draw_faces(const DeformableSimplicialComplex& dsc)
     glDisable(GL_BLEND);
 }
 
+void Painter::draw_face_energy(const DeformableSimplicialComplex& dsc, image & img, std::map<int,double> thres_hold)
+{
+    auto s_dsc = &dsc;
+    auto s_img = &img;
+    
+    // Mark the triangles that are homeogeneous
+    HMesh::AttributeVector<int, Face_key> face_can_collapse(s_dsc->get_no_faces_allocated(), 1);
+    
+    int count = 0;
+    
+
+    for(auto fid : s_dsc->faces())
+    {        
+        auto l = s_dsc->get_label(fid);
+        
+        // Compute the variance
+        auto tris = s_dsc->get_pos(fid);
+        auto mean_c = s_img->get_sum_on_tri_intensity(tris) / s_dsc->area(fid);
+        auto ext_E = s_img->get_sum_on_tri_differ(tris, mean_c);
+        
+        if(ext_E > thres_hold[l]) // Consider splitting
+        {
+            face_can_collapse[fid] = 0;
+            count ++;
+        }
+    }
+    
+    glBegin(GL_TRIANGLES);
+    static std::vector<vec3> colors_ = {vec3(1,1,1), vec3(1,0,0), vec3(0,1,0), vec3(0,0,1),
+                vec3(1,1,0), vec3(0,1,1), vec3(1,0,1)};
+    
+	for(auto fi = dsc.faces_begin(); fi != dsc.faces_end(); ++fi)
+    {
+        if(face_can_collapse[*fi])
+            glColor4f(1, 0, 0, 0.5);
+        else
+            glColor4f(0, 0, 1, 0.5);
+   
+        for (auto hew = dsc.walker(*fi); !hew.full_circle(); hew = hew.circulate_face_cw())
+        {
+            vec2 p = dsc.get_pos(hew.vertex());
+            glVertex3d(static_cast<double>(p[0]), static_cast<double>(p[1]), static_cast<double>(0.));
+        }
+    }
+    glEnd();   
+}
+
 vec3 get_color(std::vector<vec3> & colors_, int idx){
     double scale = std::ceil(idx / (double)colors_.size());
     int i = idx % colors_.size();
@@ -450,7 +497,7 @@ void Painter::draw_faces(const DeformableSimplicialComplex& dsc, const HMesh::Fa
     
 	for(auto fi = dsc.faces_begin(); fi != dsc.faces_end(); ++fi)
     {
-        vec3 c = colors[*fi];
+        vec3 c = colors_[dsc.get_label(*fi)];
         glColor4f(c[0], c[1], c[2], 0.5);
    
    //     glColor4f(c[0], c[1], c[2], 0.0);
@@ -475,7 +522,7 @@ void Painter::draw_faces(const DeformableSimplicialComplex& dsc, const HMesh::Fa
     {
         if(values[*fi] >= 0.)
         {
-            vec3 color = Util::jet_color(values[*fi]);
+            vec3 color = DSC2D::Util::jet_color(values[*fi]);
             glColor3d(static_cast<double>(color[0]), static_cast<double>(color[1]), static_cast<double>(color[2]));
             for (auto hew = dsc.walker(*fi); !hew.full_circle(); hew = hew.circulate_face_cw())
             {

@@ -20,6 +20,9 @@
 #include "velocity_function.h"
 #include "define.h"
 
+#include <map>
+
+#include "image.h"
 
 #define FORCE_SCALE 10
 
@@ -131,4 +134,6 @@ public:
     
     // Utility
     static void print_gl(const double &x, const double &y, const char* str);
+    
+    static void draw_face_energy(const DSC2D::DeformableSimplicialComplex& dsc, image & img, std::map<int,double> thres_hold);
 };

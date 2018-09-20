@@ -124,6 +124,8 @@ void gl_debug_helper::mouseDown(int button, int state, int x, int y){
             
             glutPostRedisplay();
         }
+    }else{
+        print_debug_info_nearest(*get_instance().s_dsc_);
     }
     
     glutPostRedisplay();

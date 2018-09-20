@@ -26,6 +26,7 @@
 
 #include "export.h"
 
+
 int ox, oy, w,h;
 
 using namespace DSC2D;
@@ -321,21 +322,27 @@ void interface_dsc::draw()
     
     reshape(WIN_SIZE_X, WIN_SIZE_Y);
     
-    
     if (options_disp::get_option("Image", true)) {
         image_->draw_image(WIN_SIZE_X);
     }
     else
         glColor3f(0.4, 0.4, 0.4);
-    
+
+                
     if (options_disp::get_option("DSC faces", true) and dsc) {
         Painter::draw_faces(*dsc);
     }
+    
+    if (options_disp::get_option("face energy", true) and dsc) {
+        Painter::draw_face_energy(*dsc, *image_, dyn_->get_energy_thres());
+    }
 
+            
     if (options_disp::get_option("external force", false) and dsc){
         Painter::draw_external_force(*dsc, 0.6);
     }
 
+            
     if (options_disp::get_option("Face intensity", false) and dsc) {
         if(g_param.mean_intensity.size()!=0)
         {
@@ -350,7 +357,8 @@ void interface_dsc::draw()
         glPointSize(1.0);
     //    Painter::draw_vertices(*dsc);
     }
-   
+
+            
     if(options_disp::get_option("Vertices index", false)){
         glColor3f(1, 0, 0);
         Painter::draw_vertices_index(*dsc);
@@ -637,32 +645,26 @@ bool is_boundary(DeformableSimplicialComplex & dsc, Face_key fkey){
 void interface_dsc::init_dsc(){
     
     
-    double width = imageSize[0];
-    double height = imageSize[1];
+    int width = (int)imageSize[0];
+    int height = (int)imageSize[1];
     
-//    DISCRETIZATION = (double) height / (double)DISCRETIZE_RES;
     DISCRETIZATION = DISCRETIZE_RES;
     
-//    width -= 2*DISCRETIZATION;
-//    height -= 2*DISCRETIZATION;
+    width -= 2*DISCRETIZATION;
+    height -= 2*DISCRETIZATION;
+    
+    assert(width > DISCRETIZATION && height > DISCRETIZATION);
     
     std::vector<real> points;
     std::vector<int> faces;
     Trializer::trialize(width, height, DISCRETIZATION, points, faces);
     
-//    // Offset the mesh
-//    for (auto & p:points)
-//    {
-//        p -= DISCRETIZE_RES;
-//    }
-//    //
-    
-    width += 2*DISCRETIZATION;
-    height += 2*DISCRETIZATION;
     DesignDomain *domain = new DesignDomain(DesignDomain::RECTANGLE, width, height, 0 /*,  DISCRETIZATION */);
     
     dsc = std::unique_ptr<DeformableSimplicialComplex>(
                             new DeformableSimplicialComplex(DISCRETIZATION, points, faces, domain));
+    
+    dsc->clean_attributes();
     
     if (ADAPTIVE == 1)
     {
@@ -671,19 +673,8 @@ void interface_dsc::init_dsc(){
     {
         dsc->set_uniform_smallest_feature(SMALLEST_SIZE);
     }
-    
-//    // Boundary
-//    for (auto fkey : dsc->faces())
-//    {
-//        if (is_boundary(*dsc, fkey))
-//        {
-//            dsc->update_attributes(fkey, BOUND_FACE);
-//        }else
-//            dsc->update_attributes(fkey, 1);
-//    }
-//    dsc->clean_attributes();
-    
-    printf("Average edge length: %f ; # faces: %d\n", dsc->get_avg_edge_length(), dsc->get_no_faces());
+   
+    dsc->update_attributes();
 }
 
 void interface_dsc::export_dsc()
