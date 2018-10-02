@@ -87,7 +87,7 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
     {
         update_vertex_stable();
         
-        if(count < 50)
+//        if(count < 50)
         {
             subdivide_triangles();
             cout << relabel_triangles() << "Relabel"; 
@@ -294,60 +294,6 @@ void dynamics_mul::update_vertex_stable()
     
 }
 
-//void dynamics_mul::update_dsc_build_and_solve(dsc_obj &dsc, image &img){
-
-//}
-
-//void dynamics_mul::update_dsc_area(dsc_obj &dsc, image &img){
-//    s_img = &img;
-//    s_dsc = &dsc;
-    
-//    s_dsc->deform();
-    
-//    // 1. Update mean intensity
-//    // map<phase - mean intensity>
-//    compute_mean_intensity(mean_inten_);
-    
-//    //
-//    for (auto fid = s_dsc->faces_begin(); fid != s_dsc->faces_end(); fid++) {
-//        auto node_idxs = s_dsc->get_verts(*fid);
-//        std::vector<Vec2> tris = s_dsc->get_pos(*fid);
-//        double area = s_dsc->area(*fid);
-//        double ci = mean_inten_[s_dsc->get_label(*fid)];
-        
-//        Vec2 min(INFINITY, INFINITY), max(-INFINITY, -INFINITY);
-//        for (auto p: tris){
-//            min[0] = std::min(min[0], p[0]);
-//            min[1] = std::min(min[1], p[1]);
-//            max[0] = std::max(max[0], p[0]);
-//            max[1] = std::max(max[1], p[1]);
-//        }
-        
-//        // We have to compute further
-//        double signed_a = DSC2D::Util::signed_area(tris[0], tris[1], tris[2]) / area;
-//        double distance = 10.0; // Belong on how large epsilon is.
-//        double epsilon = 1.0;
-        
-//        std::vector<Vec2> p_f(3, Vec2(0.));
-//        for (int i = floor(min[0]); i < ceil(max[0]); i++) {
-//            for (int j = floor(min[1]); j < ceil(max[1]); j++) {
-//                if (helper_t::distance_to_edge(Vec2(i,j), tris) < distance) {
-                    
-//                    Vec2 p_c((double)i,(double)j);
-//                    double area[3];
-//                    area[0] = DSC2D::Util::signed_area(p_c, tris[1], tris[2])/signed_a;
-//                    area[1] = DSC2D::Util::signed_area(tris[0], p_c, tris[2])/signed_a;
-//                    area[2] = DSC2D::Util::signed_area(tris[0], tris[1], p_c)/signed_a;
-                    
-//                    for (int k = 0; k < 3; k++) {
-//                        // Compute force
-                        
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
 
 HMesh::Walker dynamics_mul::pre_edge(dsc_obj *obj, HMesh::Walker hew){
     auto pre_e = hew.circulate_vertex_ccw();
@@ -481,6 +427,8 @@ void dynamics_mul::subdivide_triangles()
         }
     }
     
+    std::cout << count << " faces need to be subdivided" <<endl;
+    
     s_dsc->recursive_split(faces_to_split);
 }
 
@@ -554,7 +502,7 @@ void dynamics_mul::thinning_triangles(bool colapse_all)
                        continue;
                    }
                    
-//                   // Check if it is stable
+                   // Check if it is stable
 //                   if(s_dsc->bStable[edges[0].vertex()] == 0
 //                           || s_dsc->bStable[edges[0].opp().vertex()] == 0
 //                           || s_dsc->bStable[edges[1].vertex()] == 0)
@@ -571,7 +519,7 @@ void dynamics_mul::thinning_triangles(bool colapse_all)
                            s_dsc->length(edges[0].halfedge()) <  s_dsc->length(edges[1].halfedge())?
                                edges[0] : edges[1];     
                    
-                   static double thres = cos(178*M_PI/180.);
+                   static double thres = cos(175*M_PI/180.);
                    
 //                   s_dsc->collapse(shortest_edge, true);
                            
@@ -682,11 +630,11 @@ bool dynamics_mul::collapse_edge(Edge_key ek, Node_key n_to_remove, bool safe)
     if(q > min_angle)
     {
         auto result = s_dsc->collapse(hew, 0, safe);
-        if(result)
-        {
-            
-            cout << "Collapsed " << n_to_remove.get_index() << endl;
-        }
+//        if(result)
+//        {
+//
+//            cout << "Collapsed " << n_to_remove.get_index() << endl;
+//        }
             
         return result;
     }
@@ -900,8 +848,8 @@ void dynamics_mul::displace_dsc(dsc_obj *obj){
             auto origin = obj->get_pos(*ni);
             auto des = origin + dis;
             
-            crop(des, bound);
-            proximity_snap(origin, des, bound);
+//            crop(des, bound);
+//            proximity_snap(origin, des, bound);
 
             obj->set_destination(*ni, des);
         }
@@ -1007,10 +955,6 @@ void dynamics_mul::compute_intensity_force(){
 //            N01 = N01 * DSC2D::Util::dot(N01, other_n - p0);
             N01.normalize();
 
-            if(N01[0] > 0.4)
-            {
-
-            }
             
             Vec2 f_x0 = N01*f0;
             Vec2 f_x1 = N01*f1;

@@ -136,10 +136,10 @@ void interface_dsc::reshape(int width, int height){
       //  glutReshapeWindow(WIN_SIZE_X, WIN_SIZE_Y);
         
 
-        ox = options_disp::width_view + (real_width - lx)/2 + DISCRETIZE_RES / (imageSize[0] / lx);
-        oy = (WIN_SIZE_Y - ly)/2 + DISCRETIZE_RES / (imageSize[1] / ly);
-        w = lx - 2*DISCRETIZE_RES / (imageSize[0] / lx) + 1;
-        h = ly - 2*DISCRETIZE_RES / (imageSize[1] / ly) + 1;
+        ox = options_disp::width_view + (real_width - lx)/2;
+        oy = (WIN_SIZE_Y - ly)/2 ;
+        w = lx ;
+        h = ly ;
 
         gl_debug_helper::coord_transform(Vec2(ox,oy),
                                          Vec2(imageSize[0] / lx, imageSize[1] / ly), WIN_SIZE_Y);
@@ -587,6 +587,7 @@ interface_dsc::interface_dsc(int &argc, char** argv){
     try
     {
         setting_io::set_param(argv[1]);
+        
     }
     catch (std::exception & e)
     {
@@ -607,6 +608,7 @@ interface_dsc::interface_dsc(int &argc, char** argv){
     initGL();
     
     dyn_ = std::unique_ptr<dynamics_mul>(new dynamics_mul);
+    dyn_->dt = DT_;
     dsc = nullptr;
     
     image_ = std::unique_ptr<image>(new image);
@@ -679,12 +681,14 @@ void interface_dsc::init_dsc(){
 
 void interface_dsc::export_dsc()
 {
+    dsc->clean_attributes();
+
     std::map<int, int> node_idx_map;
     std::vector<Vec2> vertices;
     int idx = 1;
     for (auto nkey : dsc->vertices())
     {
-        if (!HMesh::boundary(*dsc->mesh, nkey))
+//        if (!HMesh::boundary(*dsc->mesh, nkey))
         {
             node_idx_map.insert(std::make_pair(nkey.get_index(), idx));
             vertices.push_back(dsc->get_pos(nkey));
@@ -707,7 +711,6 @@ void interface_dsc::export_dsc()
         // triangle
         for (auto fkey : dsc->faces())
         {
-            if (dsc->get_label(fkey) != BOUND_FACE)
             {
                 auto verts = dsc->get_verts(fkey);
                 f << "f " << node_idx_map[verts[0].get_index()] << " "
@@ -719,7 +722,6 @@ void interface_dsc::export_dsc()
         // label
         for (auto fkey : dsc->faces())
         {
-            if (dsc->get_label(fkey) != BOUND_FACE)
             {
                 f << "l " << dsc->get_label(fkey) << endl;
             }
@@ -746,7 +748,7 @@ void interface_dsc::random_init_dsc(int nb_phase)
     {
 //        if (dsc->get_label(tri) != BOUND_FACE)
         {
-            int idx = rand()%nb_phase + 1;
+            int idx = rand()%nb_phase;
             dsc->update_attributes(tri, idx);
         }
     }
@@ -824,9 +826,9 @@ void interface_dsc::threshold_initialization()
     }
     //  1.2 Thres hold with Otsu
     int nb_phases = NB_PHASE;
-    vector<int> thres_hold_array = otsu_muti(histogram_for_thresholding, nb_phases);
-//    vector<int>  thres_hold_array = {26, 77, 130, 180, 221}; // hard code
-    
+//    vector<int> thres_hold_array = otsu_muti(histogram_for_thresholding, nb_phases);
+    vector<int>  thres_hold_array = {26, 77, 130, 180, 221}; // hard code
+
     cout << "Threshold with ";
     for(auto t : thres_hold_array) cout << t << "; ";
     cout << endl;

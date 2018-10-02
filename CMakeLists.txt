@@ -11,7 +11,9 @@ include_directories(2D-DSC/src)
 
 # GEL
 add_subdirectory(GEL)
-include_directories(GEL)
+include_directories(GEL/src)
+include_directories(./)
+
 
 if (APPLE)
 FIND_LIBRARY(COCOA_LIBRARY Cocoa)
@@ -36,6 +38,7 @@ include (FindPkgConfig)
 if (NOT PKG_CONFIG_FOUND)
     message (FATAL_ERROR "pkg-config not found")
 endif ()
+
 # check for libpng
 pkg_check_modules (LIBPNG libpng16 REQUIRED)
 if (NOT LIBPNG_FOUND)
@@ -51,6 +54,7 @@ include_directories(segment)
 aux_source_directory(segment SRC)
 add_executable(${EXEC} ${SRC} ${LIBPNG_LINK_FLAGS})
 
+###############################3
 # Link library
 target_link_libraries(${EXEC} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${OPENGL_glu_LIBRARY} ${GLFW_LIBRARIES} 2D-DSC GEL ${COCOA_LIBRARY})
 

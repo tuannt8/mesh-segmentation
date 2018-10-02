@@ -1,0 +1,16 @@
+# This is a comment
+file_path: snake.png # Image file
+
+# Segmentation parameter
+
+shortest_edge: 20
+smooth_coefficient: 0.1 # The higher the more straight curves
+
+relabel: 1 # 0-1: Enable relabeling of triangle
+
+time_step: 0.05
+dsc_init_resolution: 40 # Edge length average, pixels
+
+number_phases_to_segment: 3 # 0 for manual initialization
+
+adaptive_mesh: 1
