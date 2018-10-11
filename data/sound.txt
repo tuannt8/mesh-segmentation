@@ -3,8 +3,8 @@ file_path: sound8.png # Image file
 
 # Segmentation parameter
 
-shortest_edge: 5
-smooth_coefficient: 0.01 # The higher the less noise dependent
+shortest_edge: 3
+smooth_coefficient: 0.03 # The higher the less noise dependent
 
 relabel: 1 # 0-1: Enable relabeling of triangle
 

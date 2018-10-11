@@ -826,9 +826,10 @@ void interface_dsc::threshold_initialization()
     }
     //  1.2 Thres hold with Otsu
     int nb_phases = NB_PHASE;
-//    vector<int> thres_hold_array = otsu_muti(histogram_for_thresholding, nb_phases);
-    vector<int>  thres_hold_array = {26, 77, 130, 180, 221}; // hard code
-
+    std::cout << "Thresholding with Otsu method ..."
+    vector<int> thres_hold_array = otsu_muti(histogram_for_thresholding, nb_phases);
+//    vector<int>  thres_hold_array = {26, 77, 130, 180, 221}; // hard code
+//
     cout << "Threshold with ";
     for(auto t : thres_hold_array) cout << t << "; ";
     cout << endl;

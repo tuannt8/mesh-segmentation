@@ -121,7 +121,7 @@ Vec2 dynamics_mul::get_node_displacement(Node_key vid)
         return Vec2(0.0);
     
     static double n_dt = dt;
-    auto dis = external_node_forces[vid] + internal_node_forces[vid]*ALPHA;
+    auto dis = external_node_forces[vid] + internal_node_forces[vid]*ALPHA*5;
     return dis*n_dt;
 }
 void dynamics_mul::compute_difference()
@@ -432,6 +432,7 @@ void dynamics_mul::subdivide_triangles()
     s_dsc->recursive_split(faces_to_split);
 }
 
+
 void dynamics_mul::thinning_triangles(bool colapse_all)
 {    
     auto thres_hold = get_energy_thres();
@@ -520,12 +521,11 @@ void dynamics_mul::thinning_triangles(bool colapse_all)
                                edges[0] : edges[1];     
                    
                    static double thres = cos(175*M_PI/180.);
-                   
-//                   s_dsc->collapse(shortest_edge, true);
-                           
+
+//                   collapse_edge(shortest_edge.halfedge(), vid, false);
+
                    if(cangle < thres &&
                            collapse_edge(shortest_edge.halfedge(), vid, false))
-//                           s_dsc->collapse(shortest_edge, false))
                        counter_interface++;
                }
            }
