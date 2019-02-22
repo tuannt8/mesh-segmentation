@@ -4,9 +4,7 @@
 # CMake
 cmake-build-debug/
 
-# Xcode
-ConsoleApplication1/DerivedData
-ConsoleApplication1/Build
+xcuserdata/
 
 # User-specific files
 *.suo

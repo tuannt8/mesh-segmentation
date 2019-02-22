@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 #include "define.h"
-#include "CImg.h"
+//#include "CImg.h"
 
 //#ifdef WIN32
 //#include <GL/glew.h>
