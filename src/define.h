@@ -10,22 +10,20 @@
 #define DSC_define_h
 #include "DSC.h"
 #include <string>
-
 #include <GEL/CGLA/Vec2i.h>
 
-// Data directory
-#ifdef WIN32
 
-#define and &&
-#define or ||
+// Uncomment to use OpenGL for display
+//#define USE_OPENGL  // Implement later
+
 
 #define DATA_PATH "./DATA/"
 #define LOG_PATH "./LOG/"
 
-#else
+
 #define DATA_PATH "./DATA/"
 #define LOG_PATH "./LOG/"
-#endif
+
 
 /*********************************************************************/
 /* Type def

@@ -21,13 +21,10 @@
 #include <ctype.h>
 #endif
 
-
 #define IMAGE_PATH_S                "file_path"
 
 #define SMALLEST_SIZE_S             "shortest_edge"
 #define ALPHA_S                     "smooth_coefficient"
-#define SPLIT_EDGE_COEFFICIENT_S        "threshold_adapt_edge"
-#define SPLIT_FACE_COEFFICIENT_S        "threshold_adapt_face"
 
 #define RELABEL_S               "relabel"
 

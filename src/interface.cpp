@@ -120,7 +120,7 @@ void interface_dsc::reshape(int width, int height){
     double real_width = width - options_disp::width_view;
     if(dsc)
     {
-        double image_ratio = imageSize[1] / imageSize[0];
+        double image_ratio = (float)imageSize[1] / imageSize[0];
         double gl_ratio = (double)WIN_SIZE_Y / real_width;
         
         glMatrixMode(GL_PROJECTION);
@@ -142,7 +142,7 @@ void interface_dsc::reshape(int width, int height){
         h = ly ;
 
         gl_debug_helper::coord_transform(Vec2(ox,oy),
-                                         Vec2(imageSize[0] / lx, imageSize[1] / ly), WIN_SIZE_Y);
+                                         Vec2((float)imageSize[0] / lx, (float)imageSize[1] / ly), WIN_SIZE_Y);
     }
 }
 
@@ -314,8 +314,7 @@ void interface_dsc::initGL(){
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     
-    
-    check_gl_error();
+
 }
 
 #pragma mark - interface_dsc
@@ -336,7 +335,7 @@ void interface_dsc::draw()
         Painter::draw_faces(*dsc);
     }
     
-    if (options_disp::get_option("face energy", true) and dsc) {
+    if (options_disp::get_option("face energy", false) and dsc) {
         Painter::draw_face_energy(*dsc, *image_, dyn_->get_energy_thres());
     }
 
@@ -619,19 +618,18 @@ interface_dsc::interface_dsc(int &argc, char** argv){
     
     imageSize = image_->size();
 
-    std::cout << imageSize[0] << " --- " << imageSize[1] << endl;
     
     init_dsc();
-
-//    random_init_dsc(NB_PHASE);
     threshold_initialization();
 
     
     gl_debug_helper::set_dsc(&(*dsc));
     
     reshape(WIN_SIZE_X, WIN_SIZE_Y);
-//    display();
+
     glutPostRedisplay();
+    
+    check_gl_error();
     
 }
 
@@ -809,6 +807,9 @@ void interface_dsc::manual_init_dsc()
 
 void interface_dsc::threshold_initialization()
 {
+    // This function is extremely slow for high number of phase
+    // TODO: optimize Otsu thresholding
+    
     // 1. Find threshold with Otsu method
     //  1.1. Find face intensity histogram
     std::vector<int> histogram_for_thresholding(256,0);
@@ -831,8 +832,7 @@ void interface_dsc::threshold_initialization()
     int nb_phases = NB_PHASE;
     std::cout << "Thresholding with Otsu method ...";
     vector<int> thres_hold_array = otsu_muti(histogram_for_thresholding, nb_phases);
-//    vector<int>  thres_hold_array = {26, 77, 130, 180, 221}; // hard code
-//
+
     cout << "Threshold with ";
     for(auto t : thres_hold_array) cout << t << "; ";
     cout << endl;
@@ -846,22 +846,21 @@ void interface_dsc::threshold_initialization()
     }
     
     dsc->update_attributes();
-//    dsc->clean_attributes();
 }
-
-void interface_dsc::thres_hold_init(){
-    for (auto fid = dsc->faces_begin(); fid != dsc->faces_end(); fid++) {   
-        double mean_c = image_->get_sum_on_tri_intensity(dsc->get_pos(*fid)) / dsc->area(*fid);
-        
-        if (mean_c < 0.2) {
-            dsc->set_label(*fid, 0);
-        }
-        else if (mean_c < 0.7)
-            dsc->set_label(*fid, 1);
-        else
-            dsc->set_label(*fid, 3);
-    }
-}
+//
+//void interface_dsc::thres_hold_init(){
+//    for (auto fid = dsc->faces_begin(); fid != dsc->faces_end(); fid++) {
+//        double mean_c = image_->get_sum_on_tri_intensity(dsc->get_pos(*fid)) / dsc->area(*fid);
+//
+//        if (mean_c < 0.2) {
+//            dsc->set_label(*fid, 0);
+//        }
+//        else if (mean_c < 0.7)
+//            dsc->set_label(*fid, 1);
+//        else
+//            dsc->set_label(*fid, 3);
+//    }
+//}
 
 void interface_dsc::circle_init(Vec2 center, double radius, int label)
 {

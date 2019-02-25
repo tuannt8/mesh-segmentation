@@ -7,23 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		17388F0A2223FB6A007D6DB5 /* options_disp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17388EEB2223FB68007D6DB5 /* options_disp.cpp */; };
+		17388F0B2223FB6A007D6DB5 /* define.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17388EEC2223FB68007D6DB5 /* define.cpp */; };
+		17388F0C2223FB6A007D6DB5 /* gl_debug_helper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17388EEE2223FB68007D6DB5 /* gl_debug_helper.cpp */; };
+		17388F0D2223FB6A007D6DB5 /* helper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17388EF02223FB68007D6DB5 /* helper.cpp */; };
+		17388F0E2223FB6A007D6DB5 /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17388EF32223FB69007D6DB5 /* log.cpp */; };
+		17388F0F2223FB6A007D6DB5 /* profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17388EF42223FB69007D6DB5 /* profile.cpp */; };
+		17388F102223FB6A007D6DB5 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17388EF62223FB69007D6DB5 /* main.cpp */; };
+		17388F112223FB6A007D6DB5 /* adapt_mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17388EF72223FB69007D6DB5 /* adapt_mesh.cpp */; };
+		17388F122223FB6A007D6DB5 /* polygon_f.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17388EF82223FB69007D6DB5 /* polygon_f.cpp */; };
+		17388F132223FB6A007D6DB5 /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17388EFA2223FB69007D6DB5 /* draw.cpp */; };
+		17388F142223FB6A007D6DB5 /* setting_io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17388EFC2223FB69007D6DB5 /* setting_io.cpp */; };
+		17388F152223FB6A007D6DB5 /* interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17388F012223FB69007D6DB5 /* interface.cpp */; };
+		17388F162223FB6A007D6DB5 /* texture_helper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17388F032223FB6A007D6DB5 /* texture_helper.cpp */; };
+		17388F172223FB6A007D6DB5 /* t_image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17388F052223FB6A007D6DB5 /* t_image.cpp */; };
+		17388F182223FB6A007D6DB5 /* dynamics_mul.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17388F072223FB6A007D6DB5 /* dynamics_mul.cpp */; };
 		17A1996C2220544700FF21C8 /* GEL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17A1995D2220541A00FF21C8 /* GEL.framework */; };
 		17A1996D2220544A00FF21C8 /* libDSC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17A199642220542100FF21C8 /* libDSC.a */; };
-		17A199902220562200FF21C8 /* interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A199742220562000FF21C8 /* interface.cpp */; };
-		17A199912220562200FF21C8 /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A199752220562000FF21C8 /* draw.cpp */; };
-		17A199922220562200FF21C8 /* define.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A199762220562000FF21C8 /* define.cpp */; };
-		17A199932220562200FF21C8 /* options_disp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A199772220562000FF21C8 /* options_disp.cpp */; };
-		17A199942220562200FF21C8 /* setting_io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A1997A2220562000FF21C8 /* setting_io.cpp */; };
-		17A199952220562200FF21C8 /* adapt_mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A1997C2220562000FF21C8 /* adapt_mesh.cpp */; };
-		17A199962220562200FF21C8 /* gl_debug_helper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A1997D2220562000FF21C8 /* gl_debug_helper.cpp */; };
-		17A199972220562200FF21C8 /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A1997F2220562100FF21C8 /* log.cpp */; };
-		17A199982220562200FF21C8 /* texture_helper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A199802220562100FF21C8 /* texture_helper.cpp */; };
-		17A199992220562200FF21C8 /* helper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A199842220562100FF21C8 /* helper.cpp */; };
-		17A1999A2220562200FF21C8 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A199852220562100FF21C8 /* main.cpp */; };
-		17A1999B2220562200FF21C8 /* polygon_f.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A199872220562100FF21C8 /* polygon_f.cpp */; };
-		17A1999C2220562200FF21C8 /* t_image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A199882220562100FF21C8 /* t_image.cpp */; };
-		17A1999D2220562200FF21C8 /* dynamics_mul.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A199892220562100FF21C8 /* dynamics_mul.cpp */; };
-		17A1999E2220562200FF21C8 /* profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A1998E2220562200FF21C8 /* profile.cpp */; };
 		17A199A32220572400FF21C8 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17A199A22220572400FF21C8 /* OpenGL.framework */; };
 		17A199A52220572900FF21C8 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17A199A42220572900FF21C8 /* GLUT.framework */; };
 /* End PBXBuildFile section */
@@ -79,41 +79,41 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		17388EEA2223FB68007D6DB5 /* gl_debug_helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gl_debug_helper.h; path = ../src/gl_debug_helper.h; sourceTree = "<group>"; };
+		17388EEB2223FB68007D6DB5 /* options_disp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = options_disp.cpp; path = ../src/options_disp.cpp; sourceTree = "<group>"; };
+		17388EEC2223FB68007D6DB5 /* define.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = define.cpp; path = ../src/define.cpp; sourceTree = "<group>"; };
+		17388EED2223FB68007D6DB5 /* log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = log.h; path = ../src/log.h; sourceTree = "<group>"; };
+		17388EEE2223FB68007D6DB5 /* gl_debug_helper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gl_debug_helper.cpp; path = ../src/gl_debug_helper.cpp; sourceTree = "<group>"; };
+		17388EEF2223FB68007D6DB5 /* profile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = profile.h; path = ../src/profile.h; sourceTree = "<group>"; };
+		17388EF02223FB68007D6DB5 /* helper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = helper.cpp; path = ../src/helper.cpp; sourceTree = "<group>"; };
+		17388EF12223FB68007D6DB5 /* otsu_multi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = otsu_multi.h; path = ../src/otsu_multi.h; sourceTree = "<group>"; };
+		17388EF22223FB68007D6DB5 /* helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = helper.h; path = ../src/helper.h; sourceTree = "<group>"; };
+		17388EF32223FB69007D6DB5 /* log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = log.cpp; path = ../src/log.cpp; sourceTree = "<group>"; };
+		17388EF42223FB69007D6DB5 /* profile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = profile.cpp; path = ../src/profile.cpp; sourceTree = "<group>"; };
+		17388EF52223FB69007D6DB5 /* dynamics_mul.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dynamics_mul.h; path = ../src/dynamics_mul.h; sourceTree = "<group>"; };
+		17388EF62223FB69007D6DB5 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../src/main.cpp; sourceTree = "<group>"; };
+		17388EF72223FB69007D6DB5 /* adapt_mesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = adapt_mesh.cpp; path = ../src/adapt_mesh.cpp; sourceTree = "<group>"; };
+		17388EF82223FB69007D6DB5 /* polygon_f.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = polygon_f.cpp; path = ../src/polygon_f.cpp; sourceTree = "<group>"; };
+		17388EF92223FB69007D6DB5 /* t_image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = t_image.h; path = ../src/t_image.h; sourceTree = "<group>"; };
+		17388EFA2223FB69007D6DB5 /* draw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = draw.cpp; path = ../src/draw.cpp; sourceTree = "<group>"; };
+		17388EFB2223FB69007D6DB5 /* draw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = draw.h; path = ../src/draw.h; sourceTree = "<group>"; };
+		17388EFC2223FB69007D6DB5 /* setting_io.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = setting_io.cpp; path = ../src/setting_io.cpp; sourceTree = "<group>"; };
+		17388EFD2223FB69007D6DB5 /* setting_io.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = setting_io.hpp; path = ../src/setting_io.hpp; sourceTree = "<group>"; };
+		17388EFE2223FB69007D6DB5 /* adapt_mesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = adapt_mesh.h; path = ../src/adapt_mesh.h; sourceTree = "<group>"; };
+		17388EFF2223FB69007D6DB5 /* polygon_f.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = polygon_f.h; path = ../src/polygon_f.h; sourceTree = "<group>"; };
+		17388F002223FB69007D6DB5 /* interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = interface.h; path = ../src/interface.h; sourceTree = "<group>"; };
+		17388F012223FB69007D6DB5 /* interface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = interface.cpp; path = ../src/interface.cpp; sourceTree = "<group>"; };
+		17388F022223FB69007D6DB5 /* define.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = define.h; path = ../src/define.h; sourceTree = "<group>"; };
+		17388F032223FB6A007D6DB5 /* texture_helper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = texture_helper.cpp; path = ../src/texture_helper.cpp; sourceTree = "<group>"; };
+		17388F042223FB6A007D6DB5 /* tri_box_overlap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tri_box_overlap.h; path = ../src/tri_box_overlap.h; sourceTree = "<group>"; };
+		17388F052223FB6A007D6DB5 /* t_image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_image.cpp; path = ../src/t_image.cpp; sourceTree = "<group>"; };
+		17388F062223FB6A007D6DB5 /* export.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = export.h; path = ../src/export.h; sourceTree = "<group>"; };
+		17388F072223FB6A007D6DB5 /* dynamics_mul.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dynamics_mul.cpp; path = ../src/dynamics_mul.cpp; sourceTree = "<group>"; };
+		17388F082223FB6A007D6DB5 /* texture_helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = texture_helper.h; path = ../src/texture_helper.h; sourceTree = "<group>"; };
+		17388F092223FB6A007D6DB5 /* options_disp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = options_disp.h; path = ../src/options_disp.h; sourceTree = "<group>"; };
 		17A1994E2220531500FF21C8 /* mesh-segmentation */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "mesh-segmentation"; sourceTree = BUILT_PRODUCTS_DIR; };
 		17A199582220541A00FF21C8 /* GEL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GEL.xcodeproj; path = ../GEL/GEL_MAC/GEL.xcodeproj; sourceTree = "<group>"; };
 		17A1995E2220542100FF21C8 /* DSC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DSC.xcodeproj; path = "../2D-DSC/DSC.xcodeproj"; sourceTree = "<group>"; };
-		17A199712220562000FF21C8 /* options_disp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = options_disp.h; path = ../../src/options_disp.h; sourceTree = "<group>"; };
-		17A199722220562000FF21C8 /* draw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = draw.h; path = ../../src/draw.h; sourceTree = "<group>"; };
-		17A199732220562000FF21C8 /* define.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = define.h; path = ../../src/define.h; sourceTree = "<group>"; };
-		17A199742220562000FF21C8 /* interface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = interface.cpp; path = ../../src/interface.cpp; sourceTree = "<group>"; };
-		17A199752220562000FF21C8 /* draw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = draw.cpp; path = ../../src/draw.cpp; sourceTree = "<group>"; };
-		17A199762220562000FF21C8 /* define.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = define.cpp; path = ../../src/define.cpp; sourceTree = "<group>"; };
-		17A199772220562000FF21C8 /* options_disp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = options_disp.cpp; path = ../../src/options_disp.cpp; sourceTree = "<group>"; };
-		17A199782220562000FF21C8 /* profile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = profile.h; path = ../../src/profile.h; sourceTree = "<group>"; };
-		17A199792220562000FF21C8 /* interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = interface.h; path = ../../src/interface.h; sourceTree = "<group>"; };
-		17A1997A2220562000FF21C8 /* setting_io.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = setting_io.cpp; path = ../../src/setting_io.cpp; sourceTree = "<group>"; };
-		17A1997B2220562000FF21C8 /* tri_box_overlap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tri_box_overlap.h; path = ../../src/tri_box_overlap.h; sourceTree = "<group>"; };
-		17A1997C2220562000FF21C8 /* adapt_mesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = adapt_mesh.cpp; path = ../../src/adapt_mesh.cpp; sourceTree = "<group>"; };
-		17A1997D2220562000FF21C8 /* gl_debug_helper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gl_debug_helper.cpp; path = ../../src/gl_debug_helper.cpp; sourceTree = "<group>"; };
-		17A1997E2220562000FF21C8 /* t_image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = t_image.h; path = ../../src/t_image.h; sourceTree = "<group>"; };
-		17A1997F2220562100FF21C8 /* log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = log.cpp; path = ../../src/log.cpp; sourceTree = "<group>"; };
-		17A199802220562100FF21C8 /* texture_helper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = texture_helper.cpp; path = ../../src/texture_helper.cpp; sourceTree = "<group>"; };
-		17A199812220562100FF21C8 /* texture_helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = texture_helper.h; path = ../../src/texture_helper.h; sourceTree = "<group>"; };
-		17A199822220562100FF21C8 /* export.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = export.h; path = ../../src/export.h; sourceTree = "<group>"; };
-		17A199832220562100FF21C8 /* dynamics_mul.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dynamics_mul.h; path = ../../src/dynamics_mul.h; sourceTree = "<group>"; };
-		17A199842220562100FF21C8 /* helper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = helper.cpp; path = ../../src/helper.cpp; sourceTree = "<group>"; };
-		17A199852220562100FF21C8 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../src/main.cpp; sourceTree = "<group>"; };
-		17A199862220562100FF21C8 /* log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = log.h; path = ../../src/log.h; sourceTree = "<group>"; };
-		17A199872220562100FF21C8 /* polygon_f.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = polygon_f.cpp; path = ../../src/polygon_f.cpp; sourceTree = "<group>"; };
-		17A199882220562100FF21C8 /* t_image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_image.cpp; path = ../../src/t_image.cpp; sourceTree = "<group>"; };
-		17A199892220562100FF21C8 /* dynamics_mul.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dynamics_mul.cpp; path = ../../src/dynamics_mul.cpp; sourceTree = "<group>"; };
-		17A1998A2220562100FF21C8 /* polygon_f.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = polygon_f.h; path = ../../src/polygon_f.h; sourceTree = "<group>"; };
-		17A1998B2220562100FF21C8 /* gl_debug_helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gl_debug_helper.h; path = ../../src/gl_debug_helper.h; sourceTree = "<group>"; };
-		17A1998C2220562100FF21C8 /* helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = helper.h; path = ../../src/helper.h; sourceTree = "<group>"; };
-		17A1998D2220562100FF21C8 /* setting_io.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = setting_io.hpp; path = ../../src/setting_io.hpp; sourceTree = "<group>"; };
-		17A1998E2220562200FF21C8 /* profile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = profile.cpp; path = ../../src/profile.cpp; sourceTree = "<group>"; };
-		17A1998F2220562200FF21C8 /* adapt_mesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = adapt_mesh.h; path = ../../src/adapt_mesh.h; sourceTree = "<group>"; };
-		17A199A02220563700FF21C8 /* otsu_multi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = otsu_multi.h; path = ../../../src/other/otsu_multi.h; sourceTree = "<group>"; };
 		17A199A22220572400FF21C8 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		17A199A42220572900FF21C8 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -133,12 +133,51 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		17388EE82223FB57007D6DB5 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				17388EF72223FB69007D6DB5 /* adapt_mesh.cpp */,
+				17388EFE2223FB69007D6DB5 /* adapt_mesh.h */,
+				17388EEC2223FB68007D6DB5 /* define.cpp */,
+				17388F022223FB69007D6DB5 /* define.h */,
+				17388EFA2223FB69007D6DB5 /* draw.cpp */,
+				17388EFB2223FB69007D6DB5 /* draw.h */,
+				17388F072223FB6A007D6DB5 /* dynamics_mul.cpp */,
+				17388EF52223FB69007D6DB5 /* dynamics_mul.h */,
+				17388F062223FB6A007D6DB5 /* export.h */,
+				17388EEE2223FB68007D6DB5 /* gl_debug_helper.cpp */,
+				17388EEA2223FB68007D6DB5 /* gl_debug_helper.h */,
+				17388EF02223FB68007D6DB5 /* helper.cpp */,
+				17388EF22223FB68007D6DB5 /* helper.h */,
+				17388F012223FB69007D6DB5 /* interface.cpp */,
+				17388F002223FB69007D6DB5 /* interface.h */,
+				17388EF32223FB69007D6DB5 /* log.cpp */,
+				17388EED2223FB68007D6DB5 /* log.h */,
+				17388EF62223FB69007D6DB5 /* main.cpp */,
+				17388EEB2223FB68007D6DB5 /* options_disp.cpp */,
+				17388F092223FB6A007D6DB5 /* options_disp.h */,
+				17388EF12223FB68007D6DB5 /* otsu_multi.h */,
+				17388EF82223FB69007D6DB5 /* polygon_f.cpp */,
+				17388EFF2223FB69007D6DB5 /* polygon_f.h */,
+				17388EF42223FB69007D6DB5 /* profile.cpp */,
+				17388EEF2223FB68007D6DB5 /* profile.h */,
+				17388EFC2223FB69007D6DB5 /* setting_io.cpp */,
+				17388EFD2223FB69007D6DB5 /* setting_io.hpp */,
+				17388F052223FB6A007D6DB5 /* t_image.cpp */,
+				17388EF92223FB69007D6DB5 /* t_image.h */,
+				17388F032223FB6A007D6DB5 /* texture_helper.cpp */,
+				17388F082223FB6A007D6DB5 /* texture_helper.h */,
+				17388F042223FB6A007D6DB5 /* tri_box_overlap.h */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
 		17A199452220531500FF21C8 = {
 			isa = PBXGroup;
 			children = (
 				17A1995E2220542100FF21C8 /* DSC.xcodeproj */,
 				17A199582220541A00FF21C8 /* GEL.xcodeproj */,
-				17A199702220560B00FF21C8 /* src */,
+				17388EE82223FB57007D6DB5 /* src */,
 				17A1994F2220531500FF21C8 /* Products */,
 				17A1996B2220544700FF21C8 /* Frameworks */,
 			);
@@ -176,53 +215,6 @@
 				17A199A22220572400FF21C8 /* OpenGL.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		17A199702220560B00FF21C8 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				17A1999F2220562C00FF21C8 /* other */,
-				17A1997C2220562000FF21C8 /* adapt_mesh.cpp */,
-				17A1998F2220562200FF21C8 /* adapt_mesh.h */,
-				17A199762220562000FF21C8 /* define.cpp */,
-				17A199732220562000FF21C8 /* define.h */,
-				17A199752220562000FF21C8 /* draw.cpp */,
-				17A199722220562000FF21C8 /* draw.h */,
-				17A199892220562100FF21C8 /* dynamics_mul.cpp */,
-				17A199832220562100FF21C8 /* dynamics_mul.h */,
-				17A199822220562100FF21C8 /* export.h */,
-				17A1997D2220562000FF21C8 /* gl_debug_helper.cpp */,
-				17A1998B2220562100FF21C8 /* gl_debug_helper.h */,
-				17A199842220562100FF21C8 /* helper.cpp */,
-				17A1998C2220562100FF21C8 /* helper.h */,
-				17A199882220562100FF21C8 /* t_image.cpp */,
-				17A1997E2220562000FF21C8 /* t_image.h */,
-				17A199742220562000FF21C8 /* interface.cpp */,
-				17A199792220562000FF21C8 /* interface.h */,
-				17A1997F2220562100FF21C8 /* log.cpp */,
-				17A199862220562100FF21C8 /* log.h */,
-				17A199852220562100FF21C8 /* main.cpp */,
-				17A199772220562000FF21C8 /* options_disp.cpp */,
-				17A199712220562000FF21C8 /* options_disp.h */,
-				17A199872220562100FF21C8 /* polygon_f.cpp */,
-				17A1998A2220562100FF21C8 /* polygon_f.h */,
-				17A1998E2220562200FF21C8 /* profile.cpp */,
-				17A199782220562000FF21C8 /* profile.h */,
-				17A1997A2220562000FF21C8 /* setting_io.cpp */,
-				17A1998D2220562100FF21C8 /* setting_io.hpp */,
-				17A199802220562100FF21C8 /* texture_helper.cpp */,
-				17A199812220562100FF21C8 /* texture_helper.h */,
-				17A1997B2220562000FF21C8 /* tri_box_overlap.h */,
-			);
-			path = src;
-			sourceTree = "<group>";
-		};
-		17A1999F2220562C00FF21C8 /* other */ = {
-			isa = PBXGroup;
-			children = (
-				17A199A02220563700FF21C8 /* otsu_multi.h */,
-			);
-			path = other;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -317,21 +309,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				17A199932220562200FF21C8 /* options_disp.cpp in Sources */,
-				17A199952220562200FF21C8 /* adapt_mesh.cpp in Sources */,
-				17A199972220562200FF21C8 /* log.cpp in Sources */,
-				17A1999B2220562200FF21C8 /* polygon_f.cpp in Sources */,
-				17A199962220562200FF21C8 /* gl_debug_helper.cpp in Sources */,
-				17A1999A2220562200FF21C8 /* main.cpp in Sources */,
-				17A199922220562200FF21C8 /* define.cpp in Sources */,
-				17A1999E2220562200FF21C8 /* profile.cpp in Sources */,
-				17A199902220562200FF21C8 /* interface.cpp in Sources */,
-				17A199912220562200FF21C8 /* draw.cpp in Sources */,
-				17A199992220562200FF21C8 /* helper.cpp in Sources */,
-				17A1999D2220562200FF21C8 /* dynamics_mul.cpp in Sources */,
-				17A1999C2220562200FF21C8 /* t_image.cpp in Sources */,
-				17A199982220562200FF21C8 /* texture_helper.cpp in Sources */,
-				17A199942220562200FF21C8 /* setting_io.cpp in Sources */,
+				17388F182223FB6A007D6DB5 /* dynamics_mul.cpp in Sources */,
+				17388F172223FB6A007D6DB5 /* t_image.cpp in Sources */,
+				17388F0B2223FB6A007D6DB5 /* define.cpp in Sources */,
+				17388F142223FB6A007D6DB5 /* setting_io.cpp in Sources */,
+				17388F0F2223FB6A007D6DB5 /* profile.cpp in Sources */,
+				17388F162223FB6A007D6DB5 /* texture_helper.cpp in Sources */,
+				17388F0A2223FB6A007D6DB5 /* options_disp.cpp in Sources */,
+				17388F132223FB6A007D6DB5 /* draw.cpp in Sources */,
+				17388F122223FB6A007D6DB5 /* polygon_f.cpp in Sources */,
+				17388F0C2223FB6A007D6DB5 /* gl_debug_helper.cpp in Sources */,
+				17388F102223FB6A007D6DB5 /* main.cpp in Sources */,
+				17388F112223FB6A007D6DB5 /* adapt_mesh.cpp in Sources */,
+				17388F0E2223FB6A007D6DB5 /* log.cpp in Sources */,
+				17388F0D2223FB6A007D6DB5 /* helper.cpp in Sources */,
+				17388F152223FB6A007D6DB5 /* interface.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

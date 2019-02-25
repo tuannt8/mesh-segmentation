@@ -32,8 +32,6 @@ void setting_io::setup_parameter()
     IMAGE_PATH = get_string(IMAGE_PATH_S);
     DISCRETIZE_RES = get_int(DISCRETIZE_RES_S);
     SMALLEST_SIZE = get_float(SMALLEST_SIZE_S);
-//    SPLIT_FACE_COEFFICIENT = get_float(SPLIT_FACE_COEFFICIENT_S);
-//    SPLIT_EDGE_COEFFICIENT = get_float(SPLIT_EDGE_COEFFICIENT_S);
     ALPHA = get_float(ALPHA_S);
     DT_ = get_float(DT_S);
     RELABEL = get_int(RELABEL_S);

@@ -15,11 +15,16 @@
 
 #define CROP_W(x) \
     if(x<0)x=0; \
-    if(x >= m_width) x= m_width;
+    if(x >= m_width) x= m_width -1;
 
 #define CROP_H(x) \
     if(x<0)x=0; \
-    if(x >= m_height) x= m_height;
+    if(x >= m_height) x= m_height -1;
+
+#define OUTSIDE_RETURN_MINUX_ONE \
+if(x < 0 || x >= m_width \
+   || y < 0 || y > m_height) \
+return -1; // Outside
 
 inline Vec2 get_coord_barry(Vec2_array & tris, double xi1, double xi2) {
     return tris[0]*xi1 + tris[1]*xi2 + tris[2]*(1- xi1 -xi2);
@@ -28,11 +33,8 @@ inline Vec2 get_coord_barry(Vec2_array & tris, double xi1, double xi2) {
 void t_image::load_image(std::string const file_path) // Using SOIL from GEL
 {
     try {
-        int channel;
         unsigned char* _image = SOIL_load_image(file_path.c_str(),
-                                                &m_width, &m_height, &channel, SOIL_LOAD_L);
-    
-        assert(m_width > 0 && m_height > 0);
+                                                &m_width, &m_height, nullptr, SOIL_LOAD_L);
         
         m_data = std::vector<float>(m_width * m_height, 0);
         
@@ -40,7 +42,12 @@ void t_image::load_image(std::string const file_path) // Using SOIL from GEL
             m_data[i] = (float)_image[i] / 255.;
         }
         
-        delete[] _image;
+//        for(int i = 0; i < m_width; i++)
+//            for (int j = 0; j < m_height; j++) {
+//                (*this)(i,j) = _image[i + j*m_width];
+//            }
+        
+        SOIL_free_image_data(_image);
         
         set_gl_texture();
     } catch (std::exception e) {
@@ -83,15 +90,17 @@ T t_image::get_sum_on_tri(Vec2_array tris, std::function<T(Vec2)> get_v){
 
 float & t_image::operator()(int x, int y)
 {
-    CROP_W(x);
-    CROP_H(y);
-    return m_data[x*m_width + y];
+    CROP_W(x)
+    CROP_H(y)
+    
+    return m_data[x + y * m_width];
 }
 
 float t_image::operator()(float x, float y) // need interpolation
 {
-    CROP_W(x);
-    CROP_H(y);
+//    OUTSIDE_RETURN_MINUX_ONE
+    CROP_W(x)
+    CROP_H(y)
     
     int x_i = (int)x;
     int y_i = (int)y;
