@@ -122,7 +122,7 @@ inline bool is_bound(DSC2D::DeformableSimplicialComplex * dsc, HMesh::HalfEdgeID
     
     return false;
 }
-void adapt_mesh::collapse_interface(DSC2D::DeformableSimplicialComplex &dsc, image &img)
+void adapt_mesh::collapse_interface(DSC2D::DeformableSimplicialComplex &dsc, t_image &img)
 {
     dsc_ = & dsc;
 
@@ -188,7 +188,7 @@ void adapt_mesh::collapse_interface(DSC2D::DeformableSimplicialComplex &dsc, ima
     
     
 }
-void adapt_mesh::split_edge(DSC2D::DeformableSimplicialComplex &dsc, image &img)
+void adapt_mesh::split_edge(DSC2D::DeformableSimplicialComplex &dsc, t_image &img)
 {
     dsc_ = &dsc;
     
@@ -297,7 +297,7 @@ void adapt_mesh::coarsening_triangles(DSC2D::DeformableSimplicialComplex &dsc)
 
 }
 
-void adapt_mesh::coarsening_interface(DSC2D::DeformableSimplicialComplex &dsc, image &img)
+void adapt_mesh::coarsening_interface(DSC2D::DeformableSimplicialComplex &dsc, t_image &img)
 {
     
 }

@@ -241,7 +241,7 @@ void gl_debug_helper::print_debug_info(dsc_obj &complex){
     }
 }
 
-void gl_debug_helper::print_image_info(image &img) {
+void gl_debug_helper::print_image_info(t_image &img) {
     Vec2 pt1 = get_instance().left_down_;
     Vec2 pt2 = get_instance().right_up_;
     Vec2 pt = get_instance().cur_mouse_pos_;

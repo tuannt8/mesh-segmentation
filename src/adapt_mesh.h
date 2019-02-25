@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include "DSC.h"
 #include "define.h"
-#include "image.h"
+#include "t_image.h"
 
 #define BOUND_FACE 0
 
@@ -26,15 +26,15 @@ public:
     ~adapt_mesh();
     
     // Split edge manually
-    void split_edge(DSC2D::DeformableSimplicialComplex &dsc, image &img);
+    void split_edge(DSC2D::DeformableSimplicialComplex &dsc, t_image &img);
     
     // Split face mannually
-    void collapse_interface(DSC2D::DeformableSimplicialComplex &dsc, image &img);
-    void split_face(DSC2D::DeformableSimplicialComplex &dsc, image &img);
+    void collapse_interface(DSC2D::DeformableSimplicialComplex &dsc, t_image &img);
+    void split_face(DSC2D::DeformableSimplicialComplex &dsc, t_image &img);
     
     // remove steiner vertices
-    void adapt_triangle(DSC2D::DeformableSimplicialComplex &dsc, image &img);
-    void thinning(DSC2D::DeformableSimplicialComplex &dsc, image &img);
+    void adapt_triangle(DSC2D::DeformableSimplicialComplex &dsc, t_image &img);
+    void thinning(DSC2D::DeformableSimplicialComplex &dsc, t_image &img);
     
     void remove_needles(DSC2D::DeformableSimplicialComplex &dsc);
     
@@ -48,7 +48,7 @@ private:
     
 public:// From dense to sparse, another approach
     void coarsening_triangles(DSC2D::DeformableSimplicialComplex &dsc);
-    void coarsening_interface(DSC2D::DeformableSimplicialComplex &dsc, image &img);
+    void coarsening_interface(DSC2D::DeformableSimplicialComplex &dsc, t_image &img);
 };
 
 #endif /* defined(__DSC_seg_integral__adapt_mesh__) */

@@ -11,7 +11,7 @@
 #include "DSC.h"
 #include <string>
 
-
+#include <GEL/CGLA/Vec2i.h>
 
 // Data directory
 #ifdef WIN32
@@ -31,6 +31,7 @@
 /* Type def
  */
 typedef DSC2D::vec2 Vec2;
+typedef CGLA::Vec2i Vec2i;
 typedef DSC2D::vec3 Vec3;
 typedef DSC2D::DeformableSimplicialComplex dsc_obj;
 typedef dsc_obj::node_key Node_key;

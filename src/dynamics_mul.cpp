@@ -257,7 +257,7 @@ double dynamics_mul::get_energy_assume_label(Face_key fid, int assumed_label)
     return external + internal * ALPHA;
 }
 
-void dynamics_mul::update_dsc(dsc_obj &dsc, image &img){
+void dynamics_mul::update_dsc(dsc_obj &dsc, t_image &img){
 
     s_dsc = &dsc;
     s_img = &img;
@@ -666,7 +666,7 @@ double dynamics_mul::energy_triangle(HMesh::FaceID fid, double c,  int new_phase
 
 #define NB_PHASE 3
 
-void dynamics_mul::update_probability(dsc_obj &dsc, image &img){
+void dynamics_mul::update_probability(dsc_obj &dsc, t_image &img){
     s_img = &img;
     s_dsc = &dsc;
     
@@ -732,32 +732,32 @@ void dynamics_mul::update_probability(dsc_obj &dsc, image &img){
 //}
 
 
-void dynamics_mul::get_energy(double &e_, double &l_)
-{
-    // intensity difference
-    double E = 0;
-    for (auto fkey : s_dsc->faces())
-    {
-        auto pts = s_dsc->get_pos(fkey);
-        double ci = mean_inten_[s_dsc->get_label(fkey)];
-        E += s_img->get_tri_differ_f(pts, ci);
-    }
-    
-    // Length
-    double L = 0;
-    for (auto ekey : s_dsc->halfedges())
-    {
-        auto hew = s_dsc->walker(ekey);
-        if (hew.vertex().get_index() > hew.opp().vertex().get_index()
-            && s_dsc->is_interface(hew.halfedge()))
-        {
-            L += s_dsc->length(ekey);
-        }
-    }
-    
-    e_ = E;
-    l_ = L;
-}
+//void dynamics_mul::get_energy(double &e_, double &l_)
+//{
+//    // intensity difference
+//    double E = 0;
+//    for (auto fkey : s_dsc->faces())
+//    {
+//        auto pts = s_dsc->get_pos(fkey);
+//        double ci = mean_inten_[s_dsc->get_label(fkey)];
+//        E += s_img->get_tri_differ_f(pts, ci);
+//    }
+//    
+//    // Length
+//    double L = 0;
+//    for (auto ekey : s_dsc->halfedges())
+//    {
+//        auto hew = s_dsc->walker(ekey);
+//        if (hew.vertex().get_index() > hew.opp().vertex().get_index()
+//            && s_dsc->is_interface(hew.halfedge()))
+//        {
+//            L += s_dsc->length(ekey);
+//        }
+//    }
+//    
+//    e_ = E;
+//    l_ = L;
+//}
 
 //double dynamics_mul::furthest_move(Node_key nid, Vec2 direction){
 //    double max_move = s_dsc->intersection_with_link(nid, s_dsc->get_pos(nid) + direction);

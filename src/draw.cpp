@@ -408,7 +408,7 @@ void Painter::draw_faces(const DeformableSimplicialComplex& dsc)
     glDisable(GL_BLEND);
 }
 
-void Painter::draw_face_energy(const DeformableSimplicialComplex& dsc, image & img, std::map<int,double> thres_hold)
+void Painter::draw_face_energy(const DeformableSimplicialComplex& dsc, t_image & img, std::map<int,double> thres_hold)
 {
     auto s_dsc = &dsc;
     auto s_img = &img;

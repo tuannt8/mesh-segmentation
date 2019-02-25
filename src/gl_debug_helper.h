@@ -15,7 +15,7 @@
 
 #include <stdio.h>
 #include "define.h"
-#include "image.h"
+#include "t_image.h"
 
 #define LOG_VERTEX  true
 #define LOG_EDGE    true
@@ -60,7 +60,7 @@ public:
     // Index of nearest element
     static void print_debug_info_nearest(dsc_obj &complex);
 
-    static void print_image_info(image &img);
+    static void print_image_info(t_image &img);
     
     static void draw();
     

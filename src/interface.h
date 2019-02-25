@@ -14,6 +14,7 @@
 #include "texture_helper.h"
 #include "setting_io.hpp"
 #include <memory>
+#include "define.h"
 
 #ifdef WIN32
 #include <GL/glew.h>
@@ -36,7 +37,7 @@ public:
     int     WIN_SIZE_X;
     int     WIN_SIZE_Y;
     double  SCALE;
-    Vec2    imageSize;
+    Vec2i    imageSize;
     std::vector<bool> bDiplay_;
     bool    RUN = false;
     
@@ -46,7 +47,7 @@ public:
     static interface_dsc *instance;
     
     std::unique_ptr<dynamics_mul> dyn_;
-    std::unique_ptr<image> image_;
+    std::unique_ptr<t_image> image_;
     
     int iter = 0;
 private:

@@ -17,18 +17,18 @@
 ////    std::string filePath = std::string(DATA_PATH) + std::string(filename);
 //    return -1;
 ////    std::string filePath(filename);
-    
+//
 ////    std::cout << filePath << std::endl;
-
+//
 ////    GLuint tex = SOIL_load_OGL_texture(filePath.c_str(),
 ////                                       SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
-
-    
+//
+//
 ////    int width, height, chanel;
 ////    unsigned char* _image = SOIL_load_image(filePath.c_str(),
 ////                                        &width, &height, &chanel, SOIL_LOAD_RGB);
 ////    size_ = Vec2(width, height);
-    
+//
 ////    // Gray image
 ////    gray_image_ = new double[width*height];
 //////    for (int i = 0; i < height; i++) {
@@ -40,20 +40,20 @@
 //////            gray_image_[idx] += _image[idx*chanel + 2];
 //////        }
 //////    }
-    
-
+//
+//
 ////    texture.push_back(tex);
 ////    tex_sizes.push_back(Vec2(width, height));
 ////    SOIL_free_image_data(_image);
-    
+//    
 ////    image_.load(filePath.c_str());
 ////   // image_.mirror('y');
-    
+//
 ////    image_ = (image_.get_channel(0) + image_.get_channel(1) + image_.get_channel(2)) / 3;
-    
+//
 ////    return tex;
 //}
-
+//
 //texture_helper::texture_helper(){
 //    LoadTexture(IMAGE_NAME.c_str());
 //}

@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 #include "define.h"
-#include "image.h"
+#include "t_image.h"
 
 enum {
     EX_BOUND = 0,
@@ -39,7 +39,7 @@ public:
     dynamics_mul();
     ~dynamics_mul();
     
-    void  update_dsc(dsc_obj &dsc, image &img);
+    void  update_dsc(dsc_obj &dsc, t_image &img);
     
     void update_vertex_stable();
     
@@ -47,7 +47,7 @@ public:
 
     // temporary variable
     dsc_obj * s_dsc;
-    image * s_img;
+    t_image * s_img;
     
     // Mean intensity
     std::map<int, double> mean_inten_;
@@ -74,7 +74,7 @@ private:
     HMesh::VertexAttributeVector<Vec2> internal_node_forces;
     HMesh::VertexAttributeVector<Vec2> external_node_forces;
 private:
-    void update_probability(dsc_obj &dsc, image &img);
+    void update_probability(dsc_obj &dsc, t_image &img);
     
 public:
 //    void update_dsc_explicit(dsc_obj &dsc, image &img);

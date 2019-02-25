@@ -313,6 +313,9 @@ void interface_dsc::initGL(){
     
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+    
+    
+    check_gl_error();
 }
 
 #pragma mark - interface_dsc
@@ -323,7 +326,7 @@ void interface_dsc::draw()
     reshape(WIN_SIZE_X, WIN_SIZE_Y);
     
     if (options_disp::get_option("Image", true)) {
-        image_->draw_image(WIN_SIZE_X);
+        image_->draw_image();
     }
     else
         glColor3f(0.4, 0.4, 0.4);
@@ -611,12 +614,12 @@ interface_dsc::interface_dsc(int &argc, char** argv){
     dyn_->dt = DT_;
     dsc = nullptr;
     
-    image_ = std::unique_ptr<image>(new image);
+    image_ = std::unique_ptr<t_image>(new t_image);
     image_->load_image(IMAGE_PATH);
     
-    imageSize = Vec2(image_->width(), image_->height());
+    imageSize = image_->size();
 
-    check_gl_error();
+    std::cout << imageSize[0] << " --- " << imageSize[1] << endl;
     
     init_dsc();
 
@@ -896,7 +899,7 @@ void interface_dsc::circle_init(Vec2 center, double radius, int label)
 }
 
 void interface_dsc::init_sqaure_boundary(){
-    Vec2 s = imageSize;// tex->get_image_size();
+    Vec2i s = imageSize;// tex->get_image_size();
     double left = 0.2;
     double right = 0.6;
     ObjectGenerator::create_square(*dsc, vec2(left*s[0], left*s[1]), vec2(right*s[0], right*s[1]), 1);
