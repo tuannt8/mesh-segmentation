@@ -63,7 +63,7 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
     
     auto init_time = std::chrono::system_clock::now();
     
-    int nb_displace = 5;
+    int nb_displace = 1;
 
 
     // Deform the mesh
@@ -81,29 +81,10 @@ void dynamics_mul::update_dsc_with_adaptive_mesh()
 
     static int count = 0;
 
-    relabel_triangles();    
+//    relabel_triangles();    
     
-    if (count++ % nb_displace == 0)
-    {
-        update_vertex_stable();
-        
-//        if(count < 50)
-        {
-            subdivide_triangles();
-            cout << relabel_triangles() << "Relabel"; 
-        }
 
 
-        thinning_triangles();
-        
-        if(ADAPTIVE)
-        {
-//            adapt_triangle();
-//            thinning();
-        }
-
-//        thinning_interface();
-    }
     
     static double time = 0;
     std::chrono::duration<double> t = std::chrono::system_clock::now() - init_time;
@@ -124,50 +105,50 @@ Vec2 dynamics_mul::get_node_displacement(Node_key vid)
     auto dis = external_node_forces[vid] + internal_node_forces[vid]*ALPHA*5;
     return dis*n_dt;
 }
-void dynamics_mul::compute_difference()
-{
-    for (auto nkey : s_dsc->vertices())
-    {
-        double total = 0.0;
-        int count_v = 0;
-        for(auto hew = s_dsc->walker(nkey); !hew.full_circle(); hew = hew.circulate_vertex_cw())
-        {
-            auto fid = hew.face();
-            
-            if (fid == HMesh::InvalidFaceID) {
-                continue;
-            }
-            
-            double ci = mean_inten_[s_dsc->get_label(fid)];
-            auto tris = s_dsc->get_pos(fid);
-            
-            Vec2 min(INFINITY, INFINITY), max(-INFINITY, -INFINITY);
-            for (auto p: tris){
-                min[0] = std::min(min[0], p[0]);
-                min[1] = std::min(min[1], p[1]);
-                max[0] = std::max(max[0], p[0]);
-                max[1] = std::max(max[1], p[1]);
-            }
-            
-            double tri_total = 0.0;
-            int count = 0;
-            for (int i = floor(min[0]); i < ceil(max[0]); i++) {
-                for (int j = floor(min[1]); j < ceil(max[1]); j++) {
-                    if (helper_t::is_point_in_tri(Vec2(i,j), tris)) {
-                        double I = s_img->get_intensity(i, j);
-                        tri_total += (I-ci)*(I-ci);
-                        count ++;
-                    }
-                }
-            }
-            
-            count_v += count;
-            total += tri_total;
-        } /* for(auto hew) */
-        
-        s_dsc->set_node_force(nkey, Vec2(total/(double)count_v), STAR_DIFFER);
-    } /* for (auto nkey) */
-}
+//void dynamics_mul::compute_difference()
+//{
+//    for (auto nkey : s_dsc->vertices())
+//    {
+//        double total = 0.0;
+//        int count_v = 0;
+//        for(auto hew = s_dsc->walker(nkey); !hew.full_circle(); hew = hew.circulate_vertex_cw())
+//        {
+//            auto fid = hew.face();
+//            
+//            if (fid == HMesh::InvalidFaceID) {
+//                continue;
+//            }
+//            
+//            double ci = mean_inten_[s_dsc->get_label(fid)];
+//            auto tris = s_dsc->get_pos(fid);
+//            
+//            Vec2 min(INFINITY, INFINITY), max(-INFINITY, -INFINITY);
+//            for (auto p: tris){
+//                min[0] = std::min(min[0], p[0]);
+//                min[1] = std::min(min[1], p[1]);
+//                max[0] = std::max(max[0], p[0]);
+//                max[1] = std::max(max[1], p[1]);
+//            }
+//            
+//            double tri_total = 0.0;
+//            int count = 0;
+//            for (int i = floor(min[0]); i < ceil(max[0]); i++) {
+//                for (int j = floor(min[1]); j < ceil(max[1]); j++) {
+//                    if (helper_t::is_point_in_tri(Vec2(i,j), tris)) {
+//                        double I = s_img->get_intensity(i, j);
+//                        tri_total += (I-ci)*(I-ci);
+//                        count ++;
+//                    }
+//                }
+//            }
+//            
+//            count_v += count;
+//            total += tri_total;
+//        } /* for(auto hew) */
+//        
+//        s_dsc->set_node_force(nkey, Vec2(total/(double)count_v), STAR_DIFFER);
+//    } /* for (auto nkey) */
+//}
 
 void dynamics_mul::adapt_triangle()
 {
@@ -855,6 +836,17 @@ void dynamics_mul::displace_dsc(dsc_obj *obj){
         }
     }
     
+    //
+    int nb_interface = -1;
+    // TODO: Only thin interface if it is stable (Small displacement)
+    s_dsc->thin_interial(165, true, &nb_interface);
+    s_dsc->smooth_boundary();
+    adapt_mesh a;
+    std::cout << nb_interface << "collapsed " << endl;
+//    if(nb_interface > 0)
+        a.remove_needles(*s_dsc);
+    //
+    
     obj->deform(ADAPTIVE);
 }
 
@@ -932,7 +924,8 @@ void dynamics_mul::compute_intensity_force(){
             double dl = (double)length / (double)N;
             for (int i = 0; i < N; i++) {
                 auto p = p0 + (p1 - p0)*((double)i / (double)N);
-                double I = s_img->get_intensity_f(p[0], p[1]);
+//                double I = s_img->get_intensity_bilinear(p[0], p[1]);
+                double I = s_img->get_intensity_bilinear_upscale(p[0], p[1]);
                 
                 double f = 0.0;
                 // Same coefficient
@@ -958,6 +951,10 @@ void dynamics_mul::compute_intensity_force(){
             
             Vec2 f_x0 = N01*f0;
             Vec2 f_x1 = N01*f1;
+            
+            // Normalize by edge length
+            f_x0 /= length;
+            f_x1 /= length;
             
             assert(f0 != NAN);
             assert(f1 != NAN);

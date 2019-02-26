@@ -12,7 +12,7 @@
 //#ifdef USE_SETTING_FILE
 
 std::string IMAGE_PATH;
-int DISCRETIZE_RES;
+float DISCRETIZE_RES;
 float SMALLEST_SIZE;
 float SPLIT_FACE_COEFFICIENT;
 float SPLIT_EDGE_COEFFICIENT;
@@ -30,7 +30,7 @@ std::string setting_io::_file_path;
 void setting_io::setup_parameter()
 {
     IMAGE_PATH = get_string(IMAGE_PATH_S);
-    DISCRETIZE_RES = get_int(DISCRETIZE_RES_S);
+    DISCRETIZE_RES = get_float(DISCRETIZE_RES_S);
     SMALLEST_SIZE = get_float(SMALLEST_SIZE_S);
     ALPHA = get_float(ALPHA_S);
     DT_ = get_float(DT_S);

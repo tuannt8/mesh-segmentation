@@ -45,16 +45,19 @@ void adapt_mesh::remove_needles(DSC2D::DeformableSimplicialComplex &dsc)
         }
         
         HMesh::Walker het = dsc.walker(*fit);
-        if (
-            dsc.min_angle(*fit) < 10*M_PI/180.// dsc.DEG_ANGLE
-            && dsc.max_angle(*fit, het) < 120*M_PI/180.
-            )
+        
+        double thres_hold  = 0.5 * dsc.MIN_ANGLE;
+        
+        if (dsc.min_angle(*fit) < thres_hold) //dsc.MIN_ANGLE
         {
-            dsc.remove_degenerate_needle(*fit);
-        }
-        else if(dsc.max_angle(*fit, het) > 170*M_PI/180.)
-        {
-            dsc.remove_degenerate_needle2(*fit);
+            if( dsc.max_angle(*fit, het) < 120*M_PI/180.)
+            {
+                dsc.remove_degenerate_needle(*fit);
+            }
+            else if(dsc.max_angle(*fit, het) > 170*M_PI/180.)
+            {
+                dsc.remove_degenerate_needle2(*fit);
+            }
         }
     }
 }
@@ -122,157 +125,7 @@ inline bool is_bound(DSC2D::DeformableSimplicialComplex * dsc, HMesh::HalfEdgeID
     
     return false;
 }
-void adapt_mesh::collapse_interface(DSC2D::DeformableSimplicialComplex &dsc, t_image &img)
-{
-    dsc_ = & dsc;
 
-    auto mean_inten_ = g_param.mean_intensity;
-    
-    for (auto vkey : dsc.vertices())
-    {
-        if (dsc.is_interface(vkey) && !dsc.is_crossing(vkey))
-        {
-            std::vector<HMesh::Walker> edges;
-            for (auto hew = dsc.walker(vkey); !hew.full_circle(); hew = hew.circulate_vertex_cw())
-            {
-                if (dsc.is_interface(hew.halfedge()))
-                {
-                    edges.push_back(hew);
-                }
-            }
-            assert(edges.size()==2);
-            
-            auto cangle = DSC2D::Util::cos_angle(dsc.get_pos(edges[0].opp().vertex()),
-                                         dsc.get_pos(edges[0].vertex()),
-                                         dsc.get_pos(edges[1].opp().vertex()));
-            if (cangle < dsc.COS_MIN_ANGLE)
-            {
-                // check energy
-                double ev = 0;
-                double c0 = mean_inten_[dsc.get_label(edges[0].face())];
-                double c1 = mean_inten_[dsc.get_label(edges[0].opp().face())];
-                
-                auto p0 = dsc.get_pos(edges[0].opp().vertex());
-                auto p1 = dsc.get_pos(edges[1].opp().vertex());
-                
-                double length = (p1 - p0).length();
-                int N = (int)length;
-                double dl = length/(double)N;
-                for (int i = 0; i <= N; i++) {
-                    auto p = p0 + (p1 - p0)*(i/(double)N)*dl;
-                    double I = img.get_intensity_f(p[0], p[1]);
-                    
-                    // Normalize force
-                    double f = (2*I - c0 - c1) / (c0-c1);
-                    
-                    ev += std::abs(f)*dl;
-                }
-                
-                ev = ev / (length + SINGULAR_EDGE);
-                
-                double thres = SPLIT_EDGE_COEFFICIENT*(c0-c1) * (c0-c1);
-                if (dsc.bStable[vkey] == 1
-                    && ev < thres)
-                {
-                    if (HMesh::precond_collapse_edge(*dsc.mesh, edges[0].halfedge())
-                        && dsc.unsafe_editable(edges[0].halfedge())
-                        && (dsc.is_collapsable(edges[0], true) || dsc.is_collapsable(edges[0].opp(), true))
-                        )
-                    {
-                        dsc.collapse(edges[0].halfedge(), 1);
-                    }
-                }
-            }
-        }
-    }
-    
-    
-}
-void adapt_mesh::split_edge(DSC2D::DeformableSimplicialComplex &dsc, t_image &img)
-{
-    dsc_ = &dsc;
-    
-    
-    std::vector<Edge_key> edges;
-    for(auto hei = dsc.halfedges_begin(); hei != dsc.halfedges_end(); ++hei)
-    {
-        if (dsc.is_interface(*hei)) {
-            auto hew = dsc.walker(*hei);
-            if(dsc.is_movable(*hei)
-               && dsc.get_label(hew.face()) < dsc.get_label(hew.opp().face()))
-            {
-                edges.push_back(*hei);
-            }
-        }
-    }
-    
-    auto mean_inten_ = g_param.mean_intensity;
-    
-    for (auto ekeyp = dsc.halfedges_begin(); ekeyp != dsc.halfedges_end(); ekeyp++){
-
-        auto ekey = *ekeyp;
-        auto hew = dsc.walker(ekey);
-        
-        
-        
-        if (! dsc.mesh->in_use(*ekeyp)
-            || !dsc.is_interface(ekey)
-            || hew.vertex() < hew.opp().vertex()
-            || hew.face() == HMesh::InvalidFaceID
-            || hew.opp().face() == HMesh::InvalidFaceID)
-        {
-            continue;
-        }
-        
-        double ev = 0;
-        double c0 = mean_inten_[dsc.get_label(hew.face())];
-        double c1 = mean_inten_[dsc.get_label(hew.opp().face())];
-        
-        // Loop on the edge
-        auto p0 = dsc.get_pos(hew.opp().vertex());
-        auto p1 = dsc.get_pos(hew.vertex());
-
-        double length = (p1 - p0).length();
-        int N = (int)length;
-        double dl = length/(double)N;
-        for (int i = 0; i <= N; i++) {
-            auto p = p0 + (p1 - p0)*(i/(double)N)*dl;
-            double I = img.get_intensity_f(p[0], p[1]);
-            
-            // Normalize force
-            double f = (2*I - c0 - c1) / (c0-c1);
-            
-            ev += std::abs(f)*dl;
-        }
-        
-        ev = ev / (length + SINGULAR_EDGE);
-        
-        double thres = SPLIT_EDGE_COEFFICIENT*(c0-c1) * (c0-c1);
-        
-        if (dsc.bStable[hew.vertex()] == 1
-            && dsc.bStable[hew.opp().vertex()] == 1)
-        {
-            if (ev > thres && length > 3*SMALLEST_SIZE
-                && !is_bound(&dsc, ekey)
-                ) // High energy. Split
-            {
-                
-                
-                dsc.split_adpat_mesh(ekey);
-            }
-            else // Low energy, consider collapse
-            {
-                // Only collapse edge on the interface
-                // And doesnot reduce mesh quality
-                // conflict with face split
-                
-//                if(dsc.collapse(ekey, true))
-//                {
-//                }
-            }
-        }
-    }
-}
 
 bool adapt_mesh::collapse_edge(HMesh::Walker hew)
 {

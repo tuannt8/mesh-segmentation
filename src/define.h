@@ -62,7 +62,7 @@ struct init_circle
 };
 
 extern std::string IMAGE_PATH;
-extern int DISCRETIZE_RES;
+extern float DISCRETIZE_RES;
 extern float SMALLEST_SIZE;
 extern float SPLIT_FACE_COEFFICIENT;
 extern float SPLIT_EDGE_COEFFICIENT;

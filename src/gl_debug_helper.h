@@ -28,7 +28,7 @@ private: // Singleton
     void operator = (gl_debug_helper const &) = delete;
     
 private:
-    bool active_ = true;
+    bool active_ = false;
     bool drawing_ = false;
     Vec2 left_down_, right_up_; // The rectangle
     

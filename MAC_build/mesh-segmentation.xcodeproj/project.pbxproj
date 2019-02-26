@@ -111,6 +111,7 @@
 		17388F072223FB6A007D6DB5 /* dynamics_mul.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dynamics_mul.cpp; path = ../src/dynamics_mul.cpp; sourceTree = "<group>"; };
 		17388F082223FB6A007D6DB5 /* texture_helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = texture_helper.h; path = ../src/texture_helper.h; sourceTree = "<group>"; };
 		17388F092223FB6A007D6DB5 /* options_disp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = options_disp.h; path = ../src/options_disp.h; sourceTree = "<group>"; };
+		177C16EE222436E3007C874B /* CImg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CImg.h; path = ../src/CImg.h; sourceTree = "<group>"; };
 		17A1994E2220531500FF21C8 /* mesh-segmentation */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "mesh-segmentation"; sourceTree = BUILT_PRODUCTS_DIR; };
 		17A199582220541A00FF21C8 /* GEL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GEL.xcodeproj; path = ../GEL/GEL_MAC/GEL.xcodeproj; sourceTree = "<group>"; };
 		17A1995E2220542100FF21C8 /* DSC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DSC.xcodeproj; path = "../2D-DSC/DSC.xcodeproj"; sourceTree = "<group>"; };
@@ -163,6 +164,7 @@
 				17388EEF2223FB68007D6DB5 /* profile.h */,
 				17388EFC2223FB69007D6DB5 /* setting_io.cpp */,
 				17388EFD2223FB69007D6DB5 /* setting_io.hpp */,
+				177C16EE222436E3007C874B /* CImg.h */,
 				17388F052223FB6A007D6DB5 /* t_image.cpp */,
 				17388EF92223FB69007D6DB5 /* t_image.h */,
 				17388F032223FB6A007D6DB5 /* texture_helper.cpp */,

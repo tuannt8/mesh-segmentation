@@ -182,25 +182,24 @@ void interface_dsc::keyboard(unsigned char key, int x, int y){
             Painter::save_painting_dsc(ox, oy, w, h, "./LOG");
             break;
         case 'i':
-            dyn_->write_energy();
+        {
+            adapt_mesh a;
+            a.remove_needles(*dsc);
+        }
             break;
         case 'f': // Flipping phase
         {
-
+            dynamics_image_seg();
         }
             break;
         case 's': // Split edge
         {
-            dyn_->s_dsc = &(*dsc);
-            dyn_->s_img = &(*image_);
-        
-            dyn_->compute_mean_intensity();
-            dyn_->thinning_triangles();
+            dsc->deform(true);
         }
             break;
         case 'b': // Split edge
         {
-            back_up_dsc();
+            dsc->thin_interial(165, true, nullptr);
         }
             break;
         case 'l': // Split edge
@@ -258,7 +257,7 @@ void interface_dsc::load_dsc()
         double width = imageSize[0];
         double height = imageSize[1];
         
-        DISCRETIZATION = (double) height / (double)DISCRETIZE_RES;
+        DISCRETIZATION = DISCRETIZE_RES;
         
         width -= 2*DISCRETIZATION;
         height -= 2*DISCRETIZATION;
@@ -330,6 +329,9 @@ void interface_dsc::draw()
     else
         glColor3f(0.4, 0.4, 0.4);
 
+    if (options_disp::get_option("Image upsample", true)) {
+        image_->draw_upsample_image();
+    }
                 
     if (options_disp::get_option("DSC faces", true) and dsc) {
         Painter::draw_faces(*dsc);
@@ -397,62 +399,7 @@ void interface_dsc::draw()
 
 void interface_dsc::draw_edge_energy(){
     
-    // By total force energy
-    if (1) {
-        
-        glColor3f(0, 0, 0);
-        
-        std::vector<Edge_key> edges;
-        for(auto hei = dsc->halfedges_begin(); hei != dsc->halfedges_end(); ++hei)
-        {
-            if (dsc->is_interface(*hei)) {
-                auto hew = dsc->walker(*hei);
-                if(dsc->is_movable(*hei)
-                   and dsc->get_label(hew.face()) < dsc->get_label(hew.opp().face()))
-                {
-                    edges.push_back(*hei);
-                }
-            }
-        }
-        
-        auto mean_inten_ = g_param.mean_intensity;
-        
-        for (auto ekey : edges){
-            auto hew = dsc->walker(ekey);
-            
-            double ev = 0;
-            double c0 = mean_inten_[dsc->get_label(hew.face())];
-            double c1 = mean_inten_[dsc->get_label(hew.opp().face())];
-            
-            // Loop on the edge
-            auto p0 = dsc->get_pos(hew.opp().vertex());
-            auto p1 = dsc->get_pos(hew.vertex());
-            
-            
-                double length = (p1 - p0).length();
-                int N = (int)length;
-                double dl = length/(double)N;
-                for (int i = 0; i <= N; i++) {
-                    auto p = p0 + (p1 - p0)*(i/(double)N)*dl;
-                    double I = image_->get_intensity_f(p[0], p[1]);
-                    
-                    // Normalize force
-                    double f = (2*I - c0 - c1) / (c0-c1);
-                    
-                    ev += std::abs(f)*dl;
-                }
-            
-            
-            ev = ev / ((double)length + 3);
-            
-            // draw
-            auto tris = dsc->get_pos(ekey);
-            auto center = (tris[0] + tris[1])/2.0;
-            std::ostringstream is;
-            is << ev;
-            Painter::print_gl(center[0], center[1], is.str().c_str());
-        }
-    }
+   
 }
 
 
@@ -534,33 +481,33 @@ void interface_dsc::draw_coord(){
 
 void interface_dsc::draw_image(){
 
-    DSC2D::DesignDomain const * domain = dsc->get_design_domain();
-    std::vector<DSC2D::vec2> corners = domain->get_corners();
-
-    std::vector<DSC2D::vec2> quad_v = get_quad(0, 0, imageSize[0], imageSize[1]);
-    std::vector<DSC2D::vec2> quad_tex;// = get_quad(0.0, 0.0, 1.0, 1.0);
-
-    quad_tex.push_back(DSC2D::vec2(1, 0));
-    quad_tex.push_back(DSC2D::vec2(1, 1));
-    quad_tex.push_back(DSC2D::vec2(0, 1));
-    quad_tex.push_back(DSC2D::vec2(0, 0));
-    
-    glColor3f(1, 1, 1);
-    glBegin(GL_QUADS);
-    for (int i = 0; i < 4; i++) {
-        glVertex2dv((GLdouble*)quad_v[i].get());
-        glTexCoord2dv((GLdouble*)quad_tex[i].get());
-    }
-    glEnd();
-    
-    glLineWidth(2.0);
-    glColor3f(1, 0, 0);
-    glBegin(GL_LINES);
-    for (int i = 0; i < 4; i++) {
-        glVertex2dv((GLdouble*)quad_v[i].get());
-        glVertex2dv((GLdouble*)quad_v[(i+1)%4].get());
-    }
-    glEnd();
+//    DSC2D::DesignDomain const * domain = dsc->get_design_domain();
+//    std::vector<DSC2D::vec2> corners = domain->get_corners();
+//
+//    std::vector<DSC2D::vec2> quad_v = get_quad(0, 0, imageSize[0], imageSize[1]);
+//    std::vector<DSC2D::vec2> quad_tex;// = get_quad(0.0, 0.0, 1.0, 1.0);
+//
+//    quad_tex.push_back(DSC2D::vec2(1, 0));
+//    quad_tex.push_back(DSC2D::vec2(1, 1));
+//    quad_tex.push_back(DSC2D::vec2(0, 1));
+//    quad_tex.push_back(DSC2D::vec2(0, 0));
+//
+//    glColor3f(1, 1, 1);
+//    glBegin(GL_QUADS);
+//    for (int i = 0; i < 4; i++) {
+//        glVertex2dv((GLdouble*)quad_v[i].get());
+//        glTexCoord2dv((GLdouble*)quad_tex[i].get());
+//    }
+//    glEnd();
+//
+//    glLineWidth(2.0);
+//    glColor3f(1, 0, 0);
+//    glBegin(GL_LINES);
+//    for (int i = 0; i < 4; i++) {
+//        glVertex2dv((GLdouble*)quad_v[i].get());
+//        glVertex2dv((GLdouble*)quad_v[(i+1)%4].get());
+//    }
+//    glEnd();
 }
 
 void interface_dsc::update_title()
@@ -622,6 +569,10 @@ interface_dsc::interface_dsc(int &argc, char** argv){
     init_dsc();
     threshold_initialization();
 
+//    dsc->smooth_interface();
+//    while (dsc->thin_interial(175, true) > 0) {
+//        
+//    }
     
     gl_debug_helper::set_dsc(&(*dsc));
     
@@ -830,7 +781,10 @@ void interface_dsc::threshold_initialization()
     }
     //  1.2 Thres hold with Otsu
     int nb_phases = NB_PHASE;
-    std::cout << "Thresholding with Otsu method ...";
+    std::cout << "Thresholding with Otsu method ..." << endl;
+    if(nb_phases > 5)
+        std::cout << "Otsu method can be slow with more than 5 phases" << endl;
+        
     vector<int> thres_hold_array = otsu_muti(histogram_for_thresholding, nb_phases);
 
     cout << "Threshold with ";
@@ -925,10 +879,10 @@ void interface_dsc::dynamics_image_seg(){
     
     dyn_->update_dsc(*dsc, *image_);
 
-    if(iter % 4 == 0)
-    {
-        export_dsc();
-    }
+//    if(iter % 4 == 0)
+//    {
+//        export_dsc();
+//    }
     iter ++;
 }
 
