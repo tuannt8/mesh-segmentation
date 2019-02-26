@@ -1,17 +1,9 @@
 # This is a comment
 file_path: brain_crop.png # Image file
 
-# Segmentation parameter
-
-shortest_edge: 0.5
 smooth_coefficient: 0.001 # The higher the more straight curves
-accuracy:0.01 #final displacement
-
-relabel: 1 # 0-1: Enable relabeling of triangle
 
 time_step: 0.2
 dsc_init_resolution: 1 # Edge length average, pixels
 
 number_phases_to_segment: 5  # 0 for manual initialization
-
-adaptive_mesh: 1

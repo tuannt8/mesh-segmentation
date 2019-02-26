@@ -1,16 +1,10 @@
 # This is a comment
 file_path: head_slice_lowdiff.png # Image file
 
-# Segmentation parameter
-
-shortest_edge: 0.5 # No need. Not anymore
 smooth_coefficient: 0.001 # The higher the more straight curves
-
-relabel: 1 # 0-1: Enable relabeling of triangle . Enable relabeling mean uniform mesh and manual initialization
 
 time_step: 0.1 # Only smoothing and time step
 dsc_init_resolution: 1 # Edge length average, pixels // Should be optional// similar to down scale
-adaptive_mesh: 1 // No need
 
 number_phases_to_segment: 2 # 0 for manual initialization
 

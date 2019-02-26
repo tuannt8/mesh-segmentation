@@ -31,11 +31,13 @@ void setting_io::setup_parameter()
 {
     IMAGE_PATH = get_string(IMAGE_PATH_S);
     DISCRETIZE_RES = get_float(DISCRETIZE_RES_S);
-    SMALLEST_SIZE = get_float(SMALLEST_SIZE_S);
     ALPHA = get_float(ALPHA_S);
     DT_ = get_float(DT_S);
-    RELABEL = get_int(RELABEL_S);
+    RELABEL = true;//get_int(RELABEL_S);
     NB_PHASE = get_int(NB_PHASE_S);
-    ADAPTIVE = get_int(ADAPTIVE_S);
+    ADAPTIVE = true;//get_int(ADAPTIVE_S);
+    
+    
+    SMALLEST_SIZE = DISCRETIZE_RES / 2.0;
 }
 
