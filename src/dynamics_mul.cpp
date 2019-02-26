@@ -839,7 +839,7 @@ void dynamics_mul::displace_dsc(dsc_obj *obj){
     //
     int nb_interface = -1;
     // TODO: Only thin interface if it is stable (Small displacement)
-    s_dsc->thin_interial(165, true, &nb_interface);
+    s_dsc->thin_interial(175, true, &nb_interface);
     s_dsc->smooth_boundary();
     adapt_mesh a;
     std::cout << nb_interface << "collapsed " << endl;
@@ -924,15 +924,15 @@ void dynamics_mul::compute_intensity_force(){
             double dl = (double)length / (double)N;
             for (int i = 0; i < N; i++) {
                 auto p = p0 + (p1 - p0)*((double)i / (double)N);
-//                double I = s_img->get_intensity_bilinear(p[0], p[1]);
+
                 double I = s_img->get_intensity_bilinear_upscale(p[0], p[1]);
                 
                 double f = 0.0;
                 // Same coefficient
-//                f = (2*I - c0 - c1) / (c0-c1) * dl;
+                f = (2*I - c0 - c1) / (c0-c1) * dl;
                 
                 // No normalization
-                f = (2*I - c0 - c1) * (c0-c1) * dl;
+//                f = (2*I - c0 - c1) * (c0-c1) * dl;
                 
                 assert(!DSC2D::Util::isnan(f));
                 

@@ -46,7 +46,7 @@ void adapt_mesh::remove_needles(DSC2D::DeformableSimplicialComplex &dsc)
         
         HMesh::Walker het = dsc.walker(*fit);
         
-        double thres_hold  = 0.5 * dsc.MIN_ANGLE;
+        double thres_hold  = 0.7 * dsc.MIN_ANGLE;
         
         if (dsc.min_angle(*fit) < thres_hold) //dsc.MIN_ANGLE
         {

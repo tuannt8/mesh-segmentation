@@ -38,7 +38,7 @@ void t_image::load_image(std::string const file_path) // Using SOIL from GEL
             cimg_library::CImg<unsigned char> img(_image, m_width, m_height, 1,1);
 //            img.resize_doubleXY();
             img.resize_tripleXY();
-            int n = std::min(m_width, m_height)*0.01;
+            int n = std::min(m_width, m_height)*0.02;
             img = img.blur_median(n);
             
             // init scale image

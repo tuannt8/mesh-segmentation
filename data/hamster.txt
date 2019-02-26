@@ -4,11 +4,11 @@ file_path: hamster.png # Image file
 # Segmentation parameter
 
 shortest_edge: 1
-smooth_coefficient: 0.0001 # The higher the more straight curves
+smooth_coefficient: 0.001 # The higher the more straight curves
 
 relabel: 1 # 0-1: Enable relabeling of triangle
 
-time_step: 10
+time_step: 0.1
 dsc_init_resolution: 2 # Edge length average, pixels
 
 number_phases_to_segment: 2 # 0 for manual initialization

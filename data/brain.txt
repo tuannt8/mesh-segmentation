@@ -9,7 +9,7 @@ accuracy:0.01 #final displacement
 
 relabel: 1 # 0-1: Enable relabeling of triangle
 
-time_step: 5
+time_step: 0.2
 dsc_init_resolution: 1 # Edge length average, pixels
 
 number_phases_to_segment: 5  # 0 for manual initialization
