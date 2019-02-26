@@ -34,12 +34,12 @@ void t_image::load_image(std::string const file_path) // Using SOIL from GEL
 
         
         // resolve jagged pixel
-
         {
             cimg_library::CImg<unsigned char> img(_image, m_width, m_height, 1,1);
 //            img.resize_doubleXY();
             img.resize_tripleXY();
-//            img = img.blur_median(5);
+            int n = std::min(m_width, m_height)*0.01;
+            img = img.blur_median(n);
             
             // init scale image
             
